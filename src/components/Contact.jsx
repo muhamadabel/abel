@@ -6,7 +6,7 @@ export default function Contact() {
     <section id="contact" className="section section--line contact">
       <div className="container">
         <Reveal>
-          <span className="section-index">05 / Kontak</span>
+          <span className="section-index">06 / Kontak</span>
         </Reveal>
 
         <Reveal delay={0.05}>

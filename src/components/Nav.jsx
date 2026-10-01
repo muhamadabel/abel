@@ -3,6 +3,7 @@ import { profile, sections } from '../data/content'
 import { scrollTo } from '../lib/smoothScroll'
 import { useScrollSpy, useScrolled } from '../hooks/useScrollSpy'
 import Clock from './Clock'
+import ThemeToggle from './ThemeToggle'
 
 const IDS = sections.map((s) => s.id)
 
@@ -45,8 +46,10 @@ export default function Nav() {
           </a>
         </nav>
 
-        <button
-          className={`nav__toggle ${open ? 'is-open' : ''}`}
+        <div className="nav__side">
+          <ThemeToggle />
+          <button
+            className={`nav__toggle ${open ? 'is-open' : ''}`}
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? 'Tutup menu' : 'Buka menu'}
           aria-expanded={open}
@@ -54,7 +57,8 @@ export default function Nav() {
           <span />
           <span />
           <span />
-        </button>
+          </button>
+        </div>
       </div>
     </header>
   )

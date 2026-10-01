@@ -6,7 +6,7 @@ export default function Education() {
     <section id="education" className="section section--line">
       <div className="container">
         <div className="section-head">
-          <span className="section-index">04 / Pendidikan</span>
+          <span className="section-index">05 / Pendidikan</span>
           <h2 className="section-title">Pendidikan</h2>
         </div>
 

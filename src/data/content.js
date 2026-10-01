@@ -64,15 +64,33 @@ export const projects = [
     id: 'rongsokin',
     title: 'Rongsokin',
     year: '2025',
-    role: 'Mobile Developer',
-    summary: 'Aplikasi jual-beli barang rongsok dan daur ulang dengan alur yang sederhana.',
+    role: 'Fullstack Developer',
+    summary: 'Marketplace daur ulang sampah berbasis geolokasi, mempertemukan penjual sampah dengan pengepul.',
     description:
-      'Dibangun dengan Flutter, menekankan tampilan yang bersih dan alur yang mudah diikuti supaya transaksi barang bekas terasa ringan.',
-    highlights: ['Dibangun dengan Flutter (Dart)', 'Fokus UI bersih dan alur sederhana'],
-    tags: ['Flutter', 'Dart', 'Mobile'],
+      'Membangun web marketplace dengan Next.js dan TypeScript: pencarian pengepul terdekat berbasis geolokasi, alur order, sampai console admin. Backend REST API dengan Prisma yang di-deploy di CapRover.',
+    highlights: [
+      'Pencarian pengepul berbasis geolokasi',
+      'Next.js + TypeScript + Tailwind CSS',
+      'Backend REST API dengan Prisma',
+    ],
+    tags: ['Next.js', 'TypeScript', 'Geolokasi'],
     preview: ['#4f9d6a', '#24503a'],
     live: 'https://rongsokin.vercel.app/',
-    repo: '',
+    repo: 'https://github.com/muhamadabel/rongsokin-frontend',
+  },
+  {
+    id: 'broilink',
+    title: 'Broilink',
+    year: '2025',
+    role: 'Mobile Developer',
+    summary: 'Aplikasi mobile Android native untuk manajemen peternakan ayam broiler.',
+    description:
+      'Aplikasi Android native dengan Kotlin untuk membantu peternak memantau dan mengelola kandang ayam broiler, dari pencatatan harian sampai ringkasan performa.',
+    highlights: ['Android native dengan Kotlin', 'Pencatatan harian kandang', 'Ringkasan performa ternak'],
+    tags: ['Kotlin', 'Android', 'Mobile'],
+    preview: ['#c8a13a', '#6b4f16'],
+    live: '',
+    repo: 'https://github.com/muhamadabel/Broilinkmobile',
   },
   {
     id: 'e2e-testing',
@@ -90,6 +108,58 @@ export const projects = [
   },
 ]
 
+// Arsip repo open-source di GitHub (di luar karya pilihan di atas)
+export const repos = [
+  {
+    name: 'rongsokin-frontend',
+    desc: 'Marketplace daur ulang sampah berbasis geolokasi (penjual sampah ↔ pengepul).',
+    lang: 'TypeScript',
+    url: 'https://github.com/muhamadabel/rongsokin-frontend',
+  },
+  {
+    name: 'be-rongsok.in',
+    desc: 'Backend REST API Rongsokin: order, discovery pengepul, pencarian publik, admin console.',
+    lang: 'JavaScript',
+    url: 'https://github.com/muhamadabel/be-rongsok.in',
+  },
+  {
+    name: 'somnia-fe',
+    desc: 'Frontend project Somnia dengan TypeScript.',
+    lang: 'TypeScript',
+    url: 'https://github.com/muhamadabel/somnia-fe',
+  },
+  {
+    name: 'desawatch',
+    desc: 'Project monitoring desa dengan TypeScript.',
+    lang: 'TypeScript',
+    url: 'https://github.com/muhamadabel/desawatch',
+  },
+  {
+    name: 'Broilinkmobile',
+    desc: 'Aplikasi Android native untuk manajemen peternakan ayam broiler.',
+    lang: 'Kotlin',
+    url: 'https://github.com/muhamadabel/Broilinkmobile',
+  },
+  {
+    name: 'Be-SIA-UGN-Kel1',
+    desc: 'Backend SIA UGN: BKD/Angka Kredit, kegiatan mengajar, penelitian, presensi GPS, gaji.',
+    lang: 'PHP',
+    url: 'https://github.com/muhamadabel/Be-SIA-UGN-Kel1',
+  },
+  {
+    name: 'Infraktrukstour-fe',
+    desc: 'Frontend project infrastruktur tour.',
+    lang: 'JavaScript',
+    url: 'https://github.com/muhamadabel/Infraktrukstour-fe',
+  },
+  {
+    name: 'PPPL-UAS',
+    desc: 'Project UAS mata kuliah PPPL dengan Java.',
+    lang: 'Java',
+    url: 'https://github.com/muhamadabel/PPPL-UAS',
+  },
+]
+
 export const education = {
   school: 'Universitas Gadjah Mada',
   program: 'Teknologi Rekayasa Perangkat Lunak',
@@ -97,9 +167,9 @@ export const education = {
 }
 
 export const stats = [
-  { value: '3+', label: 'Tahun ngoding' }, // TODO: konfirmasi
-  { value: '3', label: 'Project tampil di sini' },
-  { value: '21', label: 'Angka keberuntungan' },
+  { value: '3+', label: 'Tahun ngoding' },
+  { value: '40+', label: 'Repo di GitHub' },
+  { value: '21', label: 'Skenario test PASS' },
 ]
 
 // Penanda di navigasi dan urutan section
@@ -108,5 +178,6 @@ export const sections = [
   { id: 'about', label: 'Tentang' },
   { id: 'skills', label: 'Keahlian' },
   { id: 'work', label: 'Karya' },
+  { id: 'archive', label: 'Arsip' },
   { id: 'contact', label: 'Kontak' },
 ]
