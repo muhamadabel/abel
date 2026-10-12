@@ -7,7 +7,7 @@ function getInitial() {
   if (typeof window === 'undefined') return 'light'
   const saved = localStorage.getItem(KEY)
   if (saved === 'light' || saved === 'dark') return saved
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return 'light'
 }
 
 export default function ThemeToggle() {
