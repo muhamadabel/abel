@@ -1,43 +1,39 @@
-import Reveal from './Reveal'
+import { motion } from 'framer-motion'
 import { skills } from '../data/content'
+import { cardReveal, chipReveal, springCard, stagger, viewportOnce } from '../lib/motion'
+import SectionHead from './SectionHead'
 
-const allTech = skills.flatMap((g) => g.items)
+const total = skills.reduce((n, g) => n + g.items.length, 0)
 
 export default function Skills() {
   return (
-    <section id="skills" className="section section--line">
+    <section id="skills" className="section">
       <div className="container">
-        <div className="section-head">
-          <span className="section-index">02 / Keahlian</span>
-          <h2 className="section-title">Keahlian</h2>
-        </div>
+        <SectionHead index={3} label="Keahlian" title="Keahlian" meta={`${total} item dalam ${skills.length} kelompok`} />
 
-        <Reveal>
-          <div className="skills__grid">
-            {skills.map((group) => (
-              <div className="skill-group" key={group.group}>
-                <div className="skill-group__name">{group.group}</div>
-                <div className="skill-group__items">
-                  {group.items.map((item) => (
-                    <span className="skill-chip" key={item}>
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-
-      <div className="marquee" aria-hidden="true">
-        <div className="marquee__track">
-          {[...allTech, ...allTech].map((t, i) => (
-            <span className="marquee__item" key={i}>
-              {t}
-            </span>
+        <motion.div
+          className="skills"
+          variants={stagger(0.08)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+        >
+          {skills.map((g, gi) => (
+            <motion.article key={g.group} className="scard" variants={cardReveal} whileHover={{ y: -6 }} transition={springCard}>
+              <header className="scard__head">
+                <h3 className="scard__title">{g.group}</h3>
+                <span className="mono scard__count">{String(g.items.length).padStart(2, '0')}</span>
+              </header>
+              <motion.ul className="chips" variants={stagger(0.04, 0.15 + gi * 0.08)}>
+                {g.items.map((s) => (
+                  <motion.li key={s} className="chip" variants={chipReveal}>
+                    {s}
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

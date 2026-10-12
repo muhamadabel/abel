@@ -1,43 +1,37 @@
 import { useEffect, useState } from 'react'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { useSmoothScroll } from './lib/smoothScroll'
 import Preloader from './components/Preloader'
-import Cursor from './components/Cursor'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
-import About from './components/About'
-import Skills from './components/Skills'
+import TechMarquee from './components/TechMarquee'
 import Projects from './components/Projects'
-import Archive from './components/Archive'
-import Education from './components/Education'
+import Experience from './components/Experience'
+import Skills from './components/Skills'
+import CVPreview from './components/CVPreview'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 
 export default function App() {
   useSmoothScroll()
   const [ready, setReady] = useState(false)
-  const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 })
 
-  // Pengaman: hero tetap muncul walau preloader tersendat.
   useEffect(() => {
-    const t = setTimeout(() => setReady(true), 3500)
+    const t = setTimeout(() => setReady(true), 900)
     return () => clearTimeout(t)
   }, [])
 
   return (
     <>
-      <Preloader onReveal={() => setReady(true)} />
-      <Cursor />
-      <motion.div className="scroll-progress" style={{ width: '100%', scaleX }} aria-hidden="true" />
+      <AnimatePresence>{!ready && <Preloader key="preloader" />}</AnimatePresence>
       <Nav />
       <main>
         <Hero ready={ready} />
-        <About />
-        <Skills />
+        <TechMarquee />
         <Projects />
-        <Archive />
-        <Education />
+        <Experience />
+        <Skills />
+        <CVPreview />
         <Contact />
       </main>
       <Footer />

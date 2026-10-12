@@ -1,62 +1,70 @@
-import Reveal from './Reveal'
-import { contact } from '../data/content'
+import { motion } from 'framer-motion'
+import { contact, profile } from '../data/content'
+import { headingReveal, springSnappy, stagger, viewportOnce } from '../lib/motion'
+import SectionHead from './SectionHead'
+import Magnetic from './Magnetic'
+import Toast, { copyText, useToast } from './Toast'
+
+const socials = [contact.github, contact.linkedin, contact.instagram]
 
 export default function Contact() {
+  const [toast, showToast] = useToast()
+
+  const copyEmail = async () => {
+    showToast((await copyText(contact.email)) ? 'Email disalin' : 'Gagal menyalin email')
+  }
+
   return (
-    <section id="contact" className="section section--line contact">
+    <section id="contact" className="section contact">
       <div className="container">
-        <Reveal>
-          <span className="section-index">06 / Kontak</span>
-        </Reveal>
+        <SectionHead index={5} label="Hubungi" title={profile.availableText} meta={contact.location} />
 
-        <Reveal delay={0.05}>
-          <h2 className="contact__title display">
-            Ngobrol <span style={{ fontStyle: 'italic' }}>yuk?</span>
-          </h2>
-        </Reveal>
+        <motion.div
+          className="contact__body"
+          variants={stagger(0.1)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+        >
+          <motion.a href={`mailto:${contact.email}`} className="contact__email" variants={headingReveal}>
+            {contact.email}
+          </motion.a>
 
-        <Reveal delay={0.1}>
-          <p style={{ color: 'var(--ink-2)', maxWidth: '46ch', margin: '0 auto 2.2rem' }}>
-            Lagi cari frontend developer atau mau ngobrolin sebuah ide? Kirim email aja, aku usahakan
-            balas secepatnya.
-          </p>
-        </Reveal>
+          <motion.div className="contact__actions" variants={headingReveal}>
+            <Magnetic href={`mailto:${contact.email}`} className="btn btn--primary">
+              Kirim email
+            </Magnetic>
+            <Magnetic as="button" type="button" className="btn btn--ghost" onClick={copyEmail}>
+              Salin email
+            </Magnetic>
+          </motion.div>
 
-        <Reveal delay={0.12}>
-          <a className="btn btn--solid" href={`mailto:${contact.email}`} data-hover>
-            {contact.email} <span className="arrow">↗</span>
-          </a>
-        </Reveal>
-
-        <Reveal delay={0.16}>
-          <div className="contact__socials">
-            <a className="contact__social" href={contact.github.url} target="_blank" rel="noreferrer">
-              GitHub ↗
-            </a>
-            <a
-              className="contact__social"
-              href={contact.linkedin.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              LinkedIn ↗
-            </a>
-            <a
-              className="contact__social"
-              href={contact.instagram.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Instagram ↗
-            </a>
-            {contact.cv && (
-              <a className="contact__social" href={contact.cv} target="_blank" rel="noreferrer">
-                CV ↗
-              </a>
-            )}
-          </div>
-        </Reveal>
+          <motion.ul className="socials" variants={headingReveal}>
+            {socials.map((s) => (
+              <li key={s.label}>
+                <motion.a
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="social"
+                  whileHover={{ y: -2 }}
+                  transition={springSnappy}
+                >
+                  <span className="social__label mono">{s.label}</span>
+                  <span className="social__handle">{s.handle}</span>
+                </motion.a>
+              </li>
+            ))}
+            <li>
+              <motion.a href={`tel:${contact.phone}`} className="social" whileHover={{ y: -2 }} transition={springSnappy}>
+                <span className="social__label mono">Telepon</span>
+                <span className="social__handle">{contact.phone}</span>
+              </motion.a>
+            </li>
+          </motion.ul>
+        </motion.div>
       </div>
+      <Toast message={toast} />
     </section>
   )
 }
