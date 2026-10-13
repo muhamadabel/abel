@@ -5,7 +5,7 @@ import SectionHead from './SectionHead'
 import Magnetic from './Magnetic'
 import Toast, { copyText, useToast } from './Toast'
 
-const socials = [contact.github, contact.linkedin, contact.instagram]
+const socials = [contact.github, contact.linkedin, contact.instagram, contact.tiktok]
 
 export default function Contact() {
   const [toast, showToast] = useToast()

@@ -32,6 +32,7 @@ export const contact = {
     url: 'https://www.linkedin.com/in/muhammad-abel-abhinaya-riananto-944376326/',
   },
   instagram: { label: 'Instagram', handle: '@mhmmdabel._', url: 'https://instagram.com/mhmmdabel._' },
+  tiktok: { label: 'TikTok', handle: '@muhablee', url: 'https://www.tiktok.com/@muhablee' },
   location: 'Yogyakarta, ID',
 }
 

@@ -1210,12 +1210,18 @@ ul {
   overflow: hidden;
 }
 
+@media (max-width: 767px) {
+  .socials > li:last-child:nth-child(odd) {
+    grid-column: span 2;
+  }
+}
+
 .social {
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 18px 20px;
+  padding: 16px clamp(12px, 1.8vw, 20px);
   background: var(--bg-canvas);
   transition: background-color 0.25s ease;
 }
@@ -1333,7 +1339,7 @@ ul {
   }
 
   .socials {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 
   .hero__cards {
