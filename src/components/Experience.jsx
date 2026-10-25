@@ -1,78 +1,67 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { achievements, education, organizations } from '../data/content'
 import { ease, rowReveal, stagger, viewportOnce } from '../lib/motion'
+import { useFocus } from '../hooks/useFocus'
 import SectionHead from './SectionHead'
 
-const entries = [
-  ...organizations.map((o) => ({
-    key: o.org,
-    title: o.role,
-    sub: o.org,
-    tag: o.tag,
-    period: o.period,
-    desc: o.desc,
-  })),
-  ...achievements.map((a) => ({
-    key: a.event,
-    title: a.title,
-    sub: `${a.event}, ${a.organizer}`,
-    tag: 'Pencapaian',
-    period: a.year,
-    desc: null,
-  })),
-  ...education.map((e) => ({
-    key: e.school,
-    title: e.school,
-    sub: e.program,
-    tag: e.degree || 'Pendidikan',
-    period: e.period,
-    desc: null,
-  })),
+const groups = [
+  {
+    label: 'Organisasi',
+    items: organizations.map((o) => ({ key: o.org, title: o.role, sub: o.org, period: o.period, desc: o.desc })),
+  },
+  {
+    label: 'Pencapaian',
+    items: achievements.map((a) => ({ key: a.event, title: a.title, sub: `${a.event}, ${a.organizer}`, period: a.year })),
+  },
+  {
+    label: 'Pendidikan',
+    items: education.map((e) => ({
+      key: e.school,
+      title: e.school,
+      sub: [e.program, e.degree].filter(Boolean).join(', '),
+      period: e.period,
+    })),
+  },
 ]
 
+// Nomor urut global supaya fokus-hover berlaku lintas kelompok
+let n = 0
+groups.forEach((g) => g.items.forEach((item) => (item.idx = n++)))
+
+const rule = { hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 1, ease } } }
+
 export default function Experience() {
-  const [hovered, setHovered] = useState(null)
+  const [focus, group] = useFocus()
 
   return (
     <section id="experience" className="section section--band">
       <div className="container">
-        <SectionHead index={2} label="Pengalaman" title="Organisasi, pencapaian & pendidikan" />
+        <SectionHead id="experience" />
 
-        <motion.ul
-          className="rows"
-          variants={stagger(0.08)}
-          initial="hidden"
-          whileInView="show"
-          viewport={viewportOnce}
-          onMouseLeave={() => setHovered(null)}
-        >
-          {entries.map((item, idx) => {
-            const isDimmed = hovered !== null && hovered !== idx
-            return (
-              <motion.li key={item.key} variants={rowReveal}>
-                <motion.div
-                  className="row"
-                  onMouseEnter={() => setHovered(idx)}
-                  animate={{
-                    opacity: isDimmed ? 0.3 : 1,
-                    filter: isDimmed ? 'blur(1.5px)' : 'blur(0px)',
-                  }}
-                  transition={{ duration: 0.35, ease }}
-                >
-                  <span className="row__num mono">{String(idx + 1).padStart(2, '0')}</span>
-                  <div className="row__main">
-                    <h3 className="row__title">{item.title}</h3>
-                    <p className="row__sub">{item.sub}</p>
-                    {item.desc && <p className="row__desc">{item.desc}</p>}
-                  </div>
-                  <span className="tag mono row__tag">{item.tag}</span>
-                  <span className="row__period mono">{item.period}</span>
-                </motion.div>
-              </motion.li>
-            )
-          })}
-        </motion.ul>
+        <div {...group}>
+          {groups.map((g) => (
+            <div key={g.label} className="xp">
+              <motion.h3 className="xp__label" initial="hidden" whileInView="show" viewport={viewportOnce} variants={rowReveal}>
+                {g.label}
+              </motion.h3>
+              <motion.ol className="xp__list" variants={stagger(0.08)} initial="hidden" whileInView="show" viewport={viewportOnce}>
+                {g.items.map((item) => (
+                  <motion.li key={item.key} className="xp__row" variants={rowReveal}>
+                    <motion.span className="xp__rule" aria-hidden="true" variants={rule} />
+                    <motion.div className="xp__inner" {...focus(item.idx)}>
+                      <span className="xp__period">{item.period}</span>
+                      <div className="xp__main">
+                        <p className="xp__title">{item.title}</p>
+                        <p className="xp__sub">{item.sub}</p>
+                        {item.desc && <p className="xp__desc">{item.desc}</p>}
+                      </div>
+                    </motion.div>
+                  </motion.li>
+                ))}
+              </motion.ol>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )

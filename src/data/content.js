@@ -116,6 +116,7 @@ export const projects = [
     desc: 'Marketplace sampah berbasis geolokasi. Menghubungkan warga dengan pengepul dalam radius terdekat.',
     stack: ['Next.js', 'TypeScript', 'REST API', 'Tailwind'],
     live: 'https://rongsokin.vercel.app/',
+    image: '/projects/rongsokin.jpg',
     repo: 'https://github.com/muhamadabel/rongsokin-frontend',
     isPrivate: false,
   },
@@ -129,6 +130,7 @@ export const projects = [
     desc: 'Arsitektur front end modular dengan komponen type-safe dan zero runtime error.',
     stack: ['Next.js', 'TypeScript', 'Tailwind CSS'],
     live: 'https://www.somnia.page/',
+    image: '/projects/somnia.jpg',
     repo: 'https://github.com/muhamadabel/somnia-fe',
     isPrivate: false,
   },
@@ -142,6 +144,7 @@ export const projects = [
     desc: 'Sistem informasi manajemen pondok pesantren digital untuk tata kelola santri, administrasi akademik, dan pelaporan terpadu.',
     stack: ['Next.js', 'React', 'Tailwind CSS', 'REST API'],
     live: 'https://simpondokk.vercel.app',
+    image: '/projects/simpondok.jpg',
     repo: 'https://github.com/muhamadabel/Be-SIA-UGN-Kel1',
     isPrivate: false,
   },
@@ -182,9 +185,9 @@ export const repos = [
 ]
 
 export const sections = [
-  { id: 'work', label: 'Karya' },
-  { id: 'experience', label: 'Pengalaman' },
-  { id: 'skills', label: 'Keahlian' },
-  { id: 'cv', label: 'CV' },
-  { id: 'contact', label: 'Hubungi' },
+  { id: 'work', label: 'Karya', title: 'Proyek' },
+  { id: 'experience', label: 'Pengalaman', title: 'Pengalaman' },
+  { id: 'skills', label: 'Keahlian', title: 'Keahlian' },
+  { id: 'cv', label: 'CV', title: 'Curriculum Vitae' },
+  { id: 'contact', label: 'Hubungi', title: 'Hubungi' },
 ]

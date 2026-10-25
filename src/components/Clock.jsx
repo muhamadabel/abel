@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import { profile } from '../data/content'
 
 // Jam lokal Yogyakarta (WIB) yang jalan tiap detik.
-export default function Clock() {
+export default function Clock({ className = 'clock' }) {
   const [time, setTime] = useState('')
 
   useEffect(() => {
@@ -18,9 +19,10 @@ export default function Clock() {
   }, [])
 
   return (
-    <span className="nav__clock" aria-hidden="true">
-      <span className="nav__clock-dot" />
-      Yogyakarta · {time} WIB
+    <span className={className}>
+      <span className="clock__dot" aria-hidden="true" />
+      <span>{profile.location.split(',')[0]}</span>
+      <span className="mono clock__time">{time} WIB</span>
     </span>
   )
 }

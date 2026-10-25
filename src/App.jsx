@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, MotionConfig } from 'framer-motion'
 import { useSmoothScroll } from './lib/smoothScroll'
 import Preloader from './components/Preloader'
 import Nav from './components/Nav'
@@ -22,9 +22,9 @@ export default function App() {
   }, [])
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <AnimatePresence>{!ready && <Preloader key="preloader" />}</AnimatePresence>
-      <Nav />
+      <Nav ready={ready} />
       <main>
         <Hero ready={ready} />
         <TechMarquee />
@@ -35,6 +35,6 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </MotionConfig>
   )
 }
