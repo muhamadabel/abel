@@ -34,7 +34,7 @@ export default function Experience() {
   const [focus, group] = useFocus()
 
   return (
-    <section id="experience" className="section section--band">
+    <section id="experience" className="section section--band section--experience">
       <div className="container">
         <SectionHead id="experience" />
 

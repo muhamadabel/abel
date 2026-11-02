@@ -48,7 +48,7 @@ export default function Nav({ ready }) {
     >
       <div className="nav__inner">
         <a href="#top" className="nav__brand" onClick={(e) => go(e, '#top')}>
-          <span className="nav__mark">{profile.initials}</span>
+          <span className="nav__mark"><img src={profile.avatar} alt="Avatar Abel Abhinaya" /></span>
           <span className="nav__name">{profile.display}</span>
         </a>
 

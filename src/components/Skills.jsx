@@ -10,7 +10,7 @@ export default function Skills() {
   const [focus, group] = useFocus()
 
   return (
-    <section id="skills" className="section">
+    <section id="skills" className="section section--skills">
       <div className="container">
         <SectionHead id="skills" meta={`${total} item dalam ${skills.length} kelompok`} />
 
