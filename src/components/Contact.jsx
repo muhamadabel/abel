@@ -90,22 +90,6 @@ export default function Contact() {
         >
           {/* Kotak Inbox Langsung */}
           <motion.div className="inbox-card" variants={blurUp}>
-            <div className="inbox-card__header">
-              <div className="inbox-card__label">
-                <span className="inbox-card__icon" aria-hidden="true">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect width="20" height="16" x="2" y="4" rx="3" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                </span>
-                <span>Kotak Pesan Langsung</span>
-              </div>
-              <div className="inbox-card__status">
-                <span className="status-dot" aria-hidden="true" />
-                <span>Terbuka Diskusi</span>
-              </div>
-            </div>
-
             {status === 'sent' ? (
               <div className="inbox-card__success">
                 <div className="inbox-card__success-icon" aria-hidden="true">
