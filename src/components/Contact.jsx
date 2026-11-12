@@ -28,12 +28,10 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const form = e.currentTarget
-    const name = form.elements.name.value.trim()
-    const email = form.elements.email.value.trim()
     const message = form.elements.message.value.trim()
 
-    if (!name || !email || !message) {
-      showToast('Mohon lengkapi semua bidang pesan')
+    if (!message) {
+      showToast('Mohon tulis pesan kamu')
       return
     }
 
@@ -49,10 +47,8 @@ export default function Contact() {
           Accept: 'application/json',
         },
         body: JSON.stringify({
-          name,
-          email,
           message,
-          _subject: `Pesan Baru Portofolio dari ${name}`,
+          _subject: 'Pesan Baru dari Website Portofolio',
           _template: 'box',
           _captcha: 'false',
         }),
@@ -111,37 +107,6 @@ export default function Contact() {
               </div>
             ) : (
               <form className="inbox-form" onSubmit={handleSubmit}>
-                <div className="inbox-form__grid">
-                  <div className="inbox-form__field">
-                    <label htmlFor="inbox-name" className="inbox-form__label">
-                      Nama
-                    </label>
-                    <input
-                      id="inbox-name"
-                      name="name"
-                      type="text"
-                      className="inbox-form__input"
-                      placeholder="Nama atau instansi kamu"
-                      required
-                      autoComplete="name"
-                    />
-                  </div>
-                  <div className="inbox-form__field">
-                    <label htmlFor="inbox-email" className="inbox-form__label">
-                      Email atau WhatsApp
-                    </label>
-                    <input
-                      id="inbox-email"
-                      name="email"
-                      type="text"
-                      className="inbox-form__input"
-                      placeholder="Untuk balasan pesan"
-                      required
-                      autoComplete="email"
-                    />
-                  </div>
-                </div>
-
                 <div className="inbox-form__field">
                   <label htmlFor="inbox-message" className="inbox-form__label">
                     Pesan
@@ -149,7 +114,7 @@ export default function Contact() {
                   <textarea
                     id="inbox-message"
                     name="message"
-                    rows="3"
+                    rows="4"
                     className="inbox-form__textarea"
                     placeholder="Tulis pesan atau tawaran proyek di sini..."
                     required

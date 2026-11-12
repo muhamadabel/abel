@@ -6,7 +6,6 @@ import { blurUp, springBar, springCard, springTilt, stagger, wordReveal } from '
 import Magnetic from './Magnetic'
 
 const nameWords = profile.display.split(' ')
-const taglineWords = profile.tagline.split(' ')
 const totalSkills = skills.reduce((n, g) => n + g.items.length, 0)
 const years = projects.map((p) => p.year)
 
@@ -176,7 +175,7 @@ export default function Hero({ ready }) {
   }
 
   const state = ready ? 'show' : 'hidden'
-  const titleDone = 0.15 + (nameWords.length + taglineWords.length) * 0.07
+  const titleDone = 0.15 + nameWords.length * 0.07
 
   return (
     <section id="top" className="hero" ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
@@ -187,26 +186,10 @@ export default function Hero({ ready }) {
       </motion.div>
 
       <motion.div className="hero__center" style={{ y: centerY, opacity: centerOpacity }}>
-        <motion.p className="hero__status" variants={blurUp} initial="hidden" animate={state}>
-          {profile.available && <span className="status-dot" />}
-          {profile.availableText}
-          <span className="hero__status-sep">/</span>
-          {profile.location}
-        </motion.p>
-
         <motion.h1 className="hero__title" initial="hidden" animate={state} variants={stagger(0.07, 0.15)}>
           <span className="hero__line">
             {nameWords.map((w) => (
               <span key={w} className="word-mask">
-                <motion.span className="word" variants={wordReveal}>
-                  {w}
-                </motion.span>
-              </span>
-            ))}
-          </span>
-          <span className="hero__line hero__line--muted">
-            {taglineWords.map((w, i) => (
-              <span key={`${w}-${i}`} className="word-mask">
                 <motion.span className="word" variants={wordReveal}>
                   {w}
                 </motion.span>
