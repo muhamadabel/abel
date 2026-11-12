@@ -46,7 +46,6 @@ export default function CVPreview() {
   const rotateX = useTransform(scrollYProgress, [0, 1], [8, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [0.96, 1])
   const y = useTransform(scrollYProgress, [0, 1], [40, 0])
-  const filter = useTransform(scrollYProgress, [0, 0.8], ['blur(6px)', 'blur(0px)'])
 
   const share = async () => {
     const url = `${location.origin}${location.pathname}#cv`
@@ -78,7 +77,7 @@ export default function CVPreview() {
         </SectionHead>
 
         <div className="cv-stage">
-          <motion.article ref={paperRef} className="cv-paper" style={{ rotateX, scale, y, filter }}>
+          <motion.article ref={paperRef} className="cv-paper" style={{ rotateX, scale, y }}>
             <header className="cv-header">
               <div>
                 <h3 className="cv-name">{profile.name}</h3>

@@ -29,23 +29,23 @@ export const wordReveal = {
   show: { y: '0%', transition: { type: 'spring', stiffness: 100, damping: 16 } },
 }
 
-// Reveal blur-to-focus khas versi awal
+// Crisp clean reveal tanpa blur
 export const cardReveal = {
-  hidden: { opacity: 0, scale: 0.92, filter: 'blur(6px)' },
-  show: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.7, ease } },
+  hidden: { opacity: 0, scale: 0.96, y: 16 },
+  show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.55, ease } },
 }
 
 export const rowReveal = {
-  hidden: { opacity: 0, y: 28, filter: 'blur(6px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease } },
 }
 
 export const itemReveal = {
-  hidden: { opacity: 0, y: 10, filter: 'blur(4px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.5, ease } },
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease } },
 }
 
 export const blurUp = {
-  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease } },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
 }

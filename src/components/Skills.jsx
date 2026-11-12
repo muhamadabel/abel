@@ -19,7 +19,7 @@ export default function Skills() {
             <motion.div key={g.group} className="sgroup" variants={cardReveal}>
               <motion.div className="sgroup__inner" {...focus(gi)}>
                 <h3 className="sgroup__title">{g.group}</h3>
-                <motion.ul className="sgroup__list" variants={stagger(0.05, 0.25)}>
+                <motion.ul className="sgroup__list" variants={stagger(0.04, 0.05)}>
                   {g.items.map((s) => (
                     <motion.li key={s} variants={itemReveal}>
                       {s}

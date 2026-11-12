@@ -25,6 +25,7 @@ export const profile = {
 
 export const contact = {
   email: 'muhammadabelabhinaya@mail.ugm.ac.id',
+  formEndpoint: 'https://formsubmit.co/ajax/muhamadabelugm@gmail.com',
   phone: '08813798385',
   github: { label: 'GitHub', handle: 'muhamadabel', url: 'https://github.com/muhamadabel' },
   linkedin: {
