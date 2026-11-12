@@ -55,7 +55,6 @@ const cards = [
     target: '#experience',
     label: 'Organisasi',
     value: organizations.length,
-    note: organizations[0].org,
     list: organizations.map((o) => o.role),
   },
   {
@@ -68,8 +67,8 @@ const cards = [
     target: '#experience',
     label: 'Pencapaian',
     value: achievements[0].year,
-    note: achievements[0].title,
-    list: [achievements[0].event, achievements[0].organizer],
+    note: achievements[0].organizer,
+    list: [achievements[0].title, achievements[0].event],
   },
 ]
 
@@ -132,7 +131,7 @@ function FloatingCard({ card, mx, my, rotateX, rotateY, progress }) {
           >
             <div className="fcard__top">
               <span className="fcard__label mono">{card.label}</span>
-              <span className="fcard__note-top">{card.note}</span>
+              {card.note && <span className="fcard__note-top">{card.note}</span>}
             </div>
             <strong className="fcard__value">{card.value}</strong>
             {card.bars && <Bars bars={card.bars} delay={card.delay} note={card.barsNote} />}

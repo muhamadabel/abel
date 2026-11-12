@@ -4,15 +4,13 @@ import { cardReveal, itemReveal, stagger, viewportOnce } from '../lib/motion'
 import { useFocus } from '../hooks/useFocus'
 import SectionHead from './SectionHead'
 
-const total = skills.reduce((n, g) => n + g.items.length, 0)
-
 export default function Skills() {
   const [focus, group] = useFocus()
 
   return (
     <section id="skills" className="section section--skills">
       <div className="container">
-        <SectionHead id="skills" meta={`${total} item dalam ${skills.length} kelompok`} />
+        <SectionHead id="skills" />
 
         <motion.div className="skills" variants={stagger(0.1)} initial="hidden" whileInView="show" viewport={viewportOnce} {...group}>
           {skills.map((g, gi) => (

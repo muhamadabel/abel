@@ -41,7 +41,8 @@ Panduan onboard instan untuk AI coding agent (Claude, Antigravity, Cursor, Winds
    * Dikelilingi 4 floating cards (Proyek, Keahlian, Organisasi, Pencapaian) dengan mouse tilt.
 2. **Projects (`src/components/Projects.jsx`):**
    * Format **Horizontal Carousel Slider** (geser kanan-kiri), bukan kartu bertumpuk ke bawah.
-   * Frame browser macOS (3 titik kontrol window + URL host).
+   * Kartu clean tanpa frame/border: thumbnail di panel warna lembut (field `tint` per proyek di `content.js`), screenshot terpotong di bawah, lalu kategori · tahun, judul, deskripsi 2 baris, stack teks biasa (tanpa chip), link GitHub kecil.
+   * Seluruh kartu adalah link ke live URL.
    * 6 Proyek aktif: Simonev Renaksi, Pemilwa KMTEDI, Hongfilms, Rongsok.in, Somnia, Simpondok.
 3. **Experience & Skills (`Experience.jsx`, `Skills.jsx`):**
    * Organisasi TRPL UGM, Al-Alim, KMTEDI, dan OLIVIA award.

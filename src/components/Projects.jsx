@@ -12,16 +12,13 @@ const host = (url) => {
   }
 }
 
-function ProjectCard({ p, index, onCardClick }) {
+function ProjectCard({ p, onCardClick }) {
   const targetUrl = p.live || p.repo
-  const hasLive = Boolean(p.live)
 
   const openRepo = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    if (p.repo) {
-      window.open(p.repo, '_blank', 'noreferrer')
-    }
+    window.open(p.repo, '_blank', 'noreferrer')
   }
 
   return (
@@ -31,85 +28,35 @@ function ProjectCard({ p, index, onCardClick }) {
         target="_blank"
         rel="noreferrer"
         className="pcard"
+        style={p.tint ? { '--tint': p.tint } : undefined}
         onClick={onCardClick}
         aria-label={`Buka website proyek ${p.title}`}
       >
-        {/* macOS style browser window bar */}
-        <div className="pcard__window-bar">
-          <div className="pcard__window-dots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <span className="pcard__window-host">{host(targetUrl)}</span>
-          <span className="pcard__window-ext" aria-hidden="true">
-            ↗
-          </span>
-        </div>
-
-        {/* Media screenshot */}
         <div className="pcard__media">
           {p.image ? (
-            <img
-              src={p.image}
-              alt={`Tampilan proyek ${p.title}`}
-              loading="lazy"
-              draggable="false"
-            />
+            <img src={p.image} alt="" loading="lazy" draggable="false" />
           ) : (
-            <div className="pcard__placeholder">{host(targetUrl)}</div>
+            <span className="pcard__placeholder">{host(targetUrl)}</span>
           )}
         </div>
 
-        {/* Card details */}
         <div className="pcard__body">
-          <div className="pcard__top">
-            <div className="pcard__badge-group">
-              <span className="pcard__num">{p.num}</span>
-              <span className="pcard__cat">{p.category}</span>
-            </div>
-            <span className="pcard__year">{p.year}</span>
-          </div>
-
+          <p className="pcard__meta">
+            {p.category} · {p.year}
+          </p>
           <h3 className="pcard__title">
-            <span>{p.title}</span>
-            <svg
-              className="pcard__arrow-svg"
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              aria-hidden="true"
-            >
+            {p.title}
+            <svg className="pcard__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
               <path d="M7 17 17 7M7 7h10v10" />
             </svg>
           </h3>
-
           <p className="pcard__desc">{p.desc}</p>
 
-          <div className="pcard__stack">
-            {p.stack.map((tech) => (
-              <span key={tech} className="pcard__chip">
-                {tech}
-              </span>
-            ))}
-          </div>
-
-          <div className="pcard__footer">
-            <span className="pcard__action-primary">
-              {hasLive ? 'Kunjungi Web' : 'Lihat Detail'} ↗
-            </span>
+          <div className="pcard__foot">
+            <span className="pcard__stack">{p.stack.join(' · ')}</span>
             {p.repo && p.repo !== p.live && (
-              <button
-                type="button"
-                className="pcard__action-repo"
-                onClick={openRepo}
-                aria-label={`Lihat repositori GitHub ${p.title}`}
-              >
-                <span>GitHub</span>
-                <span aria-hidden="true">↗</span>
+              <button type="button" className="pcard__repo" onClick={openRepo} aria-label={`Repositori GitHub ${p.title}`}>
+                GitHub
               </button>
             )}
           </div>
@@ -125,7 +72,6 @@ export default function Projects() {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
 
-  // Drag-to-scroll state
   const isDraggingRef = useRef(false)
   const startXRef = useRef(0)
   const scrollLeftRef = useRef(0)
@@ -135,13 +81,14 @@ export default function Projects() {
     const el = trackRef.current
     if (!el) return
     const { scrollLeft, scrollWidth, clientWidth } = el
+    const atEnd = scrollLeft >= scrollWidth - clientWidth - 8
     setCanScrollLeft(scrollLeft > 8)
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 8)
+    setCanScrollRight(!atEnd)
 
     const slide = el.querySelector('.projects-slide')
     if (slide) {
       const slideWidth = slide.offsetWidth + 20
-      const idx = Math.min(projects.length - 1, Math.max(0, Math.round(scrollLeft / slideWidth)))
+      const idx = atEnd ? projects.length - 1 : Math.min(projects.length - 1, Math.max(0, Math.round(scrollLeft / slideWidth)))
       setActiveIndex(idx)
     }
   }
@@ -171,7 +118,6 @@ export default function Projects() {
     el.scrollTo({ left: idx * step, behavior: 'smooth' })
   }
 
-  // Mouse drag handlers
   const onMouseDown = (e) => {
     const el = trackRef.current
     if (!el) return
@@ -210,8 +156,7 @@ export default function Projects() {
   return (
     <section id="work" className="section section--projects">
       <div className="container">
-        <SectionHead id="work" meta={`${projects.length} Proyek Aktif`}>
-          {/* Navigation Controls in Section Header */}
+        <SectionHead id="work">
           <div className="projects-controls" aria-label="Navigasi slider proyek">
             <span className="projects-counter mono">
               <strong>{currentDisplay}</strong> / {totalDisplay}
@@ -244,7 +189,6 @@ export default function Projects() {
         </SectionHead>
       </div>
 
-      {/* Horizontal Carousel Track */}
       <div className="projects-slider-wrap">
         <motion.div
           className="projects-track"
@@ -265,13 +209,12 @@ export default function Projects() {
               className={`projects-slide ${activeIndex === i ? 'is-active' : ''}`}
               variants={blurUp}
             >
-              <ProjectCard p={p} index={i} onCardClick={onCardClick} />
+              <ProjectCard p={p} onCardClick={onCardClick} />
             </motion.div>
           ))}
         </motion.div>
       </div>
 
-      {/* Progress indicators / Pagination dots */}
       <div className="container">
         <div className="projects-pagination" role="tablist" aria-label="Pilih proyek">
           {projects.map((p, i) => (
