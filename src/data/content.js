@@ -96,8 +96,23 @@ export const achievements = [
 
 export const projects = [
   {
-    id: 'simonev',
+    id: 'desiltrace',
     num: '01',
+    title: 'Desiltrace',
+    year: '2026',
+    category: 'Civic Platform',
+    role: 'Developer',
+    desc: 'Platform transparansi desil sosio-ekonomi Yogyakarta untuk cek NIK, panduan bantuan sosial, dan pengawalan alur koreksi data.',
+    stack: ['Next.js', 'TypeScript', 'Tailwind CSS', 'PostgreSQL'],
+    live: 'https://desiltrace.web.id/',
+    image: '/projects/desiltrace.png',
+    tint: '#ca8a04',
+    repo: 'https://github.com/muhamadabel/desiltrace',
+    isPrivate: true,
+  },
+  {
+    id: 'simonev',
+    num: '02',
     title: 'Simonev Renaksi',
     year: '2026',
     category: 'Monitoring System',
@@ -112,7 +127,7 @@ export const projects = [
   },
   {
     id: 'pemilwa',
-    num: '02',
+    num: '03',
     title: 'Pemilwa KMTEDI',
     year: '2026',
     category: 'Voting Platform',
@@ -127,7 +142,7 @@ export const projects = [
   },
   {
     id: 'hongfilms',
-    num: '03',
+    num: '04',
     title: 'Hongfilms',
     year: '2025',
     category: 'Film Platform',
@@ -142,7 +157,7 @@ export const projects = [
   },
   {
     id: 'rongsokin',
-    num: '04',
+    num: '05',
     title: 'Rongsok.in',
     year: '2024',
     category: 'Web Platform',
@@ -157,7 +172,7 @@ export const projects = [
   },
   {
     id: 'somnia',
-    num: '05',
+    num: '06',
     title: 'Somnia',
     year: '2024',
     category: 'Web Application',
@@ -172,7 +187,7 @@ export const projects = [
   },
   {
     id: 'simpondok',
-    num: '06',
+    num: '07',
     title: 'Simpondok',
     year: '2024',
     category: 'Management System',

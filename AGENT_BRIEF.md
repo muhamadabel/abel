@@ -43,7 +43,7 @@ Panduan onboard instan untuk AI coding agent (Claude, Antigravity, Cursor, Winds
    * Format **Horizontal Carousel Slider** (geser kanan-kiri), bukan kartu bertumpuk ke bawah.
    * Kartu clean tanpa frame/border: thumbnail di panel warna lembut (field `tint` per proyek di `content.js`), screenshot terpotong di bawah, lalu kategori · tahun, judul, deskripsi 2 baris, stack teks biasa (tanpa chip), link GitHub kecil.
    * Seluruh kartu adalah link ke live URL.
-   * 6 Proyek aktif: Simonev Renaksi, Pemilwa KMTEDI, Hongfilms, Rongsok.in, Somnia, Simpondok.
+   * 7 Proyek aktif: Desiltrace, Simonev Renaksi, Pemilwa KMTEDI, Hongfilms, Rongsok.in, Somnia, Simpondok.
 3. **Experience & Skills (`Experience.jsx`, `Skills.jsx`):**
    * Organisasi TRPL UGM, Al-Alim, KMTEDI, dan OLIVIA award.
    * Chip skill terbagi dalam 4 kategori.

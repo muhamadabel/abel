@@ -98,12 +98,15 @@ abel-portfolio/
 
 ## 5. DATA PROYEK AKTIF & TAUTAN LIVE
 
-| No | Nama Proyek | Kategori | Tech Stack | URL Live |
-|---|---|---|---|---|
-| 01 | **Hongfilms** | Film Platform | React, Next.js, Tailwind CSS, TypeScript | `https://hongfilms.com` |
-| 02 | **Rongsok.in** | Web Platform | Next.js, TypeScript, REST API, Tailwind | `https://rongsokin.vercel.app/` |
-| 03 | **Somnia** | Web Application | Next.js, TypeScript, Tailwind CSS | `https://www.somnia.page/` |
-| 04 | **Simpondok** | Management System | Next.js, React, Tailwind CSS, REST API | `https://simpondokk.vercel.app` |
+| No | Nama Proyek | Kategori | Tech Stack | URL Live | Repo |
+|---|---|---|---|---|---|
+| 01 | **Desiltrace** | Civic Platform | Next.js, TypeScript, Tailwind CSS, PostgreSQL | `https://desiltrace.web.id/` | `muhamadabel/desiltrace` |
+| 02 | **Simonev Renaksi** | Monitoring System | Next.js, TypeScript, Prisma, NextAuth | `https://simonev-renaksi.vercel.app` | `muhamadabel/simonev-renaksi` |
+| 03 | **Pemilwa KMTEDI** | Voting Platform | JavaScript, Supabase, PostgreSQL, Nodemailer | `https://kmtedi-pemilwa.vercel.app` | `muhamadabel/KMTEDI-Pemilwa` |
+| 04 | **Hongfilms** | Film Platform | React, Next.js, Tailwind CSS, TypeScript | `https://hongfilms.com` | `HongFilm/honglog` |
+| 05 | **Rongsok.in** | Web Platform | Next.js, TypeScript, REST API, Tailwind | `https://rongsokin.vercel.app/` | `muhamadabel/rongsokin-frontend` |
+| 06 | **Somnia** | Web Application | Next.js, TypeScript, Tailwind CSS | `https://www.somnia.page/` | `muhamadabel/somnia-fe` |
+| 07 | **Simpondok** | Management System | Next.js, React, Tailwind CSS, REST API | `https://simpondokk.vercel.app` | `muhamadabel/Be-SIA-UGN-Kel1` |
 
 ---
 
