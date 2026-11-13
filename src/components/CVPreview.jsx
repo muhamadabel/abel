@@ -8,40 +8,10 @@ import Toast, { copyText, useToast } from './Toast'
 const githubUrl = contact.github.url.replace(/^https?:\/\//, '')
 const linkedinUrl = contact.linkedin.url.replace(/^https?:\/\/(www\.)?/, '')
 
-function Item({ title, right, sub, tags, children }) {
-  return (
-    <div className="cv-item">
-      <div className="cv-item__head">
-        <strong>{title}</strong>
-        {right && <span className="cv-item__year">{right}</span>}
-      </div>
-      {sub && <p className="cv-item__sub">{sub}</p>}
-      {children}
-      {tags && tags.length > 0 && (
-        <ul className="cv-tags">
-          {tags.map((t) => (
-            <li key={t}>{t}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
-function Block({ title, children }) {
-  return (
-    <section className="cv-block">
-      <h4 className="cv-block__title">{title}</h4>
-      {children}
-    </section>
-  )
-}
-
 export default function CVPreview() {
   const [toast, showToast] = useToast()
   const paperRef = useRef(null)
 
-  // Lembar CV sedikit rebah lalu tegak saat discroll masuk
   const { scrollYProgress } = useScroll({ target: paperRef, offset: ['start end', 'start 45%'] })
   const rotateX = useTransform(scrollYProgress, [0, 1], [8, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [0.96, 1])
@@ -77,84 +47,119 @@ export default function CVPreview() {
         </SectionHead>
 
         <div className="cv-stage">
-          <motion.article ref={paperRef} className="cv-paper" style={{ rotateX, scale, y }}>
-            <header className="cv-header">
-              <div>
-                <h3 className="cv-name">{profile.name}</h3>
-                <p className="cv-role">{profile.role}</p>
-                <p className="cv-program">
-                  {education[0].program}, {education[0].school}
-                </p>
-              </div>
-              <ul className="cv-contact">
-                <li>
-                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
-                </li>
-                <li>
-                  <a href={`tel:${contact.phone}`}>{contact.phone}</a>
-                </li>
-                <li>
-                  <a href={contact.github.url} target="_blank" rel="noreferrer">
-                    {githubUrl}
-                  </a>
-                </li>
-                <li>
-                  <a href={contact.linkedin.url} target="_blank" rel="noreferrer">
-                    {linkedinUrl}
-                  </a>
-                </li>
-                <li>{profile.address}</li>
-              </ul>
+          <motion.article ref={paperRef} className="cv-paper cv-paper--ats" style={{ rotateX, scale, y }}>
+            {/* Header ATS Style Septyan */}
+            <header className="ats-header">
+              <h3 className="ats-name">{profile.name}</h3>
+              <p className="ats-contact">
+                <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+                <span className="ats-sep">|</span>
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                <span className="ats-sep">|</span>
+                <a href={contact.linkedin.url} target="_blank" rel="noreferrer">
+                  {linkedinUrl}
+                </a>
+                <span className="ats-sep">|</span>
+                <a href={contact.github.url} target="_blank" rel="noreferrer">
+                  {githubUrl}
+                </a>
+                <br />
+                <span>{profile.address}</span>
+              </p>
             </header>
 
-            <div className="cv-body">
-              <div className="cv-col">
-                <Block title="Pendidikan">
-                  {education.map((e) => (
-                    <Item
-                      key={e.school}
-                      title={e.school}
-                      right={e.period}
-                      sub={[e.faculty, e.program].filter(Boolean).join(', ')}
-                      tags={e.degree ? [e.degree] : null}
-                    />
-                  ))}
-                </Block>
+            {/* Summary */}
+            <p className="ats-summary">
+              Software Engineering Technology undergraduate at Universitas Gadjah Mada with practical experience in
+              frontend engineering, modern web applications, and mobile systems development. Proficient in architecting
+              responsive, accessible, and type-safe applications using React, Next.js, React Native, and TypeScript.
+              Experienced in translating complex functional requirements into production-ready platforms, managing state
+              with Zustand, and collaborating across agile teams to deliver reliable digital solutions.
+            </p>
 
-                <Block title="Pengalaman">
-                  {organizations.map((o) => (
-                    <Item key={o.org} title={o.role} right={o.period} sub={o.org} tags={[o.tag]}>
-                      {o.desc && <p className="cv-item__desc">{o.desc}</p>}
-                    </Item>
-                  ))}
-                </Block>
+            {/* Work Experiences & Featured Projects */}
+            <section className="ats-section">
+              <h4 className="ats-title">Work Experiences & Featured Projects</h4>
 
-                <Block title="Pencapaian">
-                  {achievements.map((a) => (
-                    <Item key={a.event} title={a.title} right={a.year} sub={`${a.event}, ${a.organizer}`} />
-                  ))}
-                </Block>
-              </div>
-
-              <div className="cv-col">
-                <Block title="Proyek">
-                  {projects.map((p) => (
-                    <Item key={p.id} title={p.title} right={p.year} sub={`${p.category}, ${p.role}`} tags={p.stack}>
-                      <p className="cv-item__desc">{p.desc}</p>
-                    </Item>
-                  ))}
-                </Block>
-
-                <Block title="Keahlian">
-                  {skills.map((g) => (
-                    <div key={g.group} className="cv-skill">
-                      <strong>{g.group}</strong>
-                      <span>{g.items.join(', ')}</span>
+              {projects.slice(0, 5).map((p) => {
+                const targetUrl = p.live || p.repo
+                const hostName = targetUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')
+                return (
+                  <div key={p.id} className="ats-entry">
+                    <div className="ats-entry__head">
+                      <strong className="ats-entry__title">{p.title} - Yogyakarta, Indonesia</strong>
+                      <span className="ats-entry__date">{p.year}</span>
                     </div>
-                  ))}
-                </Block>
-              </div>
-            </div>
+                    <div className="ats-entry__sub">
+                      <em>{p.role}</em>
+                      <span className="ats-sep">|</span>
+                      <a href={targetUrl} target="_blank" rel="noreferrer" className="ats-entry__link">
+                        {hostName}
+                      </a>
+                    </div>
+                    <p className="ats-entry__desc">{p.desc}</p>
+                    <ul className="ats-bullets">
+                      <li>Stack utama: {p.stack.join(' · ')}</li>
+                    </ul>
+                  </div>
+                )
+              })}
+            </section>
+
+            {/* Education Level */}
+            <section className="ats-section">
+              <h4 className="ats-title">Education Level</h4>
+              {education.map((e) => (
+                <div key={e.school} className="ats-entry">
+                  <div className="ats-entry__head">
+                    <strong className="ats-entry__title">{e.school}</strong>
+                    <span className="ats-entry__date">{e.period}</span>
+                  </div>
+                  <div className="ats-entry__desc">
+                    {[e.degree, e.faculty, e.program].filter(Boolean).join(' · ')}
+                  </div>
+                </div>
+              ))}
+            </section>
+
+            {/* Organisational Experience */}
+            <section className="ats-section">
+              <h4 className="ats-title">Organisational Experience</h4>
+              {organizations.map((o) => (
+                <div key={o.org} className="ats-entry">
+                  <div className="ats-entry__head">
+                    <strong className="ats-entry__title">{o.org}</strong>
+                    <span className="ats-entry__date">{o.period}</span>
+                  </div>
+                  <div className="ats-entry__sub">
+                    <em>{o.role}</em>
+                  </div>
+                  {o.desc && (
+                    <ul className="ats-bullets">
+                      <li>{o.desc}</li>
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </section>
+
+            {/* Skills, Achievements & Other Experience */}
+            <section className="ats-section">
+              <h4 className="ats-title">Skills, Achievements & Other Experience</h4>
+              <ul className="ats-bullets">
+                {achievements.map((a) => (
+                  <li key={a.title}>
+                    <strong>Achievements ({a.year}):</strong> {a.title} di {a.event} ({a.organizer}).
+                  </li>
+                ))}
+                <li>
+                  <strong>Technical Skills:</strong> {skills.map((g) => g.items.join(', ')).join(', ')}.
+                </li>
+                <li>
+                  <strong>Specializations:</strong> Frontend Architecture, Component-Driven UI, Responsive Design, Offline-First Architecture, Automated QA.
+                </li>
+              </ul>
+            </section>
           </motion.article>
         </div>
       </div>

@@ -126,15 +126,15 @@ abel-portfolio/
 
 ---
 
-## 7. BERKAS DAN GENERATOR CV PDF (STANDAR JANUARSYAH AKBAR)
+## 7. BERKAS DAN GENERATOR CV PDF (STANDAR ATS RESUME SEPTYAN)
 
-CV dibuat 1 halaman A4 presisi bergaya Januarsyah Akbar (asymmetric navy corner polygons, serif display name, sans-serif body, timeline nodes, 10-dot skill rating).
+CV dibuat format single-column ATS-friendly 1 halaman A4 presisi bergaya resume Septyan (Harvard/Jake's ATS standard: centered name & pipe-separated contact info, full-width horizontal divider lines beneath bold section headers, entity name on left with bold dates right-aligned, italicized role & live project URLs, concise bullet points, no photo/decorations for 100% ATS readability).
 * **Lokasi file PDF siap unduh:**
   * `/Users/user/Documents/abel work/porto/abel-portfolio/public/cv-muhammad-abel-abhinaya.pdf`
   * `/Users/user/Downloads/CV - Muhammad Abel Abhinaya.pdf`
-  * `/Users/user/Documents/CV - Muhammad Abel Abhinaya.pdf`
+  * `/Users/user/Desktop/CV - Muhammad Abel Abhinaya.pdf`
 * **Cara generate ulang PDF:**
-  Gunakan Puppeteer via Node.js dengan environment `NODE_PATH=/tmp/node_modules node <script.js>` untuk mengonversi template HTML ke PDF A4 `printBackground: true`, margin `0`.
+  Jalankan skrip Playwright/Puppeteer via Node.js untuk merender template HTML ATS A4 (`printBackground: true`, margins `8mm 12mm`).
 
 ---
 

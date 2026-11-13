@@ -1152,19 +1152,160 @@ ol {
   perspective: 1600px;
 }
 
-.cv-paper {
-  max-width: 900px;
+/* ---------- CV ATS Style (Septyan Inspired) ---------- */
+.cv-paper--ats {
+  max-width: 860px;
   margin: 0 auto;
-  padding: 32px 24px;
-  border-radius: var(--radius-lg);
-  background: var(--bg-elev);
+  padding: 40px 48px;
+  background: var(--bg-card);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow-lg);
-  font-size: 14px;
-  line-height: 1.45;
-  transform-origin: center top;
-  will-change: transform;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  line-height: 1.4;
 }
+
+.ats-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.ats-name {
+  font-size: clamp(20px, 3vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.ats-contact {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.ats-contact a {
+  color: inherit;
+  transition: color 0.2s var(--ease);
+}
+
+.ats-contact a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.ats-sep {
+  margin: 0 8px;
+  color: var(--line-strong);
+}
+
+.ats-summary {
+  font-size: 13px;
+  text-align: justify;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin-bottom: 16px;
+}
+
+.ats-section {
+  margin-bottom: 14px;
+}
+
+.ats-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: capitalize;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 3px;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.ats-entry {
+  margin-bottom: 10px;
+}
+
+.ats-entry__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+.ats-entry__title {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ats-entry__date {
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.ats-entry__sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.ats-entry__sub em {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.ats-entry__link {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ats-entry__link:hover {
+  color: var(--ink);
+}
+
+.ats-entry__desc {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.ats-bullets {
+  margin: 4px 0 0 18px;
+  list-style-type: disc;
+}
+
+.ats-bullets li {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  line-height: 1.45;
+  margin-bottom: 3px;
+}
+
+.ats-bullets li strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .cv-paper--ats {
+    padding: 24px 18px;
+  }
+  .ats-entry__head {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ats-summary {
+    text-align: left;
+  }
+}
+
 
 .cv-header {
   display: flex;
@@ -1861,7 +2002,7 @@ ol {
     perspective: none;
   }
 
-  .cv-paper {
+  .cv-paper--ats {
     max-width: none;
     padding: 0;
     border: 0;
@@ -1870,27 +2011,32 @@ ol {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+    font-size: 9pt;
+  }
+
+  .ats-name {
+    font-size: 16pt;
+  }
+
+  .ats-contact {
+    font-size: 8.5pt;
+  }
+
+  .ats-summary {
+    font-size: 8.8pt;
+  }
+
+  .ats-title {
     font-size: 10.5pt;
+    border-bottom: 1px solid #000;
   }
 
-  .cv-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
+  .ats-entry__title {
+    font-size: 9pt;
   }
 
-  .cv-contact {
-    text-align: right;
-  }
-
-  .cv-body {
-    grid-template-columns: 1fr 1fr;
-    gap: 0 28px;
-  }
-
-  .cv-tags li {
-    border: 1px solid #ccc;
-    background: none;
+  .ats-bullets li {
+    font-size: 8.5pt;
   }
 
   a {
