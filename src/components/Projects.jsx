@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { projects } from '../data/content'
 import { blurUp, ease, springCard, stagger, viewportOnce } from '../lib/motion'
 import SectionHead from './SectionHead'
+import Spotlight from './fx/Spotlight'
 
 const host = (url) => {
   try {
@@ -28,17 +29,18 @@ function ProjectCard({ p, onCardClick }) {
         target="_blank"
         rel="noreferrer"
         className="pcard"
+        data-cursor="Buka"
         style={p.tint ? { '--tint': p.tint } : undefined}
         onClick={onCardClick}
         aria-label={`Buka website proyek ${p.title}`}
       >
-        <div className="pcard__media">
+        <Spotlight className="pcard__media">
           {p.image ? (
             <img src={p.image} alt="" loading="lazy" draggable="false" />
           ) : (
             <span className="pcard__placeholder">{host(targetUrl)}</span>
           )}
-        </div>
+        </Spotlight>
 
         <div className="pcard__body">
           <p className="pcard__meta">
@@ -55,7 +57,7 @@ function ProjectCard({ p, onCardClick }) {
           <div className="pcard__foot">
             <span className="pcard__stack">{p.stack.join(' · ')}</span>
             {p.repo && p.repo !== p.live && (
-              <button type="button" className="pcard__repo" onClick={openRepo} aria-label={`Repositori GitHub ${p.title}`}>
+              <button type="button" className="pcard__repo" data-cursor="GitHub" onClick={openRepo} aria-label={`Repositori GitHub ${p.title}`}>
                 GitHub
               </button>
             )}

@@ -30,6 +30,7 @@
   /* Tipografi */
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-hero: 'Inter Tight', var(--font-display);
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Bentuk & ritme */
@@ -188,7 +189,9 @@ ol {
 }
 
 .section-title {
-  font-family: var(--font-display);
+  --w0: 600;
+  --dw: 300;
+  font-family: var(--font-hero);
   font-size: clamp(30px, 4vw, 44px);
   font-weight: 600;
   line-height: 1.1;
@@ -548,11 +551,11 @@ ol {
 }
 
 .hero__title {
-  font-family: var(--font-display);
-  font-size: clamp(40px, 7vw, 80px);
-  line-height: 1.05;
-  letter-spacing: -1.2px;
-  font-weight: 600;
+  font-family: var(--font-hero);
+  font-size: clamp(64px, 20vw, 120px);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  font-weight: 500;
 }
 
 .hero__line {
@@ -908,8 +911,13 @@ ol {
   background: color-mix(in srgb, var(--tint) 17%, var(--bg-sunken));
 }
 
+.pcard__media img {
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+}
+
 .pcard:hover .pcard__media img {
-  transform: translateY(-3%) scale(1.015);
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-3%) scale(1.02);
+  transition-duration: 0.45s;
 }
 
 .pcard__placeholder {
@@ -1129,16 +1137,17 @@ ol {
 
 .sgroup__list li {
   padding: 6px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--accent) calc(var(--p, 0) * 100%), var(--line));
   border-radius: 999px;
-  color: var(--ink-2);
+  background: color-mix(in srgb, var(--accent) calc(var(--p, 0) * 12%), transparent);
+  color: color-mix(in srgb, var(--accent) calc(var(--p, 0) * 100%), var(--ink-2));
   line-height: 1.3;
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease), background-color 0.3s var(--ease);
 }
 
 .sgroup__list li:hover {
-  color: var(--ink);
-  border-color: var(--ink);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ---------- CV Compact Card ---------- */
@@ -1734,6 +1743,10 @@ ol {
 
 /* ---------- Desktop (992px) ---------- */
 @media (min-width: 992px) {
+  .hero__title {
+    font-size: clamp(120px, 12.6vw, 230px);
+  }
+
   .nav__links {
     display: flex;
     gap: 2px;
@@ -1842,17 +1855,6 @@ ol {
     var(--bg);
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.48;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse at 50% 45%, black, transparent 66%);
-}
-
 .fcard {
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
@@ -1872,6 +1874,223 @@ ol {
 
 .section--experience .container {
   position: relative;
+}
+
+/* ---------- Interaktif (adaptasi 21st.dev) ---------- */
+/* Grid interaktif hero, pola sama dengan latar awal. */
+.hero__field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 25%, rgba(0, 0, 0, 0.35) 70%, transparent 95%);
+  mask-image: radial-gradient(ellipse at 50% 45%, #000 25%, rgba(0, 0, 0, 0.35) 70%, transparent 95%);
+}
+
+/* Huruf nama mengikuti kedekatan kursor (--p 0..1 diisi dari Hero.jsx). */
+.hero__title .word-mask {
+  padding: 0.2em 0.08em 0.12em;
+  margin: -0.2em calc(0.2em - 0.08em) -0.12em -0.08em;
+}
+
+.hero__title .word-mask:last-child {
+  margin-right: -0.08em;
+}
+
+.plet {
+  display: inline-block;
+  font-weight: calc(var(--w0, 460) + var(--p, 0) * var(--dw, 440));
+  color: color-mix(in srgb, var(--accent) calc(var(--p, 0) * 100%), var(--ink));
+  transition: font-weight 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.4s var(--ease);
+}
+
+/* Spotlight kartu proyek */
+.spotlight {
+  isolation: isolate;
+}
+
+.spotlight__light,
+.spotlight__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.spotlight__light {
+  z-index: -1;
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 30%),
+    color-mix(in srgb, #fff 70%, transparent),
+    transparent 70%
+  );
+}
+
+.spotlight__ring {
+  z-index: 2;
+  padding: 1.5px;
+  background: radial-gradient(
+    220px circle at var(--spot-x, 50%) var(--spot-y, 30%),
+    color-mix(in srgb, var(--tint, var(--ink)) 70%, transparent),
+    transparent 65%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* Kilau tipis di atas screenshot, ikut posisi pointer. */
+.pcard__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 30%), rgba(255, 255, 255, 0.24), transparent 70%);
+  transition: opacity 0.35s var(--ease);
+}
+
+.pcard:hover .pcard__media::after,
+.pcard:hover .spotlight__light,
+.pcard:hover .spotlight__ring,
+.pcard:focus-visible .spotlight__light,
+.pcard:focus-visible .spotlight__ring {
+  opacity: 1;
+}
+
+[data-theme='dark'] .spotlight__light {
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 30%),
+    color-mix(in srgb, var(--tint, #fff) 35%, transparent),
+    transparent 70%
+  );
+}
+
+/* Timeline pengalaman */
+.xp__list {
+  position: relative;
+  padding-left: 32px;
+}
+
+.xp__track {
+  position: absolute;
+  top: 30px;
+  bottom: 22px;
+  left: 4px;
+  width: 1px;
+  background: var(--line-strong);
+}
+
+.xp__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: top;
+}
+
+.xp__dot {
+  position: absolute;
+  top: 28px;
+  left: -32px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  background: var(--bg-sunken);
+  transform: scale(0.8);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.xp__row.is-lit .xp__dot {
+  transform: scale(1);
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+.xp__title {
+  transition: color 0.3s var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plet {
+    transform: none;
+    color: inherit;
+  }
+}
+
+/* Bubble kursor di kartu proyek */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  pointer-events: none;
+}
+
+.cursor__bubble {
+  position: absolute;
+  top: -44px;
+  left: -44px;
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-cursor] {
+    cursor: none;
+  }
+}
+
+/* Footer: wordmark raksasa di atas garis interaktif */
+.footer {
+  padding: 0 0 28px;
+}
+
+.footer__mark {
+  position: relative;
+  overflow: hidden;
+  padding-top: clamp(96px, 16vw, 220px);
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.footer__field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 45%);
+  mask-image: linear-gradient(to bottom, transparent, #000 45%);
+}
+
+.footer__word {
+  position: relative;
+  font-family: var(--font-hero);
+  font-size: 16.4vw;
+  line-height: 0.74;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+  text-align: center;
+  user-select: none;
+  margin-bottom: -0.035em;
+}
+
+.footer__gap {
+  display: inline-block;
+  width: 0.18em;
 }
 
 /* ---------- Print: hanya CV ---------- */

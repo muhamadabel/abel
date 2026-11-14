@@ -4,6 +4,8 @@ import { achievements, contact, organizations, profile, projects, skills } from 
 import { scrollTo } from '../lib/smoothScroll'
 import { blurUp, springBar, springCard, springTilt, stagger, wordReveal } from '../lib/motion'
 import Magnetic from './Magnetic'
+import GridField from './fx/GridField'
+import useProximity from './fx/useProximity'
 
 const nameWords = profile.display.split(' ')
 const totalSkills = skills.reduce((n, g) => n + g.items.length, 0)
@@ -173,11 +175,15 @@ export default function Hero({ ready }) {
     my.set(0)
   }
 
+  const titleRef = useRef(null)
+  useProximity(titleRef, 260)
+
   const state = ready ? 'show' : 'hidden'
   const titleDone = 0.15 + nameWords.length * 0.07
 
   return (
     <section id="top" className="hero" ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+      <GridField className="hero__field" />
       <motion.div className="hero__cards" initial="hidden" animate={state}>
         {cards.map((c) => (
           <FloatingCard key={c.pos} card={c} mx={sx} my={sy} rotateX={rotateX} rotateY={rotateY} progress={scrollYProgress} />
@@ -185,12 +191,17 @@ export default function Hero({ ready }) {
       </motion.div>
 
       <motion.div className="hero__center" style={{ y: centerY, opacity: centerOpacity }}>
-        <motion.h1 className="hero__title" initial="hidden" animate={state} variants={stagger(0.07, 0.15)}>
-          <span className="hero__line">
+        <motion.h1 ref={titleRef} className="hero__title" initial="hidden" animate={state} variants={stagger(0.07, 0.15)}>
+          <span className="sr-only">{profile.display}</span>
+          <span className="hero__line" aria-hidden="true">
             {nameWords.map((w) => (
               <span key={w} className="word-mask">
                 <motion.span className="word" variants={wordReveal}>
-                  {w}
+                  {[...w].map((ch, i) => (
+                    <span key={i} className="plet">
+                      {ch}
+                    </span>
+                  ))}
                 </motion.span>
               </span>
             ))}

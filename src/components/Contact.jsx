@@ -5,6 +5,7 @@ import { blurUp, rowReveal, stagger, viewportOnce } from '../lib/motion'
 import { useFocus } from '../hooks/useFocus'
 import SectionHead from './SectionHead'
 import Toast, { copyText, useToast } from './Toast'
+import ScrambleText from './fx/ScrambleText'
 
 const socials = [
   contact.github,
@@ -177,7 +178,7 @@ export default function Contact() {
                   className="social"
                   {...(s.url.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
                 >
-                  <span className="social__label">{s.label}</span>
+                  <ScrambleText className="social__label" text={s.label} />
                   <span className="social__handle">{s.handle}</span>
                   <span className="social__arrow" aria-hidden="true">
                     ↗

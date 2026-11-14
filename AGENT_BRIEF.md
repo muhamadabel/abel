@@ -53,6 +53,20 @@ Panduan onboard instan untuk AI coding agent (Claude, Antigravity, Cursor, Winds
 
 ---
 
+5. **Efek Interaktif (`src/components/fx/`):**
+   * `GridField.jsx`: grid tipis 72px (pola latar awal) di hero dan footer. Garis melengkung menjauhi kursor (lensa), kotak yang dilewati menyala oranye lalu memudar, klik memicu gelombang riak oranye. Warna dari token `--line/--accent`, ikut tema. Ide interaksi dari "Interactive Dot Grid Hero" (21st.dev).
+   * Judul section (`SectionHead` via `SplitText letters`) dan chip Keahlian ikut efek proximity (`fx/useProximity.js`).
+   * Nama di hero: font Inter Tight (variable), ukuran raksasa dua baris. Tiap huruf (`.plet`) menebal dan berubah ke warna aksen sesuai jarak kursor (`fx/useProximity.js`). Hanya di perangkat dengan mouse.
+   * `Cursor.jsx`: bubble label mengikuti kursor di elemen ber-atribut `data-cursor` (kartu proyek "Buka", tombol "GitHub").
+   * Thumbnail proyek ikut miring 3D (tilt) mengikuti pointer.
+   * Footer: wordmark raksasa nama di atas `GridField`, ikut efek proximity.
+   * `Spotlight.jsx`: cahaya + tepi menyala mengikuti pointer di thumbnail proyek (adaptasi "Spotlight", 21st.dev).
+   * Experience: garis timeline terisi mengikuti scroll, titik menyala saat baris lewat tengah layar.
+   * `ScrambleText.jsx`: label sosial di Kontak dan "Kembali ke atas" di footer teracak lalu tersusun saat hover.
+   * Semua efek menghormati `prefers-reduced-motion`.
+
+---
+
 ## 4. Alur Kerja Agent
 
 1. Buka file target (misal `src/styles/global.css` atau komponen terkait di `src/components/`).

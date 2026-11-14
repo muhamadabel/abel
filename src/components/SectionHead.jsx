@@ -1,15 +1,19 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { sections } from '../data/content'
 import { blurUp, stagger, viewportOnce } from '../lib/motion'
 import SplitText from './SplitText'
+import useProximity from './fx/useProximity'
 
 // Judul section dari data sections, info pendek di sisi kanan, garis tipis di bawah.
 export default function SectionHead({ id, meta, children }) {
   const { title } = sections.find((s) => s.id === id)
+  const ref = useRef(null)
+  useProximity(ref, 180)
 
   return (
-    <motion.header className="section-head" variants={stagger(0.08)} initial="hidden" whileInView="show" viewport={viewportOnce}>
-      <SplitText as="h2" text={title} className="section-title" gap={0.05} />
+    <motion.header ref={ref} className="section-head" variants={stagger(0.08)} initial="hidden" whileInView="show" viewport={viewportOnce}>
+      <SplitText as="h2" text={title} className="section-title" gap={0.05} letters />
       {meta && (
         <motion.p className="section-meta" variants={blurUp}>
           {meta}

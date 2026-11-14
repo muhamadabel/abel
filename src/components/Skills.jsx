@@ -1,18 +1,22 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { skills } from '../data/content'
 import { cardReveal, itemReveal, stagger, viewportOnce } from '../lib/motion'
 import { useFocus } from '../hooks/useFocus'
 import SectionHead from './SectionHead'
+import useProximity from './fx/useProximity'
 
 export default function Skills() {
   const [focus, group] = useFocus()
+  const ref = useRef(null)
+  useProximity(ref, 150, '.sgroup__list li')
 
   return (
     <section id="skills" className="section section--skills">
       <div className="container">
         <SectionHead id="skills" />
 
-        <motion.div className="skills" variants={stagger(0.1)} initial="hidden" whileInView="show" viewport={viewportOnce} {...group}>
+        <motion.div ref={ref} className="skills" variants={stagger(0.1)} initial="hidden" whileInView="show" viewport={viewportOnce} {...group}>
           {skills.map((g, gi) => (
             <motion.div key={g.group} className="sgroup" variants={cardReveal}>
               <motion.div className="sgroup__inner" {...focus(gi)}>

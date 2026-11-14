@@ -1,62 +1,48 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion, useMotionValue, useSpring } from 'framer-motion'
 
-// Cursor kustom (dot + ring) khusus perangkat dengan pointer presisi.
+// Bubble label yang mengikuti kursor di atas elemen ber-atribut data-cursor="Label".
 export default function Cursor() {
-  const dotRef = useRef(null)
-  const ringRef = useRef(null)
+  const x = useMotionValue(-200)
+  const y = useMotionValue(-200)
+  const sx = useSpring(x, { stiffness: 420, damping: 32, mass: 0.6 })
+  const sy = useSpring(y, { stiffness: 420, damping: 32, mass: 0.6 })
+  const [label, setLabel] = useState(null)
 
   useEffect(() => {
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-    if (!finePointer) return
-
-    const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-    const ring = { x: pos.x, y: pos.y }
-    let raf
-
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    if (!fine) return
     const onMove = (e) => {
-      pos.x = e.clientX
-      pos.y = e.clientY
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`
-      }
+      x.set(e.clientX)
+      y.set(e.clientY)
+      const host = e.target.closest?.('[data-cursor]')
+      setLabel(host ? host.getAttribute('data-cursor') : null)
     }
-    const onOver = (e) => {
-      if (e.target.closest('a, button, [data-hover]')) {
-        ringRef.current?.classList.add('is-hover')
-      }
-    }
-    const onOut = (e) => {
-      if (e.target.closest('a, button, [data-hover]')) {
-        ringRef.current?.classList.remove('is-hover')
-      }
-    }
-
-    const loop = () => {
-      ring.x += (pos.x - ring.x) * 0.18
-      ring.y += (pos.y - ring.y) * 0.18
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ring.x}px, ${ring.y}px) translate(-50%, -50%)`
-      }
-      raf = requestAnimationFrame(loop)
-    }
-
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseover', onOver)
-    window.addEventListener('mouseout', onOut)
-    raf = requestAnimationFrame(loop)
-
+    const onLeave = () => setLabel(null)
+    window.addEventListener('pointermove', onMove, { passive: true })
+    document.addEventListener('pointerleave', onLeave)
     return () => {
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseover', onOver)
-      window.removeEventListener('mouseout', onOut)
-      cancelAnimationFrame(raf)
+      window.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerleave', onLeave)
     }
-  }, [])
+  }, [x, y])
 
   return (
-    <>
-      <div ref={dotRef} className="cursor-dot" aria-hidden="true" />
-      <div ref={ringRef} className="cursor-ring" aria-hidden="true" />
-    </>
+    <motion.div className="cursor" style={{ x: sx, y: sy }} aria-hidden="true">
+      <AnimatePresence>
+        {label && (
+          <motion.span
+            key="bubble"
+            className="cursor__bubble"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+          >
+            {label}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }

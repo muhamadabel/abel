@@ -11,6 +11,7 @@ import Skills from './components/Skills'
 import CVPreview from './components/CVPreview'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import Cursor from './components/Cursor'
 
 export default function App() {
   useSmoothScroll()
@@ -35,6 +36,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <Cursor />
     </MotionConfig>
   )
 }
