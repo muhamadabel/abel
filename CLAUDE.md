@@ -124,37 +124,42 @@ abel-portfolio/
 
 ---
 
-## 5. Active Projects List (All 7 Verified Live)
+## 5. Active Projects List (All 8 Verified Live)
 
 1. **Desiltrace (2026)**
    * Category: Civic Platform | Role: Developer
    * Stack: Next.js, TypeScript, Tailwind CSS, PostgreSQL
    * Live: `https://desiltrace.web.id/`
    * Repo: `https://github.com/muhamadabel/desiltrace`
-2. **Simonev Renaksi (2026)**
+2. **SurveyMETER Redesign (2026)**
+   * Category: Website Redesign | Role: Developer
+   * Stack: HTML, CSS, JavaScript, Python (static site builder)
+   * Live: `https://surveymeter-redesign.vercel.app/`
+   * Repo: `https://github.com/muhamadabel/surveymeter-redesign`
+3. **Simonev Renaksi (2026)**
    * Category: Monitoring System | Role: Developer
    * Stack: Next.js, TypeScript, Prisma, NextAuth
    * Live: `https://simonev.site` (backup: `https://simonev-renaksi.vercel.app`)
    * Repo: `https://github.com/muhamadabel/simonev-renaksi`
-3. **Pemilwa KMTEDI (2026)**
+4. **Pemilwa KMTEDI (2026)**
    * Category: Voting Platform | Role: Developer
    * Stack: JavaScript, Supabase, PostgreSQL, Nodemailer
    * Live: `https://kmtedi-pemilwa.vercel.app`
    * Repo: `https://github.com/muhamadabel/KMTEDI-Pemilwa`
-4. **Hongfilms (2026)**
+5. **Hongfilms (2026)**
    * Category: Film Platform | Role: Developer
    * Stack: React, Next.js, Tailwind CSS, TypeScript
    * Live: `https://hongfilms.com`
-5. **Rongsok.in (2026)**
+6. **Rongsok.in (2026)**
    * Category: Web Platform | Role: Developer
    * Stack: Next.js, TypeScript, REST API, Tailwind
    * Live: `https://rongsokin.vercel.app/`
    * Repo: `https://github.com/muhamadabel/rongsokin-frontend`
-6. **Somnia (2026)**
+7. **Somnia (2026)**
    * Category: Web Application | Role: Developer
    * Stack: Next.js, TypeScript, Tailwind CSS
    * Live: `https://www.somnia.page/`
-7. **Simpondok (2025)**
+8. **Simpondok (2025)**
    * Category: Management System | Role: Developer
    * Stack: Next.js, React, Tailwind CSS, REST API
    * Live: `https://simpondokk.vercel.app`
