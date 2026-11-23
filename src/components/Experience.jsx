@@ -1,92 +1,67 @@
-import { useRef } from 'react'
-import { motion, useInView, useScroll, useSpring } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { achievements, education, organizations } from '../data/content'
-import { ease, rowReveal, stagger, viewportOnce } from '../lib/motion'
-import { useFocus } from '../hooks/useFocus'
+import { blurUp, stagger, viewportOnce } from '../lib/motion'
 import SectionHead from './SectionHead'
+import LiquidAccordion from './fx/LiquidAccordion'
 
-const groups = [
-  {
-    label: 'Organisasi',
-    items: organizations.map((o) => ({ key: o.org, title: o.role, sub: o.org, period: o.period, desc: o.desc })),
-  },
-  {
-    label: 'Pencapaian',
-    items: achievements.map((a) => ({ key: a.event, title: a.title, sub: `${a.event}, ${a.organizer}`, period: a.year })),
-  },
-  {
-    label: 'Pendidikan',
-    items: education.map((e) => ({
-      key: e.school,
-      title: e.school,
-      sub: [e.program, e.degree].filter(Boolean).join(', '),
-      period: e.period,
-    })),
-  },
-]
-
-// Nomor urut global supaya fokus-hover berlaku lintas kelompok
-let n = 0
-groups.forEach((g) => g.items.forEach((item) => (item.idx = n++)))
-
-const rule = { hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 1, ease } } }
-
-// Garis vertikal yang terisi mengikuti scroll, titik menyala saat barisnya lewat tengah layar.
-function XpRow({ item, focus }) {
-  const ref = useRef(null)
-  const lit = useInView(ref, { margin: '0px 0px -45% 0px' })
-
-  return (
-    <motion.li ref={ref} className={`xp__row${lit ? ' is-lit' : ''}`} variants={rowReveal}>
-      <span className="xp__dot" aria-hidden="true" />
-      <motion.span className="xp__rule" aria-hidden="true" variants={rule} />
-      <motion.div className="xp__inner" {...focus(item.idx)}>
-        <span className="xp__period">{item.period}</span>
-        <div className="xp__main">
-          <p className="xp__title">{item.title}</p>
-          <p className="xp__sub">{item.sub}</p>
-          {item.desc && <p className="xp__desc">{item.desc}</p>}
-        </div>
-      </motion.div>
-    </motion.li>
-  )
-}
-
-function XpList({ items, focus }) {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 55%'] })
-  const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 24 })
-
-  return (
-    <motion.ol ref={ref} className="xp__list" variants={stagger(0.08)} initial="hidden" whileInView="show" viewport={viewportOnce}>
-      <span className="xp__track" aria-hidden="true">
-        <motion.span className="xp__fill" style={{ scaleY: fill }} />
-      </span>
-      {items.map((item) => (
-        <XpRow key={item.key} item={item} focus={focus} />
-      ))}
-    </motion.ol>
-  )
-}
+const orgItems = organizations.map((o) => ({
+  key: o.org,
+  title: o.role,
+  sub: o.org,
+  tag: o.tag,
+  desc: o.desc,
+}))
 
 export default function Experience() {
-  const [focus, group] = useFocus()
-
   return (
     <section id="experience" className="section section--band section--experience">
       <div className="container">
         <SectionHead id="experience" />
 
-        <div {...group}>
-          {groups.map((g) => (
-            <div key={g.label} className="xp">
-              <motion.h3 className="xp__label" initial="hidden" whileInView="show" viewport={viewportOnce} variants={rowReveal}>
-                {g.label}
-              </motion.h3>
-              <XpList items={g.items} focus={focus} />
+        <motion.div
+          className="xp-grid"
+          variants={stagger(0.1)}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+        >
+          {/* Organisasi dalam Liquid Glass Water-Drop Accordion (WebGL shader) */}
+          <motion.div className="xp-col xp-col--main" variants={blurUp}>
+            <h3 className="xp__label">Organisasi</h3>
+            <LiquidAccordion items={orgItems} defaultOpen={0} />
+          </motion.div>
+
+          {/* Pendidikan & Pencapaian dalam panel kaca bersih tanpa tanggal ramai */}
+          <motion.div className="xp-col xp-col--side" variants={blurUp}>
+            <div className="xp-card">
+              <h3 className="xp__label">Pendidikan</h3>
+              <ul className="xp-card__list">
+                {education.map((e) => (
+                  <li key={e.school} className="xp-card__item">
+                    <p className="xp-card__title">{e.school}</p>
+                    <p className="xp-card__sub">
+                      {[e.program, e.degree].filter(Boolean).join(' · ')}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
-          ))}
-        </div>
+
+            <div className="xp-card">
+              <h3 className="xp__label">Pencapaian</h3>
+              <ul className="xp-card__list">
+                {achievements.map((a) => (
+                  <li key={a.event} className="xp-card__item">
+                    <p className="xp-card__title">{a.title}</p>
+                    <p className="xp-card__sub">
+                      {a.event} · {a.organizer}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   )

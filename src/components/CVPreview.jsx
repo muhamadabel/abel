@@ -25,7 +25,6 @@ export default function CVPreview() {
           viewport={viewportOnce}
         >
           <div className="cv-card__info">
-            <span className="cv-card__badge">Berkas Resmi</span>
             <h3 className="cv-card__title">Curriculum Vitae</h3>
             <p className="cv-card__desc">
               Dokumen satu halaman format ATS yang merangkum keahlian teknis, rekam jejak proyek rekayasa perangkat lunak, riwayat pendidikan, dan pengalaman organisasi.

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { projects } from '../data/content'
-import { blurUp, ease, springCard, stagger, viewportOnce } from '../lib/motion'
+import { blurUp, stagger, viewportOnce } from '../lib/motion'
 import SectionHead from './SectionHead'
 import Spotlight from './fx/Spotlight'
 
@@ -43,15 +43,15 @@ function ProjectCard({ p, onCardClick }) {
         </Spotlight>
 
         <div className="pcard__body">
-          <p className="pcard__meta">
-            {p.category} · {p.year}
-          </p>
-          <h3 className="pcard__title">
-            {p.title}
-            <svg className="pcard__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-              <path d="M7 17 17 7M7 7h10v10" />
-            </svg>
-          </h3>
+          <div className="pcard__head">
+            <h3 className="pcard__title">
+              {p.title}
+              <svg className="pcard__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                <path d="M7 17 17 7M7 7h10v10" />
+              </svg>
+            </h3>
+            <span className="pcard__cat">{p.category}</span>
+          </div>
           <p className="pcard__desc">{p.desc}</p>
 
           <div className="pcard__foot">
@@ -152,17 +152,11 @@ export default function Projects() {
     }
   }
 
-  const currentDisplay = String(activeIndex + 1).padStart(2, '0')
-  const totalDisplay = String(projects.length).padStart(2, '0')
-
   return (
     <section id="work" className="section section--projects">
       <div className="container">
         <SectionHead id="work">
           <div className="projects-controls" aria-label="Navigasi slider proyek">
-            <span className="projects-counter mono">
-              <strong>{currentDisplay}</strong> / {totalDisplay}
-            </span>
             <div className="projects-nav-btns">
               <button
                 type="button"

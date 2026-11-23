@@ -5,7 +5,6 @@ import Preloader from './components/Preloader'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import TechMarquee from './components/TechMarquee'
-import Projects from './components/Projects'
 import Experience from './components/Experience'
 import Skills from './components/Skills'
 import CVPreview from './components/CVPreview'
@@ -29,7 +28,6 @@ export default function App() {
       <main>
         <Hero ready={ready} />
         <TechMarquee />
-        <Projects />
         <Experience />
         <Skills />
         <CVPreview />

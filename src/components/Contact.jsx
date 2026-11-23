@@ -4,7 +4,7 @@ import { contact } from '../data/content'
 import { blurUp, rowReveal, stagger, viewportOnce } from '../lib/motion'
 import { useFocus } from '../hooks/useFocus'
 import SectionHead from './SectionHead'
-import Toast, { copyText, useToast } from './Toast'
+import Toast, { useToast } from './Toast'
 import ScrambleText from './fx/ScrambleText'
 
 const socials = [
@@ -20,11 +20,6 @@ export default function Contact() {
   const [focus, group] = useFocus()
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
   const [errorMessage, setErrorMessage] = useState('')
-
-  const copyEmail = async () => {
-    const success = await copyText(contact.email)
-    showToast(success ? 'Email disalin ke clipboard' : 'Gagal menyalin email')
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -129,21 +124,6 @@ export default function Contact() {
                 )}
 
                 <div className="inbox-form__footer">
-                  <div className="inbox-form__meta">
-                    <button
-                      type="button"
-                      className="inbox-copy-inline"
-                      onClick={copyEmail}
-                      title="Salin email langsung"
-                    >
-                      <span className="mono">{contact.email}</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                      </svg>
-                    </button>
-                  </div>
-
                   <button
                     type="submit"
                     className="inbox-btn inbox-btn--primary"

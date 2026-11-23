@@ -13,16 +13,25 @@ export default function Cursor() {
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
     if (!fine) return
     const onMove = (e) => {
+      if (e.pointerType !== 'mouse' || window.innerWidth < 768) {
+        setLabel(null)
+        return
+      }
       x.set(e.clientX)
       y.set(e.clientY)
       const host = e.target.closest?.('[data-cursor]')
       setLabel(host ? host.getAttribute('data-cursor') : null)
     }
     const onLeave = () => setLabel(null)
+    const onResize = () => {
+      if (window.innerWidth < 768) setLabel(null)
+    }
     window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
     document.addEventListener('pointerleave', onLeave)
     return () => {
       window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('resize', onResize)
       document.removeEventListener('pointerleave', onLeave)
     }
   }, [x, y])
