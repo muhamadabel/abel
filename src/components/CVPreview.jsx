@@ -15,7 +15,7 @@ export default function CVPreview() {
   return (
     <section id="cv" className="section section--band cv-section">
       <div className="container">
-        <SectionHead id="cv" meta="Standar ATS · 1 Halaman A4" />
+        <SectionHead id="cv" />
 
         <motion.div
           className="cv-card"
@@ -27,14 +27,12 @@ export default function CVPreview() {
           <div className="cv-card__info">
             <h3 className="cv-card__title">Curriculum Vitae</h3>
             <p className="cv-card__desc">
-              Dokumen satu halaman format ATS yang merangkum keahlian teknis, rekam jejak proyek rekayasa perangkat lunak, riwayat pendidikan, dan pengalaman organisasi.
+              Ringkasan satu halaman yang memuat keahlian teknis, rekam jejak proyek rekayasa perangkat lunak, riwayat pendidikan, dan pengalaman organisasi.
             </p>
             <div className="cv-card__meta">
               <span>Format PDF</span>
               <span className="cv-card__dot">·</span>
               <span>1 Halaman A4</span>
-              <span className="cv-card__dot">·</span>
-              <span>Standar ATS</span>
             </div>
           </div>
 

@@ -40,9 +40,15 @@ export default function Hero({ ready }) {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
-      {/* Lantai grid perspektif halus bergaya ruang VisionOS */}
+      {/* Lantai grid 3D perspektif mengedepan bergaya ruang VisionOS */}
       <div className="hero__floor" aria-hidden="true">
-        <motion.div className="hero__floor-grid" style={reduceMotion ? undefined : { x: floorShiftX }} />
+        <div className="hero__floor-horizon" />
+        <motion.div
+          className="hero__floor-shift"
+          style={reduceMotion ? undefined : { x: floorShiftX }}
+        >
+          <div className="hero__floor-grid" />
+        </motion.div>
       </div>
 
       {/* Blok atas bersih: nama partikel interaktif + 1 baris identitas + 2 aksi utama */}
