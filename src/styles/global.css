@@ -1447,30 +1447,74 @@ ol {
 }
 
 @media (max-width: 899px) {
+  .fdeck-track.is-sticky .fdeck-stage {
+    padding: calc(var(--nav-h) + 14px) 0 24px;
+  }
+
+  .fdeck-head {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+
+  .fdeck-track.is-sticky .fdeck-cards {
+    margin-top: 28px;
+  }
+
+  .fcard {
+    border-radius: 26px;
+    padding: 24px 20px 24px;
+  }
+
   .fcard__grid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+  }
+
+  .fcard__left {
+    height: auto;
+    justify-content: flex-start;
+  }
+
+  .fcard__title {
+    font-size: clamp(26px, 7.2vw, 34px);
+  }
+
+  .fcard__desc {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.52;
   }
 
   .fcard__visual {
     min-height: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    height: min(100%, 348px);
+    position: relative;
   }
 
   .fcard__frame {
-    position: relative;
-    inset: auto;
-    width: 100%;
     border-radius: 14px;
-    transform: none;
-    opacity: 1;
+  }
+
+  .fcard__frame--back {
+    width: min(86%, 46svh);
+    top: 2%;
+    right: 0;
+    transform: perspective(900px) rotateY(-6deg) rotateZ(2deg);
+    opacity: 0.94;
+  }
+
+  .fcard__frame--main {
+    width: min(90%, 48svh);
+    bottom: 2%;
+    left: 0;
+    transform: perspective(900px) rotateY(-3deg) rotateZ(-1.2deg);
   }
 
   .fcard__frame--back:hover,
   .fcard__frame--main:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px) scale(1.02);
   }
 }
 

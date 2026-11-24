@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
 import { projects } from '../data/content'
 
@@ -6,15 +6,16 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v)
 const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 
 // Matematika 3D Tilt-Stacking adaptasi 21st.dev id:44650 (kedhareswer/tilt-stack-scroll)
-function pose(p, i, reduced) {
+function pose(p, i, reduced, compact) {
   const enter = i === 0 ? 1 : clamp(p - (i - 1), 0, 1)
   const depth = clamp(p - i, 0, 2.5)
   if (reduced) {
     return { y: 0, scale: 1, rx: 0, rz: 0, shade: Math.min(depth, 1) * 0.35, opacity: enter >= 1 ? 1 : enter }
   }
   const e = easeOut(enter)
+  const lift = compact ? 2.1 : 3.2
   return {
-    y: (1 - e) * 116 - depth * 3.2,
+    y: (1 - e) * 116 - depth * lift,
     scale: (1 - depth * 0.055) * (0.92 + 0.08 * e),
     rx: (1 - e) * 16 - depth * 7,
     rz: (1 - e) * (i % 2 ? 3 : -3),
@@ -56,17 +57,6 @@ export default function FocusDeck() {
   const shadeEls = useRef([])
   const stepEls = useRef([])
   const reduceMotion = useReducedMotion()
-  const [isDesktop, setIsDesktop] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(min-width: 900px)').matches : true,
-  )
-
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 900px)')
-    const sync = () => setIsDesktop(mq.matches)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
@@ -76,12 +66,12 @@ export default function FocusDeck() {
   const n = cards.length
 
   const paint = (progress) => {
-    if (!isDesktop) return
     const p = clamp(progress, 0, 1) * (n - 1)
+    const compact = typeof window !== 'undefined' && window.innerWidth < 900
     for (let i = 0; i < n; i++) {
       const el = cardEls.current[i]
       if (!el) continue
-      const q = pose(p, i, reduceMotion)
+      const q = pose(p, i, reduceMotion, compact)
       el.style.transform = toTransform(q)
       el.style.opacity = String(q.opacity)
       const sh = shadeEls.current[i]
@@ -99,27 +89,16 @@ export default function FocusDeck() {
   })
 
   useEffect(() => {
-    if (!isDesktop) {
-      cardEls.current.forEach((el) => {
-        if (!el) return
-        el.style.transform = ''
-        el.style.opacity = ''
-      })
-      shadeEls.current.forEach((sh) => {
-        if (sh) sh.style.opacity = '0'
-      })
-      return
-    }
     paint(scrollYProgress.get())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDesktop, reduceMotion])
+  }, [reduceMotion])
 
   return (
     <section
       id="focus"
       ref={trackRef}
-      className={`fdeck-track${isDesktop ? ' is-sticky' : ''}`}
-      style={isDesktop ? { height: `calc(100svh * ${n - 0.35})` } : undefined}
+      className="fdeck-track is-sticky"
+      style={{ height: `calc(100svh * ${n - 0.35})` }}
       aria-label="Fokus keahlian"
     >
       <div className="fdeck-stage">
@@ -127,18 +106,16 @@ export default function FocusDeck() {
           <header className="fdeck-head">
             <h2 className="section-title">Fokus</h2>
 
-            {isDesktop && (
-              <div className="fdeck-steps" aria-hidden="true">
-                {cards.map((c, idx) => (
-                  <span
-                    key={c.id}
-                    ref={(el) => (stepEls.current[idx] = el)}
-                    className="fdeck-step"
-                    data-active={idx === 0 ? 'true' : 'false'}
-                  />
-                ))}
-              </div>
-            )}
+            <div className="fdeck-steps" aria-hidden="true">
+              {cards.map((c, idx) => (
+                <span
+                  key={c.id}
+                  ref={(el) => (stepEls.current[idx] = el)}
+                  className="fdeck-step"
+                  data-active={idx === 0 ? 'true' : 'false'}
+                />
+              ))}
+            </div>
           </header>
 
           <div className="fdeck-cards">
@@ -147,12 +124,12 @@ export default function FocusDeck() {
                 key={card.id}
                 ref={(el) => (cardEls.current[i] = el)}
                 className={`fcard fcard--${card.tone}`}
-                style={isDesktop ? { zIndex: i + 1 } : undefined}
+                style={{ zIndex: i + 1 }}
               >
                 <div className="fcard__shade" ref={(el) => (shadeEls.current[i] = el)} aria-hidden="true" />
 
                 <div className="fcard__grid">
-                  {/* Kiri: tipografi judul dan deskripsi bersih tanpa daftar ekstra */}
+                  {/* Kiri/Atas: tipografi judul dan deskripsi bersih tanpa daftar ekstra */}
                   <div className="fcard__left">
                     <div className="fcard__copy">
                       <h3 className="fcard__title">{card.title}</h3>
@@ -160,7 +137,7 @@ export default function FocusDeck() {
                     </div>
                   </div>
 
-                  {/* Kanan: panggung visual dua screenshot bersih berlapis 3D tanpa badge penutup */}
+                  {/* Kanan/Bawah: panggung visual dua thumbnail berlapis 3D tanpa badge penutup */}
                   <div className="fcard__visual">
                     {card.previews[1] && (
                       <a
