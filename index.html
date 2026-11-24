@@ -2,36 +2,283 @@
 <html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
-    <title>Abel Abhinaya, Software Engineer</title>
+
+    <!-- Primary SEO -->
+    <title>Abel Abhinaya - Software Engineer | Portofolio</title>
     <meta
       name="description"
-      content="Portfolio Muhammad Abel Abhinaya, software engineer asal Indonesia. Bikin antarmuka yang rapi, ringan, dan nyaman dipakai pakai React, Next.js, dan Laravel."
+      content="Portofolio Muhammad Abel Abhinaya Riananto (Abel Abhinaya), Software Engineer dari Universitas Gadjah Mada. Mengembangkan aplikasi web dan mobile dengan React, Next.js, TypeScript, React Native, Node.js, dan PostgreSQL."
     />
-    <link rel="canonical" href="https://abel-portfolio.vercel.app/" />
+    <meta
+      name="keywords"
+      content="Abel Abhinaya, Muhammad Abel Abhinaya, Muhammad Abel Abhinaya Riananto, Software Engineer Indonesia, Frontend Developer Yogyakarta, Full-Stack Developer UGM, TRPL UGM, React, Next.js, TypeScript, React Native, Portofolio"
+    />
+    <meta name="author" content="Muhammad Abel Abhinaya Riananto" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <link rel="canonical" href="https://www.akuabel.my.id/" />
+
+    <!-- Theme & Icons -->
+    <meta name="theme-color" content="#f8f9fc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#090a0f" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Abel Abhinaya, Software Engineer" />
+    <meta property="og:url" content="https://www.akuabel.my.id/" />
+    <meta property="og:site_name" content="Abel Abhinaya" />
+    <meta property="og:title" content="Abel Abhinaya - Software Engineer" />
     <meta
       property="og:description"
-      content="Bikin antarmuka yang rapi, ringan, dan nyaman dipakai. React, Next.js, Laravel."
+      content="Portofolio Muhammad Abel Abhinaya Riananto, Software Engineer dari Universitas Gadjah Mada. Aplikasi web & mobile dengan React, Next.js, TypeScript, React Native, dan PostgreSQL."
+    />
+    <meta property="og:image" content="https://www.akuabel.my.id/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://www.akuabel.my.id/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Pratinjau portofolio Abel Abhinaya, Software Engineer Universitas Gadjah Mada"
     />
     <meta property="og:locale" content="id_ID" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:locale:alternate" content="en_US" />
 
-    <!-- Fonts -->
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://www.akuabel.my.id/" />
+    <meta name="twitter:title" content="Abel Abhinaya - Software Engineer" />
+    <meta
+      name="twitter:description"
+      content="Portofolio Muhammad Abel Abhinaya Riananto, Software Engineer UGM. Aplikasi web & mobile dengan React, Next.js, TypeScript, React Native, dan PostgreSQL."
+    />
+    <meta name="twitter:image" content="https://www.akuabel.my.id/og-image.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Pratinjau portofolio Abel Abhinaya, Software Engineer Universitas Gadjah Mada"
+    />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://www.akuabel.my.id/#website",
+            "url": "https://www.akuabel.my.id/",
+            "name": "Abel Abhinaya",
+            "description": "Portofolio resmi Muhammad Abel Abhinaya Riananto, Software Engineer Universitas Gadjah Mada.",
+            "inLanguage": "id-ID",
+            "publisher": { "@id": "https://www.akuabel.my.id/#person" }
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://www.akuabel.my.id/#webpage",
+            "url": "https://www.akuabel.my.id/",
+            "name": "Abel Abhinaya - Software Engineer | Portofolio",
+            "isPartOf": { "@id": "https://www.akuabel.my.id/#website" },
+            "mainEntity": { "@id": "https://www.akuabel.my.id/#person" },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://www.akuabel.my.id/og-image.jpg",
+              "width": 1200,
+              "height": 630
+            },
+            "inLanguage": "id-ID"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://www.akuabel.my.id/#person",
+            "name": "Muhammad Abel Abhinaya Riananto",
+            "alternateName": ["Abel Abhinaya", "muhamadabel"],
+            "url": "https://www.akuabel.my.id/",
+            "image": "https://www.akuabel.my.id/profile.png",
+            "jobTitle": "Software Engineer",
+            "description": "Mahasiswa Teknologi Rekayasa Perangkat Lunak Universitas Gadjah Mada yang membangun aplikasi web dan mobile full-stack dengan React, Next.js, TypeScript, React Native, Node.js, dan PostgreSQL.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Yogyakarta",
+              "addressRegion": "DI Yogyakarta",
+              "addressCountry": "ID"
+            },
+            "alumniOf": {
+              "@type": "CollegeOrUniversity",
+              "name": "Universitas Gadjah Mada",
+              "url": "https://ugm.ac.id/"
+            },
+            "affiliation": [
+              { "@type": "Organization", "name": "Universitas Gadjah Mada" },
+              { "@type": "Organization", "name": "HongFilms", "url": "https://hongfilms.com/" },
+              { "@type": "Organization", "name": "KMTEDI SV UGM" },
+              { "@type": "Organization", "name": "ASSETS TRPL UGM" },
+              { "@type": "Organization", "name": "Jamaah Vokasi Al-Alim SV UGM" }
+            ],
+            "sameAs": [
+              "https://github.com/muhamadabel",
+              "https://www.linkedin.com/in/muhammad-abel-abhinaya-riananto-944376326/",
+              "https://instagram.com/mhmmdabel._",
+              "https://www.tiktok.com/@muhablee"
+            ],
+            "knowsAbout": [
+              "React",
+              "Next.js",
+              "TypeScript",
+              "JavaScript",
+              "React Native",
+              "Expo",
+              "Tailwind CSS",
+              "Node.js",
+              "PostgreSQL",
+              "Laravel",
+              "Software Engineering",
+              "Web Development"
+            ]
+          },
+          {
+            "@type": "ItemList",
+            "@id": "https://www.akuabel.my.id/#projects",
+            "name": "Proyek Pilihan Abel Abhinaya",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Desiltrace",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://desiltrace.web.id/",
+                  "image": "https://www.akuabel.my.id/projects/desiltrace.jpg",
+                  "description": "Platform transparansi desil sosio-ekonomi Yogyakarta untuk cek NIK, panduan bantuan sosial, dan pengawalan alur koreksi data."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "WebSite",
+                  "name": "SurveyMETER Redesign",
+                  "url": "https://surveymeter-redesign.vercel.app/",
+                  "image": "https://www.akuabel.my.id/projects/surveymeter.jpg",
+                  "description": "Redesain situs lembaga riset SurveyMETER dua bahasa dengan 470 artikel dan pencarian instan."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Simonev Renaksi",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://simonev-renaksi.vercel.app",
+                  "image": "https://www.akuabel.my.id/projects/simonev.jpg",
+                  "description": "Sistem monitoring dan evaluasi BBPPKS Yogyakarta untuk memantau realisasi anggaran dan rencana aksi."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Pemilwa KMTEDI",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://kmtedi-pemilwa.vercel.app",
+                  "image": "https://www.akuabel.my.id/projects/pemilwa.jpg",
+                  "description": "Platform pemilihan KMTEDI SV UGM dengan verifikasi OTP email UGM, voting anonim, dan panel admin."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 5,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Hongfilms",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://hongfilms.com",
+                  "image": "https://www.akuabel.my.id/projects/hongfilms.jpg",
+                  "description": "Platform ekosistem perfilman independen beserta aplikasi camera report dan slate log untuk kru film."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 6,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Rongsok.in",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://rongsokin.vercel.app/",
+                  "image": "https://www.akuabel.my.id/projects/rongsokin.jpg",
+                  "description": "Marketplace daur ulang sampah berbasis geolokasi yang menghubungkan warga dengan pengepul terdekat."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 7,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Somnia",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://www.somnia.page/",
+                  "image": "https://www.akuabel.my.id/projects/somnia.jpg",
+                  "description": "Aplikasi web modular berbasis Next.js dan TypeScript dengan arsitektur front end type-safe."
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 8,
+                "item": {
+                  "@type": "SoftwareApplication",
+                  "name": "Simpondok",
+                  "applicationCategory": "WebApplication",
+                  "url": "https://simpondokk.vercel.app",
+                  "image": "https://www.akuabel.my.id/projects/simpondok.jpg",
+                  "description": "Sistem informasi manajemen pondok pesantren tahfidz untuk tata kelola santri, halaqah, dan laporan."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+
+    <!-- Preload & Fonts (hanya Inter & Inter Tight yang dipakai) -->
+    <link rel="preload" as="image" href="/projects/desiltrace.jpg" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@200..900&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main style="max-width:720px;margin:48px auto;padding:0 24px;font-family:Inter,system-ui,sans-serif;line-height:1.6;color:#111;">
+        <h1>Abel Abhinaya</h1>
+        <p>Muhammad Abel Abhinaya Riananto, Software Engineer dari Teknologi Rekayasa Perangkat Lunak (TRPL), Sekolah Vokasi Universitas Gadjah Mada.</p>
+        <h2>Proyek Pilihan</h2>
+        <ul>
+          <li><a href="https://desiltrace.web.id/">Desiltrace</a> - Platform transparansi desil sosio-ekonomi Yogyakarta.</li>
+          <li><a href="https://surveymeter-redesign.vercel.app/">SurveyMETER</a> - Redesain situs lembaga riset dua bahasa.</li>
+          <li><a href="https://simonev-renaksi.vercel.app">Simonev Renaksi</a> - Sistem monitoring dan evaluasi BBPPKS Yogyakarta.</li>
+          <li><a href="https://kmtedi-pemilwa.vercel.app">Pemilwa KMTEDI</a> - Platform pemilihan mahasiswa KMTEDI SV UGM.</li>
+          <li><a href="https://hongfilms.com">Hongfilms</a> - Platform ekosistem perfilman independen dan workflow produksi.</li>
+          <li><a href="https://rongsokin.vercel.app/">Rongsok.in</a> - Marketplace daur ulang sampah berbasis geolokasi.</li>
+          <li><a href="https://www.somnia.page/">Somnia</a> - Aplikasi web front end modular berbasis TypeScript.</li>
+          <li><a href="https://simpondokk.vercel.app">Simpondok</a> - Sistem informasi manajemen pondok pesantren tahfidz.</li>
+        </ul>
+        <p>
+          <a href="/cv-muhammad-abel-abhinaya.pdf">Unduh CV (PDF)</a> ·
+          <a href="https://github.com/muhamadabel">GitHub</a> ·
+          <a href="https://www.linkedin.com/in/muhammad-abel-abhinaya-riananto-944376326/">LinkedIn</a>
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
