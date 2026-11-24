@@ -1,14 +1,13 @@
 import { useRef } from 'react'
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
-import { education, organizations, profile, projects } from '../data/content'
+import { cvHighlights, education, organizations, profile } from '../data/content'
 import SectionHead from './SectionHead'
 import Magnetic from './Magnetic'
 import Toast, { copyText, useToast } from './Toast'
 import { blurUp, springTilt, viewportOnce } from '../lib/motion'
 
-const featuredProjects = projects.slice(0, 3)
 const primaryEdu = education[0]
-const featuredOrgs = organizations.slice(0, 2)
+const featuredOrgs = organizations.slice(0, 3)
 
 export default function CVPreview() {
   const [toast, showToast] = useToast()
@@ -149,12 +148,12 @@ export default function CVPreview() {
                 </div>
 
                 <div className="cv-sheet__sec">
-                  <span className="cv-sheet__kicker">Proyek</span>
-                  {featuredProjects.map((p) => (
-                    <div key={p.id} className="cv-sheet__row">
+                  <span className="cv-sheet__kicker">Pengalaman & Proyek</span>
+                  {cvHighlights.map((item) => (
+                    <div key={item.id} className="cv-sheet__row">
                       <div className="cv-sheet__row-top">
-                        <strong>{p.title}</strong>
-                        <span>{p.category}</span>
+                        <strong>{item.title}</strong>
+                        <span>{item.meta}</span>
                       </div>
                       <span className="cv-sheet__bar" aria-hidden="true" />
                     </div>

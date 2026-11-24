@@ -258,3 +258,19 @@ export const sections = [
   { id: 'cv', label: 'CV', title: 'Curriculum Vitae' },
   { id: 'contact', label: 'Hubungi', title: 'Hubungi' },
 ]
+
+export const affiliations = [
+  { id: 'ugm', name: 'Universitas Gadjah Mada', logo: '/logos/ugm.png', kind: 'wordmark', scale: 1.24 },
+  { id: 'hongfilms', name: 'Hongfilms', logo: '/logos/hongfilms.png', kind: 'wordmark', scale: 0.94 },
+  { id: 'surveymeter', name: 'SurveyMETER', logo: '/logos/surveymeter.png', kind: 'wordmark', scale: 1.04 },
+  { id: 'kmtedi', name: 'KMTEDI SV UGM', logo: '/logos/kmtedi.png', kind: 'lockup', label: 'KMTEDI', sub: 'SV UGM' },
+  { id: 'assets', name: 'ASSETS TRPL UGM', logo: '/logos/assets.png', kind: 'wordmark', scale: 0.84 },
+  { id: 'bbppks', name: 'BBPPKS Yogyakarta', logo: '/logos/kemensos.png', kind: 'lockup', label: 'BBPPKS', sub: 'Kemensos RI' },
+  { id: 'alalim', name: 'Jamaah Vokasi Al-Alim', logo: '/logos/alalim.png', kind: 'lockup', label: 'Al-Alim', sub: 'SV UGM' },
+]
+
+export const cvHighlights = [
+  { id: 'hongfilms', title: 'HongFilms', meta: 'Software Engineer' },
+  { id: 'tna', title: 'TNA Sekolah Rakyat', meta: 'BBPPKS Yogyakarta' },
+  { id: 'simpondok', title: 'SI-Tahfidz (Simpondok)', meta: 'Frontend Developer' },
+]
