@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ease } from '../../lib/motion'
-import LiquidGlass from './LiquidGlass'
 
 function wrap(i, n) {
   return n > 0 ? ((i % n) + n) % n : 0
@@ -152,7 +151,7 @@ function buildGrid(segX, segY) {
  * Mendukung drag/flick bebas, swipe sentuh, horizontal trackpad scroll, klik samping,
  * dan klik kartu tengah untuk langsung membuka proyek. Tanpa tombol panah ramai.
  */
-export default function CurvedProjectLens({ items, ready = true }) {
+export default function CurvedProjectLens({ items, ready = true, settledIntro = false }) {
   const n = items.length
   const rootRef = useRef(null)
   const canvasRef = useRef(null)
@@ -236,7 +235,7 @@ export default function CurvedProjectLens({ items, ready = true }) {
     let pos = 0
     let vel = 0
     let target = 0
-    let intro = reduced.matches ? 1.4 : 0
+    let intro = reduced.matches || settledIntro ? 1.4 : 0
     let introStart = -1
     let dragging = false
     let dragX = 0
@@ -490,14 +489,14 @@ export default function CurvedProjectLens({ items, ready = true }) {
       gl.deleteBuffer(buf)
       gl.deleteProgram(prog)
     }
-  }, [items, n])
+  }, [items, n, settledIntro])
 
   const active = items[activeIndex] || items[0]
 
   return (
     <div
       ref={rootRef}
-      className="lens-stage"
+      className={`lens-stage${ready ? '' : ' lens-stage--masked'}`}
       tabIndex={0}
       aria-label="Galeri proyek 3D, geser kiri atau kanan untuk menjelajah"
     >
@@ -516,41 +515,27 @@ export default function CurvedProjectLens({ items, ready = true }) {
         )}
       </div>
 
-      {/* Caption optik bersih di bawah stage: tanpa tanggal, tanpa nomor, tanpa tombol panah */}
+      {/* Caption editorial bersih di bawah stage: tanpa bulet-bulet, tanpa panah, tanpa pill */}
       <div className="lens-caption">
-        <div className="lens-caption__row">
-          <LiquidGlass
-            className="lens-caption__glass"
-            radius={999}
-            bevelDepth={10}
-            scale={18}
-            aberration={2}
-            frost={1.4}
+        <div className="lens-caption__bar">
+          <a
+            href={active.live || active.repo}
+            target="_blank"
+            rel="noreferrer"
+            className="lens-caption__main"
+            data-cursor="Buka"
           >
-            <a
-              href={active.live || active.repo}
-              target="_blank"
-              rel="noreferrer"
-              className="lens-caption__link"
-              data-cursor="Buka"
+            <motion.span
+              key={active.id}
+              className="lens-caption__inner"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.24, ease }}
             >
-              <motion.span
-                key={active.id}
-                className="lens-caption__inner"
-                initial={{ opacity: 0.25, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2, ease }}
-              >
-                <span className="lens-caption__dot" style={{ background: active.tint }} aria-hidden="true" />
-                <strong className="lens-caption__title">{active.title}</strong>
-                <span className="lens-caption__sep" aria-hidden="true">·</span>
-                <span className="lens-caption__cat">{active.category}</span>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-                  <path d="M7 17 17 7M7 7h10v10" />
-                </svg>
-              </motion.span>
-            </a>
-          </LiquidGlass>
+              <strong className="lens-caption__title">{active.title}</strong>
+              <span className="lens-caption__cat">{active.category}</span>
+            </motion.span>
+          </a>
 
           {active.repo && active.repo !== active.live && (
             <a
@@ -566,7 +551,7 @@ export default function CurvedProjectLens({ items, ready = true }) {
           )}
         </div>
 
-        <div className="lens-dots" role="tablist" aria-label="Pilih pratinjau proyek">
+        <div className="lens-rail" role="tablist" aria-label="Pilih pratinjau proyek">
           {items.map((p, i) => (
             <button
               key={p.id}
@@ -574,7 +559,7 @@ export default function CurvedProjectLens({ items, ready = true }) {
               role="tab"
               aria-selected={i === activeIndex}
               aria-label={p.title}
-              className={`lens-dot${i === activeIndex ? ' is-active' : ''}`}
+              className={`lens-rail__seg${i === activeIndex ? ' is-active' : ''}`}
               onClick={() => apiRef.current.goTo(i)}
             />
           ))}

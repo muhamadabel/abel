@@ -60,18 +60,18 @@ export default function Contact() {
         showToast('Pesan berhasil terkirim ke Abel')
       } else {
         setStatus('error')
-        setErrorMessage('Gagal mengirim pesan. Silakan coba lagi atau hubungi via WhatsApp/email.')
+        setErrorMessage('Gagal mengirim pesan. Silakan coba lagi.')
       }
     } catch {
       setStatus('error')
-      setErrorMessage('Terjadi kendala koneksi. Silakan coba lagi atau hubungi langsung via WhatsApp.')
+      setErrorMessage('Terjadi kendala koneksi. Silakan coba lagi.')
     }
   }
 
   return (
     <section id="contact" className="section contact">
       <div className="container">
-        <SectionHead id="contact" meta={contact.location} />
+        <SectionHead id="contact" />
 
         <motion.div
           className="contact__body"
@@ -80,8 +80,14 @@ export default function Contact() {
           whileInView="show"
           viewport={viewportOnce}
         >
-          {/* Kotak Inbox Langsung */}
-          <motion.div className="inbox-card" variants={blurUp}>
+          {/* Kartu penutup obsidian gelap ber-pendar biru kobalt, satu textarea tanpa email tampil */}
+          <motion.div className="inbox-card inbox-card--finale" variants={blurUp}>
+            <div className="inbox-finale__head">
+              <h3 className="inbox-finale__title">
+                Punya ide atau proyek? <span>Tulis pesan langsung.</span>
+              </h3>
+            </div>
+
             {status === 'sent' ? (
               <div className="inbox-card__success">
                 <div className="inbox-card__success-icon" aria-hidden="true">
@@ -91,11 +97,11 @@ export default function Contact() {
                 </div>
                 <h4 className="inbox-card__success-title">Pesan Berhasil Terkirim</h4>
                 <p className="inbox-card__success-desc">
-                  Terima kasih sudah menghubungi. Pesanmu sudah diteruskan langsung ke Abel dan akan dibalas secepatnya.
+                  Terima kasih sudah menghubungi. Pesanmu sudah diteruskan langsung ke Abel.
                 </p>
                 <button
                   type="button"
-                  className="inbox-btn inbox-btn--primary"
+                  className="inbox-btn inbox-btn--light"
                   onClick={() => setStatus('idle')}
                 >
                   Kirim Pesan Lain
@@ -112,7 +118,7 @@ export default function Contact() {
                     name="message"
                     rows="4"
                     className="inbox-form__textarea"
-                    placeholder="Tulis pesan atau tawaran proyek di sini..."
+                    placeholder="Ceritakan singkat proyek atau hal yang ingin dibahas..."
                     required
                   />
                 </div>
@@ -126,7 +132,7 @@ export default function Contact() {
                 <div className="inbox-form__footer">
                   <button
                     type="submit"
-                    className="inbox-btn inbox-btn--primary"
+                    className="inbox-btn inbox-btn--light"
                     disabled={status === 'sending'}
                   >
                     {status === 'sending' ? (

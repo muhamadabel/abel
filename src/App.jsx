@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, MotionConfig } from 'framer-motion'
+import { useState } from 'react'
+import { MotionConfig } from 'framer-motion'
 import { useSmoothScroll } from './lib/smoothScroll'
 import Preloader from './components/Preloader'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import TechMarquee from './components/TechMarquee'
+import FocusDeck from './components/FocusDeck'
 import Experience from './components/Experience'
 import Skills from './components/Skills'
 import CVPreview from './components/CVPreview'
@@ -14,20 +15,25 @@ import Cursor from './components/Cursor'
 
 export default function App() {
   useSmoothScroll()
+  const [reveal, setReveal] = useState(false)
   const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 1450)
-    return () => clearTimeout(t)
-  }, [])
 
   return (
     <MotionConfig reducedMotion="user">
-      <AnimatePresence>{!ready && <Preloader key="preloader" />}</AnimatePresence>
-      <Nav ready={ready} />
+      {!ready && (
+        <Preloader
+          onReveal={() => setReveal(true)}
+          onDone={() => {
+            setReveal(true)
+            setReady(true)
+          }}
+        />
+      )}
+      <Nav ready={reveal} />
       <main>
-        <Hero ready={ready} />
+        <Hero reveal={reveal} ready={ready} />
         <TechMarquee />
+        <FocusDeck />
         <Experience />
         <Skills />
         <CVPreview />

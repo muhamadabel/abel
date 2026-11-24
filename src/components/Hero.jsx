@@ -7,13 +7,19 @@ import Magnetic from './Magnetic'
 import ParticleText from './fx/ParticleText'
 import CurvedProjectLens from './fx/CurvedProjectLens'
 
-export default function Hero({ ready }) {
+export default function Hero({ reveal, ready }) {
   const sectionRef = useRef(null)
   const reduceMotion = useReducedMotion()
 
   const mx = useMotionValue(0)
+  const my = useMotionValue(0)
   const sx = useSpring(mx, springTilt)
-  const floorShiftX = useTransform(sx, [-0.5, 0.5], [14, -14])
+  const sy = useSpring(my, springTilt)
+  const floorShiftX = useTransform(sx, [-0.5, 0.5], [16, -16])
+  const tagLeftX = useTransform(sx, [-0.5, 0.5], [-10, 10])
+  const tagLeftY = useTransform(sy, [-0.5, 0.5], [-8, 8])
+  const tagRightX = useTransform(sx, [-0.5, 0.5], [12, -12])
+  const tagRightY = useTransform(sy, [-0.5, 0.5], [8, -8])
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
   const topY = useTransform(scrollYProgress, [0, 1], [0, -44])
@@ -24,13 +30,15 @@ export default function Hero({ ready }) {
     if (reduceMotion || !sectionRef.current) return
     const r = sectionRef.current.getBoundingClientRect()
     mx.set((e.clientX - r.left) / r.width - 0.5)
+    my.set((e.clientY - r.top) / r.height - 0.5)
   }
 
   const onMouseLeave = () => {
     mx.set(0)
+    my.set(0)
   }
 
-  const state = ready ? 'show' : 'hidden'
+  const state = reveal ? 'show' : 'hidden'
 
   return (
     <section
@@ -59,7 +67,7 @@ export default function Hero({ ready }) {
         animate={state}
         variants={stagger(0.1, 0.08)}
       >
-        <ParticleText text={profile.display} ready={ready} />
+        <ParticleText text={profile.display} ready={reveal} />
 
         <motion.p className="hero__sub" variants={blurUp}>
           {profile.role} · {profile.institution}
@@ -89,15 +97,33 @@ export default function Hero({ ready }) {
         </motion.div>
       </motion.div>
 
-      {/* Galeri 3D WebGL Lengkung: geser/flick langsung tanpa tombol panah, tanpa tanggal */}
+      {/* Galeri 3D WebGL Lengkung: posisi tetap (y=0) agar globe preloader mendarat tepat subpiksel */}
       <motion.div
         className="hero__stage"
-        initial={{ opacity: 0, y: 30 }}
-        animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-        transition={{ duration: 0.72, ease, delay: 0.16 }}
         style={reduceMotion ? undefined : { y: stageY }}
       >
-        <CurvedProjectLens items={projects} ready={ready} />
+        <motion.span
+          className="hero__chip hero__chip--blue"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={ready ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.45, ease }}
+          style={reduceMotion ? undefined : { x: tagLeftX, y: tagLeftY }}
+          aria-hidden="true"
+        >
+          @frontend
+        </motion.span>
+        <motion.span
+          className="hero__chip hero__chip--dark"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={ready ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.45, ease, delay: 0.06 }}
+          style={reduceMotion ? undefined : { x: tagRightX, y: tagRightY }}
+          aria-hidden="true"
+        >
+          @fullstack
+        </motion.span>
+
+        <CurvedProjectLens items={projects} ready={ready} settledIntro />
       </motion.div>
     </section>
   )

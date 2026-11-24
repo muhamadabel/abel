@@ -34,13 +34,13 @@ export default function ParticleText({ text, ready = true, className = '' }) {
       isDark
         ? {
             base: [244, 246, 251],
-            active: [96, 165, 250],
+            active: [96, 152, 255],
             alphaMin: 0.66,
             alphaSpan: 0.30,
           }
         : {
-            base: [16, 18, 24],
-            active: [0, 113, 227],
+            base: [17, 18, 22],
+            active: [35, 75, 255],
             alphaMin: 0.72,
             alphaSpan: 0.25,
           }

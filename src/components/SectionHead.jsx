@@ -5,7 +5,7 @@ import { blurUp, stagger, viewportOnce } from '../lib/motion'
 import SplitText from './SplitText'
 import useProximity from './fx/useProximity'
 
-// Judul section dari data sections, info pendek di sisi kanan, garis tipis di bawah.
+// Judul section bersih dan konsisten dengan garis tipis di bawah.
 export default function SectionHead({ id, meta, children }) {
   const { title } = sections.find((s) => s.id === id)
   const ref = useRef(null)

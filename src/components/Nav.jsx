@@ -7,11 +7,18 @@ import { ease, springSoft } from '../lib/motion'
 import ThemeToggle from './ThemeToggle'
 import LiquidGlass from './fx/LiquidGlass'
 
-// 'top' ikut dipantau supaya di hero tidak ada link yang aktif
-const ids = ['top', ...sections.filter((s) => s.id !== 'work').map((s) => s.id)]
+const navItems = [
+  { id: 'work', label: 'Karya', target: '#top' },
+  { id: 'focus', label: 'Fokus', target: '#focus' },
+  ...sections
+    .filter((s) => s.id !== 'work' && s.id !== 'contact')
+    .map((s) => ({ id: s.id, label: s.label, target: `#${s.id}` })),
+]
+
+const spyIds = ['top', 'focus', 'experience', 'skills', 'cv', 'contact']
 
 export default function Nav({ ready }) {
-  const active = useScrollSpy(ids)
+  const active = useScrollSpy(spyIds)
   const [hovered, setHovered] = useState(null)
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -22,8 +29,8 @@ export default function Nav({ ready }) {
 
   // Sembunyi saat scroll turun, muncul lagi saat scroll naik.
   useMotionValueEvent(scrollY, 'change', (y) => {
-    setScrolled(y > 16)
-    setHidden(y > 520 && y > last.current && !open)
+    setScrolled(y > 24)
+    setHidden(y > 540 && y > last.current && !open)
     last.current = y
   })
 
@@ -64,24 +71,26 @@ export default function Nav({ ready }) {
         </a>
 
         <nav className="nav__links" aria-label="Navigasi utama" onMouseLeave={() => setHovered(null)}>
-          {sections.map((s) => {
-            const target = s.id === 'work' ? '#top' : `#${s.id}`
+          {navItems.map((item) => {
+            const isActive = active === item.id
             return (
               <a
-                key={s.id}
-                href={target}
-                className={`nav__link${active === s.id ? ' is-active' : ''}`}
-                aria-current={active === s.id ? 'true' : undefined}
-                onMouseEnter={() => setHovered(s.id)}
-                onFocus={() => setHovered(s.id)}
+                key={item.id}
+                href={item.target}
+                className={`nav__link${isActive ? ' is-active' : ''}`}
+                aria-current={isActive ? 'true' : undefined}
+                onMouseEnter={() => setHovered(item.id)}
+                onFocus={() => setHovered(item.id)}
                 onBlur={() => setHovered(null)}
-                onClick={(e) => go(e, target)}
+                onClick={(e) => go(e, item.target)}
               >
-                {active === s.id && <motion.span className="nav__pill" layoutId="nav-pill" transition={springSoft} />}
-                {hovered === s.id && active !== s.id && (
+                {hovered === item.id && (
                   <motion.span className="nav__hover-pill" layoutId="nav-hover" transition={springSoft} />
                 )}
-                <span className="nav__label">{s.label}</span>
+                <span className="nav__label">
+                  {isActive && <motion.span className="nav__dot" layoutId="nav-dot" transition={springSoft} aria-hidden="true" />}
+                  {item.label}
+                </span>
               </a>
             )
           })}
@@ -89,6 +98,16 @@ export default function Nav({ ready }) {
 
         <div className="nav__actions">
           <ThemeToggle />
+          <a
+            href="#contact"
+            className={`nav__cta${active === 'contact' ? ' is-active' : ''}`}
+            onClick={(e) => go(e, '#contact')}
+          >
+            Hubungi
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" aria-hidden="true">
+              <path d="M7 17 17 7M7 7h10v10" />
+            </svg>
+          </a>
           <button
             type="button"
             className={`nav__burger${open ? ' is-open' : ''}`}
@@ -112,23 +131,19 @@ export default function Nav({ ready }) {
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.35, ease }}
           >
-            {sections.map((s, i) => {
-              const target = s.id === 'work' ? '#top' : `#${s.id}`
-              return (
-                <motion.a
-                  key={s.id}
-                  href={target}
-                  className={`nav__sheet-link${active === s.id ? ' is-active' : ''}`}
-                  onClick={(e) => go(e, target)}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.45, ease, delay: 0.04 + 0.04 * i }}
-                >
-                  <span className="mono">{String(i + 1).padStart(2, '0')}</span>
-                  {s.label}
-                </motion.a>
-              )
-            })}
+            {[...navItems, { id: 'contact', label: 'Hubungi', target: '#contact' }].map((item, i) => (
+              <motion.a
+                key={item.id}
+                href={item.target}
+                className={`nav__sheet-link${active === item.id ? ' is-active' : ''}`}
+                onClick={(e) => go(e, item.target)}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.45, ease, delay: 0.04 + 0.04 * i }}
+              >
+                {item.label}
+              </motion.a>
+            ))}
           </motion.nav>
         )}
       </AnimatePresence>
