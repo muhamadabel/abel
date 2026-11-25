@@ -28,6 +28,7 @@ export default function GridField({ className }) {
     const c = cvs?.getContext('2d')
     if (!c) return
 
+    const coarse = window.matchMedia('(pointer: coarse)').matches
     let W = 0
     let H = 0
     let cols = 0
@@ -70,11 +71,11 @@ export default function GridField({ className }) {
     }
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
       W = cvs.offsetWidth
       H = cvs.offsetHeight
-      cvs.width = W * dpr
-      cvs.height = H * dpr
+      const dpr = W < 640 ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2)
+      cvs.width = Math.round(W * dpr)
+      cvs.height = Math.round(H * dpr)
       c.setTransform(dpr, 0, 0, dpr, 0, 0)
       cols = Math.ceil(W / CELL) + 1
       rows = Math.ceil(H / CELL) + 1
@@ -214,10 +215,12 @@ export default function GridField({ className }) {
     io.observe(cvs)
     ro.observe(cvs)
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-    window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('pointerdown', onDown, { passive: true })
-    document.addEventListener('pointerleave', onLeave)
-    document.addEventListener('visibilitychange', start)
+    if (!coarse) {
+      window.addEventListener('pointermove', onMove, { passive: true })
+      window.addEventListener('pointerdown', onDown, { passive: true })
+      document.addEventListener('pointerleave', onLeave)
+      document.addEventListener('visibilitychange', start)
+    }
     resize()
 
     return () => {
@@ -225,10 +228,12 @@ export default function GridField({ className }) {
       io.disconnect()
       ro.disconnect()
       mo.disconnect()
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onDown)
-      document.removeEventListener('pointerleave', onLeave)
-      document.removeEventListener('visibilitychange', start)
+      if (!coarse) {
+        window.removeEventListener('pointermove', onMove)
+        window.removeEventListener('pointerdown', onDown)
+        document.removeEventListener('pointerleave', onLeave)
+        document.removeEventListener('visibilitychange', start)
+      }
     }
   }, [reduce])
 

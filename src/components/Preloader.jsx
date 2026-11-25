@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { profile, projects } from '../data/content'
+import { getParticleDpr, particleDotRadius, sampleParticleTitle, sampleWordPixels } from '../lib/particleLayout'
+
+const TAU = Math.PI * 2
+const P_BUCKETS = 4
 
 const nameParts = profile.display.trim().split(/\s+/)
 const leftWord = nameParts[0] || profile.display
 const rightWord = nameParts.length > 1 ? `${nameParts.slice(1).join(' ')}.` : ''
 
-// Distribusi lintang 3D supaya 8 proyek membentuk bola/globe utuh, namun 3 kartu utama tetap harmonis saat membuka
-const LATITUDES = [0.0, 0.34, -0.36, 0.42, -0.40, 0.36, -0.34, 0.0]
+// Distribusi lintang 3D supaya 9 proyek membentuk bola/globe utuh, namun 3 kartu utama tetap harmonis saat membuka
+const LATITUDES = [0.0, 0.34, -0.34, 0.42, -0.40, 0.36, -0.38, 0.28, -0.26]
 
 function wrap(i, n) {
   return n > 0 ? ((i % n) + n) % n : 0
@@ -29,6 +33,14 @@ function heroCardSize(w, h) {
 
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
 const easeInOutQuart = (t) => (t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2)
+// Kurva terbang partikel: pecah singkat di tepi (10%), lalu melesat mulus melengkung & mengunci presisi di akhir
+const easeParticleFlight = (t) => {
+  if (t <= 0) return 0
+  if (t >= 1) return 1
+  if (t < 0.10) return (t / 0.10) * 0.045
+  const u = (t - 0.10) / 0.90
+  return 0.045 + 0.955 * (1 - Math.pow(1 - u, 3.1))
+}
 
 const VERT = `
 attribute vec2 aPos;
@@ -197,6 +209,9 @@ function buildGrid(segX, segY) {
 export default function Preloader({ onReveal, onDone }) {
   const reduceMotion = useReducedMotion()
   const canvasRef = useRef(null)
+  const particleCanvasRef = useRef(null)
+  const leftTextRef = useRef(null)
+  const rightTextRef = useRef(null)
   const [unfolding, setUnfolding] = useState(false)
   const onRevealRef = useRef(onReveal)
   const onDoneRef = useRef(onDone)
@@ -235,7 +250,8 @@ export default function Preloader({ onReveal, onDone }) {
     }
 
     gl.useProgram(prog)
-    const mesh = buildGrid(28, 12)
+    const compactMesh = window.innerWidth < 640
+    const mesh = buildGrid(compactMesh ? 16 : 28, compactMesh ? 8 : 12)
     const buf = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buf)
     gl.bufferData(gl.ARRAY_BUFFER, mesh, gl.STATIC_DRAW)
@@ -297,6 +313,9 @@ export default function Preloader({ onReveal, onDone }) {
       return entry
     })
 
+    const pCanvas = particleCanvasRef.current
+    const pCtx = pCanvas ? pCanvas.getContext('2d', { alpha: true }) : null
+
     let W = window.innerWidth
     let H = window.innerHeight
     let dpr = 1
@@ -304,10 +323,14 @@ export default function Preloader({ onReveal, onDone }) {
     const syncSize = () => {
       W = Math.max(1, window.innerWidth)
       H = Math.max(1, window.innerHeight)
-      dpr = Math.min(2, window.devicePixelRatio || 1)
+      dpr = getParticleDpr(W)
       canvas.width = Math.round(W * dpr)
       canvas.height = Math.round(H * dpr)
       gl.viewport(0, 0, canvas.width, canvas.height)
+      if (pCanvas) {
+        pCanvas.width = Math.round(W * dpr)
+        pCanvas.height = Math.round(H * dpr)
+      }
     }
     syncSize()
     window.addEventListener('resize', syncSize, { passive: true })
@@ -327,12 +350,99 @@ export default function Preloader({ onReveal, onDone }) {
       return { cx: 0, cy: -H * 0.14, tw: W, th: fallbackH }
     }
 
-    const SPIN_DURATION = 1.55 // detik berputar 3D globe ke kanan
-    const MORPH_START = 1.48 // mulai membuka mulus ke posisi Hero
-    const MORPH_DURATION = 0.92 // detik transisi dari globe -> panorama Hero
-    const TOTAL_END = MORPH_START + MORPH_DURATION
+    // Bangun partikel tepat saat "Abel" & "Abhinaya." pecah menjadi titik-titik menuju judul raksasa Hero
+    let morphParticles = null
+    const buildTextMorphParticles = () => {
+      const heroCanvas = document.querySelector('.particle-title')
+      const heroWrap = document.querySelector('.particle-title-wrap')
+      const heroRect = (heroCanvas || heroWrap)?.getBoundingClientRect()
+      if (!heroRect || heroRect.width < 20) return []
+
+      const leftEl = leftTextRef.current
+      const rightEl = rightTextRef.current
+      const leftRect = leftEl
+        ? leftEl.getBoundingClientRect()
+        : { left: 48, top: H * 0.5 - 16, width: 72, height: 32 }
+      const rightRect = rightEl
+        ? rightEl.getBoundingClientRect()
+        : { left: W - 168, top: H * 0.5 - 16, width: 120, height: 32 }
+
+      const leftFs = leftEl ? parseFloat(getComputedStyle(leftEl).fontSize) || 28 : 28
+      const rightFs = rightEl ? parseFloat(getComputedStyle(rightEl).fontSize) || 28 : 28
+
+      const leftOrigins = sampleWordPixels(leftWord, leftRect, leftFs, '500')
+      const rightOrigins = sampleWordPixels(rightWord || leftWord, rightRect, rightFs, '500')
+      const sampled = sampleParticleTitle(profile.display, heroRect.width, dpr)
+
+      // Offset posisi kanvas target ke ruang piksel layar penuh (dpr)
+      const offX = (heroRect.left + (heroRect.width - sampled.cssW) * 0.5) * dpr
+      const offY = (heroRect.top + (heroRect.height - sampled.cssH) * 0.5) * dpr
+
+      // Bagi titik target kiri ("Abel") dan kanan ("Abhinaya") agar masing-masing pecah dari katanya sendiri
+      const leftPts = []
+      const rightPts = []
+      for (let i = 0; i < sampled.points.length; i++) {
+        const pt = sampled.points[i]
+        if (pt.group === 0) leftPts.push(pt)
+        else rightPts.push(pt)
+      }
+
+      const out = []
+      const makeSwarm = (targets, origins, sideSign) => {
+        const oLen = origins.length
+        const tLen = Math.max(1, targets.length)
+        for (let i = 0; i < targets.length; i++) {
+          const pt = targets[i]
+          // Pemetaan urutan ruang yang stabil + sedikit acak organik agar pecahnya terasa hidup
+          const mappedIdx = Math.min(oLen - 1, Math.floor((i / tLen) * oLen))
+          const jitterIdx = (mappedIdx + Math.floor((Math.random() - 0.5) * 18) + oLen) % oLen
+          const orig = origins[jitterIdx]
+
+          const ox = (orig.x + (Math.random() - 0.5) * 2.2) * dpr
+          const oy = (orig.y + (Math.random() - 0.5) * 2.2) * dpr
+          const tx = offX + pt.tx
+          const ty = offY + pt.ty
+
+          // Busur Bezier organik melengkung ke atas-tengah dengan efek sebaran partikel di udara
+          const midX = (ox + tx) * 0.5
+          const midY = (oy + ty) * 0.5
+          const arcLift = (64 + Math.random() * 145) * dpr
+          const swirlX = (sideSign * (24 + Math.random() * 72) + (Math.random() - 0.5) * 165) * dpr
+          const swirlY = (-arcLift + (Math.random() - 0.5) * 96 * dpr)
+
+          const cx = midX + swirlX
+          const cy = midY + swirlY
+
+          // Stagger halus dari tepi dalam menuju tepi luar agar kata terasa larut beruntun
+          const normPos = i / tLen
+          const edgeOrder = sideSign < 0 ? 1 - normPos : normPos
+          const delay = edgeOrder * 0.15 + Math.random() * 0.07
+          const r = particleDotRadius(sampled.compact, dpr)
+          const bucket = Math.min(P_BUCKETS - 1, Math.floor(Math.random() * P_BUCKETS))
+          const spark = Math.random() < 0.58 ? 0.62 + Math.random() * 0.38 : 0
+
+          out.push({ ox, oy, cx, cy, tx, ty, delay, r, bucket, spark, dx: 0, dy: 0, dr: r })
+        }
+      }
+
+      makeSwarm(leftPts, leftOrigins, -1)
+      makeSwarm(rightPts, rightOrigins, 1)
+      return out
+    }
+
+    const pBaseBuckets = Array.from({ length: P_BUCKETS }, () => [])
+    const pHeatBuckets = Array.from({ length: P_BUCKETS }, () => [])
+
+    const SPIN_DURATION = 1.44 // detik berputar 3D globe ke kanan
+    const PARTICLE_START = 1.32 // saat "Abel" & "Abhinaya." pecah menjadi titik-titik
+    const PARTICLE_DURATION = 1.28 // detik terbang melengkung & menyatu menjadi judul besar Hero
+    const MORPH_START = 1.42 // mulai membuka mulus globe -> panorama Hero
+    const MORPH_DURATION = 0.96
+    const REVEAL_AT = 2.04 // munculkan subjudul, tombol CTA, dan Nav saat huruf hampir terbentuk
+    const TOTAL_END = PARTICLE_START + PARTICLE_DURATION + 0.06
 
     const startTime = performance.now()
+    let startedUnfold = false
     let revealed = false
     let finished = false
     let raf = 0
@@ -347,7 +457,7 @@ export default function Preloader({ onReveal, onDone }) {
       const t = (now - startTime) / 1000
       const intro = easeOutCubic(Math.min(1, t / 0.45))
 
-      // Putaran globe ke kanan (sudut naik dari -1.15 putaran menuju 0 tepat di Desiltrace)
+      // Putaran globe ke kanan (sudut naik dari -2.25*pi menuju 0 tepat di Desiltrace)
       const spinT = Math.min(1, t / SPIN_DURATION)
       const spinEase = easeOutCubic(spinT)
       const spinAngle = -Math.PI * 2.25 * (1 - spinEase)
@@ -356,9 +466,14 @@ export default function Preloader({ onReveal, onDone }) {
       const morphRaw = Math.max(0, Math.min(1, (t - MORPH_START) / MORPH_DURATION))
       const morph = easeInOutQuart(morphRaw)
 
-      if (t >= MORPH_START && !revealed) {
-        revealed = true
+      if (t >= PARTICLE_START && !startedUnfold) {
+        startedUnfold = true
+        morphParticles = buildTextMorphParticles()
         setUnfolding(true)
+      }
+
+      if (t >= REVEAL_AT && !revealed) {
+        revealed = true
         onRevealRef.current?.()
       }
 
@@ -420,6 +535,85 @@ export default function Preloader({ onReveal, onDone }) {
         gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 2)
       }
 
+      // Render animasi titik-titik dari "Abel" & "Abhinaya." -> judul partikel besar Hero (batched 8 fill/frame)
+      if (pCtx && pCanvas) {
+        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height)
+        if (morphParticles && morphParticles.length > 0 && t >= PARTICLE_START) {
+          const elapsed = t - PARTICLE_START
+          const globalP = Math.max(0, Math.min(1, elapsed / PARTICLE_DURATION))
+          const fadeIn = Math.min(1, elapsed / 0.11)
+
+          const baseR = isDark ? 244 : 17
+          const baseG = isDark ? 246 : 18
+          const baseB = isDark ? 251 : 22
+          const actR = isDark ? 96 : 35
+          const actG = isDark ? 152 : 75
+          const actB = 255
+          const aMin = isDark ? 0.66 : 0.72
+          const aSpan = isDark ? 0.30 : 0.25
+
+          for (let b = 0; b < P_BUCKETS; b++) {
+            pBaseBuckets[b].length = 0
+            pHeatBuckets[b].length = 0
+          }
+
+          for (let i = 0; i < morphParticles.length; i++) {
+            const pt = morphParticles[i]
+            const span = Math.max(0.25, 1 - pt.delay)
+            const localT = Math.max(0, Math.min(1, (globalP - pt.delay) / span))
+            const uEase = easeParticleFlight(localT)
+            const inv = 1 - uEase
+
+            // Kurva Bezier kuadratik: pecah halus -> melayang menyebar -> mengunci tajam di bentuk huruf besar
+            pt.dx = inv * inv * pt.ox + 2 * inv * uEase * pt.cx + uEase * uEase * pt.tx
+            pt.dy = inv * inv * pt.oy + 2 * inv * uEase * pt.cy + uEase * uEase * pt.ty
+
+            const flight = Math.sin(uEase * Math.PI)
+            pt.dr = pt.r * (0.76 + 0.24 * uEase + 0.28 * flight)
+            const heat = pt.spark * flight
+
+            if (heat > 0.05) {
+              const hb = Math.min(P_BUCKETS - 1, Math.floor(heat * P_BUCKETS))
+              pHeatBuckets[hb].push(pt)
+            } else {
+              pBaseBuckets[pt.bucket].push(pt)
+            }
+          }
+
+          for (let b = 0; b < P_BUCKETS; b++) {
+            const list = pBaseBuckets[b]
+            if (!list.length) continue
+            const alpha = ((aMin + ((b + 0.5) / P_BUCKETS) * aSpan) * fadeIn).toFixed(2)
+            pCtx.fillStyle = `rgba(${baseR},${baseG},${baseB},${alpha})`
+            pCtx.beginPath()
+            for (let i = 0; i < list.length; i++) {
+              const pt = list[i]
+              pCtx.moveTo(pt.dx + pt.dr, pt.dy)
+              pCtx.arc(pt.dx, pt.dy, pt.dr, 0, TAU)
+            }
+            pCtx.fill()
+          }
+
+          for (let b = 0; b < P_BUCKETS; b++) {
+            const list = pHeatBuckets[b]
+            if (!list.length) continue
+            const h = (b + 0.6) / P_BUCKETS
+            const rCol = Math.round(baseR + (actR - baseR) * h)
+            const gCol = Math.round(baseG + (actG - baseG) * h)
+            const bCol = Math.round(baseB + (actB - baseB) * h)
+            const alpha = Math.min(1, (aMin + 0.5 * aSpan + h * 0.18) * fadeIn).toFixed(2)
+            pCtx.fillStyle = `rgba(${rCol},${gCol},${bCol},${alpha})`
+            pCtx.beginPath()
+            for (let i = 0; i < list.length; i++) {
+              const pt = list[i]
+              pCtx.moveTo(pt.dx + pt.dr, pt.dy)
+              pCtx.arc(pt.dx, pt.dy, pt.dr, 0, TAU)
+            }
+            pCtx.fill()
+          }
+        }
+      }
+
       if (t >= TOTAL_END && !finished) {
         finished = true
         onDoneRef.current?.()
@@ -459,27 +653,30 @@ export default function Preloader({ onReveal, onDone }) {
         transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
       />
 
-      {/* Teks editorial minimal mengapit globe */}
+      {/* Teks editorial minimal mengapit globe: langsung larut menjadi partikel saat membuka */}
       <motion.span
         className="preloader__side preloader__side--left"
         initial={{ opacity: 0, x: -20 }}
-        animate={unfolding ? { opacity: 0, x: -32 } : { opacity: 1, x: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        animate={unfolding ? { opacity: 0, x: 0 } : { opacity: 1, x: 0 }}
+        transition={{ duration: unfolding ? 0.13 : 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
-        {leftWord}
+        <span ref={leftTextRef}>{leftWord}</span>
       </motion.span>
 
       <motion.span
         className="preloader__side preloader__side--right"
         initial={{ opacity: 0, x: 20 }}
-        animate={unfolding ? { opacity: 0, x: 32 } : { opacity: 1, x: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        animate={unfolding ? { opacity: 0, x: 0 } : { opacity: 1, x: 0 }}
+        transition={{ duration: unfolding ? 0.13 : 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
-        {rightWord}
+        <span ref={rightTextRef}>{rightWord}</span>
       </motion.span>
 
       {/* Kanvas WebGL penuh layar: 3D Globe berputar ke kanan -> melebur langsung ke Hero */}
       <canvas ref={canvasRef} className="preloader__canvas" />
+
+      {/* Kanvas 2D penuh layar: "Abel" & "Abhinaya." pecah menjadi titik-titik -> membentuk judul besar Hero */}
+      <canvas ref={particleCanvasRef} className="preloader__particles" />
 
       <motion.p
         className="preloader__foot"

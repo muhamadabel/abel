@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useMotionValue, useSpring } from 'framer-motion'
 
-// Bubble label yang mengikuti kursor di atas elemen ber-atribut data-cursor="Label".
-export default function Cursor() {
+function FineCursor() {
   const x = useMotionValue(-200)
   const y = useMotionValue(-200)
   const sx = useSpring(x, { stiffness: 420, damping: 32, mass: 0.6 })
@@ -10,8 +9,6 @@ export default function Cursor() {
   const [label, setLabel] = useState(null)
 
   useEffect(() => {
-    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-    if (!fine) return
     const onMove = (e) => {
       if (e.pointerType !== 'mouse' || window.innerWidth < 768) {
         setLabel(null)
@@ -54,4 +51,21 @@ export default function Cursor() {
       </AnimatePresence>
     </motion.div>
   )
+}
+
+// Bubble label yang mengikuti kursor di atas elemen ber-atribut data-cursor="Label".
+// Tidak dipasang sama sekali di perangkat sentuh agar nol beban spring dan DOM di HP.
+export default function Cursor() {
+  const [fine, setFine] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const sync = () => setFine(mq.matches)
+    sync()
+    mq.addEventListener?.('change', sync)
+    return () => mq.removeEventListener?.('change', sync)
+  }, [])
+
+  if (!fine) return null
+  return <FineCursor />
 }

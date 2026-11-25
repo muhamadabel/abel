@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react'
+import { getParticleDpr, particleDotRadius, sampleParticleTitle } from '../../lib/particleLayout'
+
+const TAU = Math.PI * 2
+const BUCKETS = 4
 
 /**
  * Tipografi partikel interaktif berbasis HTML5 Canvas 2D (gaya nbgate.com).
- * Partikel menyatu dari sebaran awal, bergetar halus, dan memencar melingkar
- * saat kursor atau sentuhan melintas sebelum memantul kembali ke posisi huruf.
+ * Saat preloader aktif, kanvas tersembunyi (masked) agar partikel dari preloader
+ * bisa mendarat tepat subpiksel lalu langsung diambil alih secara interaktif tanpa kedip.
  */
-export default function ParticleText({ text, ready = true, className = '' }) {
+export default function ParticleText({ text, ready = true, settledIntro = false, className = '' }) {
   const wrapRef = useRef(null)
   const canvasRef = useRef(null)
   const readyRef = useRef(ready)
@@ -21,167 +25,129 @@ export default function ParticleText({ text, ready = true, className = '' }) {
     if (!ctx) return
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches
     let particles = []
     let width = 0
     let height = 0
     let dpr = 1
+    let isCompact = false
     let rafId = 0
     let isVisible = true
     let isDark = document.documentElement.dataset.theme === 'dark'
+    let lastDrawAt = 0
     const pointer = { x: -9999, y: -9999, active: false }
 
-    const getPalette = () =>
-      isDark
-        ? {
-            base: [244, 246, 251],
-            active: [96, 152, 255],
-            alphaMin: 0.66,
-            alphaSpan: 0.30,
-          }
-        : {
-            base: [17, 18, 22],
-            active: [35, 75, 255],
-            alphaMin: 0.72,
-            alphaSpan: 0.25,
-          }
+    const baseBuckets = Array.from({ length: BUCKETS }, () => [])
+    const heatBuckets = Array.from({ length: BUCKETS }, () => [])
+    let baseStyles = []
+    let heatStyles = []
 
-    const baseColorFor = (alphaRatio) => {
-      const pal = getPalette()
-      const a = (pal.alphaMin + alphaRatio * pal.alphaSpan).toFixed(2)
-      return `rgba(${pal.base[0]}, ${pal.base[1]}, ${pal.base[2]}, ${a})`
+    const rebuildStyles = () => {
+      const pal = isDark
+        ? { base: [244, 246, 251], active: [96, 152, 255], alphaMin: 0.66, alphaSpan: 0.3 }
+        : { base: [17, 18, 22], active: [35, 75, 255], alphaMin: 0.72, alphaSpan: 0.25 }
+
+      baseStyles = Array.from({ length: BUCKETS }, (_, b) => {
+        const a = (pal.alphaMin + ((b + 0.5) / BUCKETS) * pal.alphaSpan).toFixed(2)
+        return `rgba(${pal.base[0]},${pal.base[1]},${pal.base[2]},${a})`
+      })
+      heatStyles = Array.from({ length: BUCKETS }, (_, b) => {
+        const h = (b + 0.6) / BUCKETS
+        const r = Math.round(pal.base[0] + (pal.active[0] - pal.base[0]) * h)
+        const g = Math.round(pal.base[1] + (pal.active[1] - pal.base[1]) * h)
+        const bl = Math.round(pal.base[2] + (pal.active[2] - pal.base[2]) * h)
+        return `rgba(${r},${g},${bl},${(0.82 + h * 0.16).toFixed(2)})`
+      })
     }
-
-    const buildParticles = (scatterOnFirst = false) => {
-      const rect = wrap.getBoundingClientRect()
-      const cssW = Math.max(280, Math.round(rect.width))
-      const compact = cssW < 560
-      const cssH = compact
-        ? Math.round(Math.min(188, Math.max(138, cssW * 0.42)))
-        : Math.round(Math.min(176, Math.max(112, cssW * 0.145)))
-
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
-      width = Math.round(cssW * dpr)
-      height = Math.round(cssH * dpr)
-
-      canvas.width = width
-      canvas.height = height
-      canvas.style.width = `${cssW}px`
-      canvas.style.height = `${cssH}px`
-
-      const off = document.createElement('canvas')
-      off.width = width
-      off.height = height
-      const octx = off.getContext('2d')
-      if (!octx) return
-
-      octx.clearRect(0, 0, width, height)
-      octx.fillStyle = '#000000'
-      octx.textAlign = 'center'
-      octx.textBaseline = 'middle'
-
-      const fontFamily = `'Inter Tight', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif`
-
-      if (compact) {
-        const words = text.trim().split(/\s+/)
-        const line1 = words[0] || text
-        const line2 = words.slice(1).join(' ')
-        let fontSize = Math.floor(height * 0.43)
-        octx.font = `600 ${fontSize}px ${fontFamily}`
-        const maxLineW = width * 0.94
-        const measured = Math.max(octx.measureText(line1).width, octx.measureText(line2).width)
-        if (measured > maxLineW) {
-          fontSize = Math.floor(fontSize * (maxLineW / measured))
-          octx.font = `600 ${fontSize}px ${fontFamily}`
-        }
-        if (line2) {
-          octx.fillText(line1, width / 2, height * 0.30)
-          octx.fillText(line2, width / 2, height * 0.72)
-        } else {
-          octx.fillText(line1, width / 2, height / 2)
-        }
-      } else {
-        let fontSize = Math.floor(height * 0.78)
-        octx.font = `600 ${fontSize}px ${fontFamily}`
-        const maxW = width * 0.96
-        const measured = octx.measureText(text).width
-        if (measured > maxW) {
-          fontSize = Math.floor(fontSize * (maxW / measured))
-          octx.font = `600 ${fontSize}px ${fontFamily}`
-        }
-        octx.fillText(text, width / 2, height * 0.52)
-      }
-
-      const img = octx.getImageData(0, 0, width, height).data
-      const step = Math.max(2, Math.round((compact ? 2.1 : 2.5) * dpr))
-      const next = []
-      let idx = 0
-
-      for (let y = 0; y < height; y += step) {
-        for (let x = 0; x < width; x += step) {
-          const alpha = img[(y * width + x) * 4 + 3]
-          if (alpha > 128) {
-            const alphaRatio = Math.random()
-            const startScattered = scatterOnFirst && !reducedMotion
-            const sx = startScattered ? Math.random() * width : x
-            const sy = startScattered ? Math.random() * height : y
-            next.push({
-              x: sx,
-              y: sy,
-              tx: x,
-              ty: y,
-              vx: 0,
-              vy: 0,
-              r: (compact ? 0.74 + Math.random() * 0.44 : 0.86 + Math.random() * 0.48) * dpr,
-              idx,
-              alphaRatio,
-              heat: 0,
-              color: baseColorFor(alphaRatio),
-            })
-            idx += 1
-          }
-        }
-      }
-
-      particles = next
-      if (reducedMotion) drawStatic()
-    }
-
-    const recolor = () => {
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i]
-        p.color = baseColorFor(p.alphaRatio)
-      }
-      if (reducedMotion) drawStatic()
-    }
+    rebuildStyles()
 
     const drawStatic = () => {
       ctx.clearRect(0, 0, width, height)
+      for (let b = 0; b < BUCKETS; b++) baseBuckets[b].length = 0
       for (let i = 0; i < particles.length; i++) {
-        const p = particles[i]
-        ctx.fillStyle = p.color
+        baseBuckets[particles[i].bucket].push(particles[i])
+      }
+      for (let b = 0; b < BUCKETS; b++) {
+        const list = baseBuckets[b]
+        if (!list.length) continue
+        ctx.fillStyle = baseStyles[b]
         ctx.beginPath()
-        ctx.arc(p.tx, p.ty, p.r, 0, Math.PI * 2)
+        for (let i = 0; i < list.length; i++) {
+          const p = list[i]
+          ctx.moveTo(p.tx + p.r, p.ty)
+          ctx.arc(p.tx, p.ty, p.r, 0, TAU)
+        }
         ctx.fill()
       }
     }
 
-    const tick = () => {
+    const buildParticles = (scatterOnFirst = false) => {
+      const rect = wrap.getBoundingClientRect()
+      dpr = getParticleDpr(window.innerWidth)
+      const sampled = sampleParticleTitle(text, rect.width, dpr)
+      width = sampled.width
+      height = sampled.height
+      isCompact = sampled.compact
+
+      canvas.width = width
+      canvas.height = height
+      canvas.style.width = `${sampled.cssW}px`
+      canvas.style.height = `${sampled.cssH}px`
+
+      const startScattered = scatterOnFirst && !settledIntro && !reducedMotion
+      const next = sampled.points.map((pt, idx) => {
+        const alphaRatio = Math.random()
+        const sx = startScattered ? Math.random() * width : pt.tx
+        const sy = startScattered ? Math.random() * height : pt.ty
+        return {
+          x: sx,
+          y: sy,
+          tx: pt.tx,
+          ty: pt.ty,
+          vx: 0,
+          vy: 0,
+          r: particleDotRadius(sampled.compact, dpr),
+          idx,
+          bucket: Math.min(BUCKETS - 1, Math.floor(alphaRatio * BUCKETS)),
+          heat: 0,
+        }
+      })
+
+      particles = next
+      drawStatic()
+    }
+
+    const tick = (now) => {
       rafId = requestAnimationFrame(tick)
-      if (!isVisible) return
+      if (!isVisible || document.hidden) return
+      // Jangan membakar CPU/GPU saat kanvas masih tertutup Preloader (frame statis sudah siap untuk handoff)
+      if (!readyRef.current && settledIntro) return
+
+      const active = pointer.active
+      // Di layar mobile saat idle (tanpa sentuhan), cukup ~24fps untuk shimmer halus; langsung 60fps saat disentuh
+      if ((isCoarse || isCompact) && !active && releasedRef.current) {
+        if (now - lastDrawAt < 40) return
+      }
+      lastDrawAt = now
 
       ctx.clearRect(0, 0, width, height)
       const radius = 92 * dpr
       const radiusSq = radius * radius
-      const active = pointer.active
       const px = pointer.x
       const py = pointer.y
-      const canSettle = readyRef.current
+      const canSettle = settledIntro || readyRef.current
 
       if (canSettle && !releasedRef.current) {
         releasedRef.current = true
       }
 
-      const pal = getPalette()
+      for (let b = 0; b < BUCKETS; b++) {
+        baseBuckets[b].length = 0
+        heatBuckets[b].length = 0
+      }
+
+      let hasEnergy = active
+      const jitter = 0.3 * dpr
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
 
@@ -210,20 +176,48 @@ export default function ParticleText({ text, ready = true, className = '' }) {
         p.vx *= 0.855
         p.vy *= 0.855
         p.heat *= 0.91
-        p.x += p.vx + (Math.random() - 0.5) * 0.3 * dpr
-        p.y += p.vy + (Math.random() - 0.5) * 0.3 * dpr
+        p.x += p.vx + (Math.random() - 0.5) * jitter
+        p.y += p.vy + (Math.random() - 0.5) * jitter
+
+        if (!hasEnergy && (Math.abs(p.vx) > 0.35 || Math.abs(p.vy) > 0.35)) {
+          hasEnergy = true
+        }
 
         if (p.heat > 0.03) {
-          const h = p.heat
-          const r = Math.round(pal.base[0] + (pal.active[0] - pal.base[0]) * h)
-          const g = Math.round(pal.base[1] + (pal.active[1] - pal.base[1]) * h)
-          const b = Math.round(pal.base[2] + (pal.active[2] - pal.base[2]) * h)
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${(0.82 + h * 0.16).toFixed(2)})`
+          hasEnergy = true
+          const hb = Math.min(BUCKETS - 1, Math.floor(p.heat * BUCKETS))
+          heatBuckets[hb].push(p)
         } else {
-          ctx.fillStyle = p.color
+          baseBuckets[p.bucket].push(p)
         }
+      }
+
+      if (hasEnergy) lastDrawAt = 0
+
+      // Batch render: maksimal 4-8 fill() per frame (sebelumnya ~2.500-3.500 fill() per frame)
+      for (let b = 0; b < BUCKETS; b++) {
+        const list = baseBuckets[b]
+        if (!list.length) continue
+        ctx.fillStyle = baseStyles[b]
         ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+        for (let i = 0; i < list.length; i++) {
+          const p = list[i]
+          ctx.moveTo(p.x + p.r, p.y)
+          ctx.arc(p.x, p.y, p.r, 0, TAU)
+        }
+        ctx.fill()
+      }
+
+      for (let b = 0; b < BUCKETS; b++) {
+        const list = heatBuckets[b]
+        if (!list.length) continue
+        ctx.fillStyle = heatStyles[b]
+        ctx.beginPath()
+        for (let i = 0; i < list.length; i++) {
+          const p = list[i]
+          ctx.moveTo(p.x + p.r, p.y)
+          ctx.arc(p.x, p.y, p.r, 0, TAU)
+        }
         ctx.fill()
       }
     }
@@ -233,6 +227,7 @@ export default function ParticleText({ text, ready = true, className = '' }) {
       pointer.x = (clientX - r.left) * dpr
       pointer.y = (clientY - r.top) * dpr
       pointer.active = true
+      lastDrawAt = 0
     }
 
     const onPointerMove = (e) => {
@@ -248,6 +243,7 @@ export default function ParticleText({ text, ready = true, className = '' }) {
 
     const onPointerDown = (e) => {
       if (reducedMotion) return
+      lastDrawAt = 0
       const r = canvas.getBoundingClientRect()
       const cx = (e.clientX - r.left) * dpr
       const cy = (e.clientY - r.top) * dpr
@@ -267,9 +263,9 @@ export default function ParticleText({ text, ready = true, className = '' }) {
       }
     }
 
-    canvas.addEventListener('pointermove', onPointerMove)
-    canvas.addEventListener('pointerleave', onPointerLeave)
-    canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('pointermove', onPointerMove, { passive: true })
+    canvas.addEventListener('pointerleave', onPointerLeave, { passive: true })
+    canvas.addEventListener('pointerdown', onPointerDown, { passive: true })
 
     const io = new IntersectionObserver(
       ([entry]) => {
@@ -283,7 +279,8 @@ export default function ParticleText({ text, ready = true, className = '' }) {
       const nextDark = document.documentElement.dataset.theme === 'dark'
       if (nextDark !== isDark) {
         isDark = nextDark
-        recolor()
+        rebuildStyles()
+        if (reducedMotion || (!readyRef.current && settledIntro)) drawStatic()
       }
     })
     themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
@@ -293,7 +290,7 @@ export default function ParticleText({ text, ready = true, className = '' }) {
       clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(() => buildParticles(false), 180)
     }
-    window.addEventListener('resize', onResize)
+    window.addEventListener('resize', onResize, { passive: true })
 
     let cancelled = false
     const start = () => {
@@ -322,10 +319,10 @@ export default function ParticleText({ text, ready = true, className = '' }) {
       canvas.removeEventListener('pointerleave', onPointerLeave)
       canvas.removeEventListener('pointerdown', onPointerDown)
     }
-  }, [text])
+  }, [text, settledIntro])
 
   return (
-    <div ref={wrapRef} className={`particle-title-wrap ${className}`.trim()}>
+    <div ref={wrapRef} className={`particle-title-wrap${ready ? '' : ' particle-title-wrap--masked'} ${className}`.trim()}>
       <h1 className="sr-only">{text}</h1>
       <canvas ref={canvasRef} className="particle-title" aria-hidden="true" />
     </div>

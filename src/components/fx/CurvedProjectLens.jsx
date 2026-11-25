@@ -184,7 +184,8 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
     }
 
     gl.useProgram(prog)
-    const mesh = buildGrid(32, 12)
+    const compactMesh = window.innerWidth < 640
+    const mesh = buildGrid(compactMesh ? 18 : 32, compactMesh ? 8 : 12)
     const buf = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buf)
     gl.bufferData(gl.ARRAY_BUFFER, mesh, gl.STATIC_DRAW)
@@ -252,10 +253,12 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
     let isDark = document.documentElement.dataset.theme === 'dark' ? 1 : 0
     let wheelTimer = 0
 
+    const orderIdx = Array.from({ length: n }, (_, i) => i)
+
     const resize = (w, h) => {
       W = Math.max(1, w)
       H = Math.max(1, h)
-      dpr = Math.min(2, window.devicePixelRatio || 1)
+      dpr = W < 640 ? Math.min(1.5, window.devicePixelRatio || 1) : Math.min(2, window.devicePixelRatio || 1)
       canvas.width = Math.round(W * dpr)
       canvas.height = Math.round(H * dpr)
       ;[cw, ch] = cardSize(W, H)
@@ -275,10 +278,8 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
       gl.uniform1f(u.uDark, isDark)
 
       const step = cw + gap
-      // Urutkan dari yang terjauh ke tengah agar layering rapi
-      const orderIdx = Array.from({ length: n }, (_, i) => i).sort(
-        (a, b) => Math.abs(offsetOf(b, pos, n)) - Math.abs(offsetOf(a, pos, n)),
-      )
+      // Urutkan dari yang terjauh ke tengah agar layering rapi (tanpa alokasi array per frame)
+      orderIdx.sort((a, b) => Math.abs(offsetOf(b, pos, n)) - Math.abs(offsetOf(a, pos, n)))
 
       for (const i of orderIdx) {
         const d = offsetOf(i, pos, n)

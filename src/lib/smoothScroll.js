@@ -7,7 +7,8 @@ let lenis = null
 export function useSmoothScroll() {
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) return
+    const coarse = window.matchMedia('(pointer: coarse)').matches
+    if (reduce || coarse) return
 
     lenis = new Lenis({
       lerp: 0.1,

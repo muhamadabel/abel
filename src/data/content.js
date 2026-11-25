@@ -215,6 +215,21 @@ export const projects = [
     repo: 'https://github.com/muhamadabel/Be-SIA-UGN-Kel1',
     isPrivate: false,
   },
+  {
+    id: 'tna-sekolah-rakyat',
+    num: '09',
+    title: 'TNA Sekolah Rakyat',
+    year: '2026',
+    category: 'Survey Platform',
+    role: 'Full-Stack Developer',
+    desc: 'Sistem survei kebutuhan pelatihan SDM 56 Sekolah Rakyat di 6 provinsi untuk BBPPKS Yogyakarta dengan 5 instrumen peran, dashboard live, dan ekspor Excel serta PowerPoint.',
+    stack: ['Next.js', 'TypeScript', 'Drizzle ORM', 'PostgreSQL'],
+    live: 'https://tna-sr.bbppks.yogya.site/',
+    image: '/projects/tna-sekolah-rakyat.jpg',
+    tint: '#2e7d32',
+    repo: '',
+    isPrivate: true,
+  },
 ]
 
 export const skills = [
@@ -262,9 +277,12 @@ export const sections = [
 export const affiliations = [
   { id: 'ugm', name: 'Universitas Gadjah Mada', logo: '/logos/ugm.png', kind: 'wordmark', scale: 1.24 },
   { id: 'hongfilms', name: 'Hongfilms', logo: '/logos/hongfilms.png', kind: 'wordmark', scale: 0.94 },
+  { id: 'refactory', name: 'Refactory Hackathon UGM', logo: '/logos/refactory.png', kind: 'wordmark', scale: 1.32 },
   { id: 'surveymeter', name: 'SurveyMETER', logo: '/logos/surveymeter.png', kind: 'wordmark', scale: 1.04 },
+  { id: 'olivia', name: 'OLIVIA XI 2026', logo: '/logos/olivia.png', kind: 'wordmark', scale: 1.26 },
   { id: 'kmtedi', name: 'KMTEDI SV UGM', logo: '/logos/kmtedi.png', kind: 'lockup', label: 'KMTEDI', sub: 'SV UGM' },
   { id: 'assets', name: 'ASSETS TRPL UGM', logo: '/logos/assets.png', kind: 'wordmark', scale: 0.84 },
+  { id: 'ligatrpl', name: 'Liga TRPL SV UGM', logo: '/logos/ligatrpl.png', kind: 'lockup', label: 'Liga TRPL', sub: 'SV UGM' },
   { id: 'bbppks', name: 'BBPPKS Yogyakarta', logo: '/logos/kemensos.png', kind: 'lockup', label: 'BBPPKS', sub: 'Kemensos RI' },
   { id: 'alalim', name: 'Jamaah Vokasi Al-Alim', logo: '/logos/alalim.png', kind: 'lockup', label: 'Al-Alim', sub: 'SV UGM' },
 ]

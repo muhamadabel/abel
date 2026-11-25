@@ -163,8 +163,10 @@ export default function LiquidGlass({
   const [mode, setMode] = useState('pending')
 
   useEffect(() => {
+    const coarseOrCompact =
+      window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768
     if (prefersReducedTransparency()) setMode('opaque')
-    else if (isSafariLike() || !supportsUrlBackdropFilter()) setMode('simple')
+    else if (coarseOrCompact || isSafariLike() || !supportsUrlBackdropFilter()) setMode('simple')
   }, [])
 
   useEffect(() => {

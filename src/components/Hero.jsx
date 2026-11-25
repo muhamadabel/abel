@@ -67,7 +67,7 @@ export default function Hero({ reveal, ready }) {
         animate={state}
         variants={stagger(0.1, 0.08)}
       >
-        <ParticleText text={profile.display} ready={reveal} />
+        <ParticleText text={profile.display} ready={ready} settledIntro />
 
         <motion.p className="hero__sub" variants={blurUp}>
           {profile.role} · {profile.institution}
