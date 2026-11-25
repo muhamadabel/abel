@@ -203,7 +203,6 @@ ol {
 
 .section--band {
   background: var(--bg-sunken);
-  border-block: 1px solid var(--line);
 }
 
 .section-head {
@@ -213,8 +212,7 @@ ol {
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px 24px;
-  padding-bottom: 22px;
-  margin-bottom: 42px;
+  margin-bottom: clamp(28px, 3.6vw, 42px);
 }
 
 .section-head__main {
@@ -243,16 +241,6 @@ ol {
 .section-meta {
   color: var(--muted);
   font-size: 15px;
-}
-
-.section-rule {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--line-strong);
-  transform-origin: left center;
 }
 
 /* Mask untuk reveal per kata */
@@ -1077,19 +1065,8 @@ ol {
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
-  padding-left: 18px;
+  padding-left: 10px;
   transition: color 0.25s var(--ease);
-}
-
-.lens-caption__repo::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 1px;
-  height: 12px;
-  transform: translateY(-50%);
-  background: var(--line-strong);
 }
 
 .lens-caption__repo:hover {
@@ -1285,9 +1262,7 @@ ol {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding-bottom: 18px;
   margin-bottom: 24px;
-  border-bottom: 1px solid var(--line-strong);
 }
 
 .fdeck-steps {
@@ -1569,7 +1544,6 @@ ol {
 .marquee {
   overflow: hidden;
   padding: 22px 0;
-  border-block: 1px solid var(--line);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
@@ -1909,509 +1883,563 @@ ol {
   background-color: var(--ink);
 }
 
-/* ---------- Experience (Nimbus WebGL Water Accordion + Editorial Glass Cards) ---------- */
-.xp-grid {
+/* ---------- Experience (Studio Dossier Bento: Obsidian Stage + 3D Portrait + Sapphire Award + Prismatic Glass, Zero Lines) ---------- */
+.xpb {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 28px;
-  align-items: start;
+  gap: 18px;
 }
 
-.xp-col {
+@media (min-width: 900px) {
+  .xpb {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .xpb__card--org {
+    grid-column: span 7;
+  }
+
+  .xpb__card--portrait {
+    grid-column: span 5;
+  }
+
+  .xpb__card--award {
+    grid-column: span 6;
+  }
+
+  .xpb__card--edu {
+    grid-column: span 6;
+  }
+}
+
+.xpb__card {
+  --mx: 50%;
+  --my: 18%;
+  position: relative;
+  border-radius: 30px;
+  overflow: hidden;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  justify-content: space-between;
   min-width: 0;
 }
 
-.xp-block {
+.xpb__card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(340px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.14), transparent 68%);
+  transition: opacity 0.35s var(--ease);
+  z-index: 1;
+}
+
+.xpb__card:hover::after {
+  opacity: 1;
+}
+
+.xpb__head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.xpb__kicker {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+.xpb__kicker--light {
+  color: rgba(226, 232, 240, 0.64);
+}
+
+.xpb__year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: rgba(226, 232, 240, 0.64);
+}
+
+/* 1. Panggung Organisasi Interaktif (Obsidian Studio Material) */
+.xpb__card--org {
+  padding: clamp(24px, 3.2vw, 34px);
+  gap: 28px;
+  background:
+    radial-gradient(76% 80% at 88% 8%, rgba(58, 112, 255, 0.24) 0%, transparent 66%),
+    linear-gradient(148deg, #131826 0%, #090c14 100%);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 30px 64px -30px rgba(5, 8, 18, 0.72);
+}
+
+.xpb__org-stage {
+  position: relative;
+  z-index: 2;
+  min-height: 196px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.xpb__org-body {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.xp-col--side {
-  gap: 20px;
+.xpb__org-watermark {
+  position: absolute;
+  right: -8px;
+  bottom: -24px;
+  width: clamp(128px, 18vw, 188px);
+  height: auto;
+  max-height: 112px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.065;
+  pointer-events: none;
+  user-select: none;
 }
 
-/* Kartu potret editorial monokrom-ke-warna + pelat nama Liquid Glass */
-.xp-portrait {
+.xpb__org-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.xpb__org-emblem {
+  height: 28px;
+  min-width: 28px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 7px;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.xpb__org-emblem img {
+  height: 16px;
+  width: auto;
+  max-width: 56px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.xpb__org-name {
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.xpb__org-sep,
+.xpb__org-period {
+  color: rgba(148, 163, 184, 0.85);
+}
+
+.xpb__org-role {
+  font-family: var(--font-hero);
+  font-size: clamp(26px, 2.8vw, 36px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.xpb__org-desc {
+  max-width: 52ch;
+  font-size: 15px;
+  line-height: 1.64;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+/* Interactive 4-Tab Dock di dalam panggung Obsidian */
+.xpb__dock {
   position: relative;
-  border-radius: 26px;
-  overflow: hidden;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 6px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 640px) {
+  .xpb__dock {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.xpb__tab {
+  position: relative;
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: center;
+  cursor: pointer;
+  color: rgba(226, 232, 240, 0.68);
+  transition: color 0.25s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.xpb__tab:hover,
+.xpb__tab.is-active {
+  color: #ffffff;
+}
+
+.xpb__tab:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px rgba(114, 168, 255, 0.75);
+}
+
+.xpb__tab-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: linear-gradient(155deg, rgba(64, 126, 255, 0.36) 0%, rgba(28, 68, 196, 0.24) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 8px 20px -10px rgba(35, 75, 255, 0.58);
+}
+
+.xpb__tab-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.xpb__tab-name {
+  font-family: var(--font-hero);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+
+/* 2. Kartu Potret Studio 3D Tilt */
+.xpb__card--portrait {
+  min-height: 360px;
   border: 1px solid var(--glass-border);
-  background: linear-gradient(175deg, #eceff6 0%, #dfe5f0 100%);
+  background:
+    radial-gradient(72% 65% at 50% 24%, rgba(255, 255, 255, 0.92) 0%, transparent 72%),
+    radial-gradient(60% 55% at 50% 62%, rgba(35, 75, 255, 0.14) 0%, transparent 76%),
+    linear-gradient(175deg, #eef2f9 0%, #dde5f3 100%);
   box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-ring);
+  will-change: transform;
 }
 
-[data-theme='dark'] .xp-portrait {
-  background: linear-gradient(175deg, #181e2d 0%, #0e131f 100%);
+[data-theme='dark'] .xpb__card--portrait {
+  background:
+    radial-gradient(62% 58% at 50% 34%, rgba(64, 126, 255, 0.22) 0%, transparent 72%),
+    linear-gradient(175deg, #171e30 0%, #0c101b 100%);
 }
 
-.xp-portrait__media {
+.xpb__portrait-aura {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--mx) var(--my), rgba(59, 130, 246, 0.16), transparent 72%);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.xpb__card--portrait:hover .xpb__portrait-aura {
+  opacity: 1;
+}
+
+.xpb__portrait-media {
   position: relative;
-  aspect-ratio: 4 / 3.4;
+  flex: 1;
+  min-height: 340px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-top: 18px;
+  padding-top: 24px;
   overflow: hidden;
 }
 
-.xp-portrait__media img {
-  width: 82%;
+.xpb__portrait-media img {
+  width: 84%;
+  max-width: 340px;
   height: 100%;
   object-fit: contain;
   object-position: bottom center;
-  filter: grayscale(100%) contrast(1.06);
-  transition: filter 0.55s var(--ease), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: contrast(1.03) saturate(1.02);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.xp-portrait:hover .xp-portrait__media img {
-  filter: grayscale(0%) contrast(1.02);
-  transform: scale(1.03);
+.xpb__card--portrait:hover .xpb__portrait-media img {
+  transform: scale(1.035);
 }
 
-.xp-portrait__bar {
+.xpb__portrait-plate {
   position: absolute;
   left: 14px;
   right: 14px;
   bottom: 14px;
-  padding: 10px 16px;
+  z-index: 3;
+  padding: 11px 16px;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.96);
-  box-shadow: 0 8px 20px -10px rgba(15, 23, 42, 0.22);
-  -webkit-backdrop-filter: blur(16px) saturate(1.6);
-  backdrop-filter: blur(16px) saturate(1.6);
-  font-size: 13px;
+  box-shadow: 0 12px 28px -14px rgba(15, 23, 42, 0.28);
+  -webkit-backdrop-filter: blur(18px) saturate(1.65);
+  backdrop-filter: blur(18px) saturate(1.65);
 }
 
-[data-theme='dark'] .xp-portrait__bar {
-  background: rgba(14, 18, 28, 0.78);
+[data-theme='dark'] .xpb__portrait-plate {
+  background: rgba(13, 18, 30, 0.78);
   border-color: rgba(255, 255, 255, 0.16);
 }
 
-.xp-portrait__bar strong {
+.xpb__portrait-plate strong {
   font-family: var(--font-hero);
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-}
-
-.xp-portrait__bar span {
-  color: var(--muted);
-  font-size: 12.5px;
-}
-
-.xp__label {
-  color: var(--muted);
   font-size: 13.5px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-.xp-card {
-  padding: 24px 26px;
-  border-radius: 26px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-ring);
-  -webkit-backdrop-filter: blur(16px) saturate(1.5);
-  backdrop-filter: blur(16px) saturate(1.5);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.xp-card__list {
-  display: flex;
-  flex-direction: column;
-}
-
-.xp-card__item {
-  padding: 14px 0;
-}
-
-.xp-card__item:first-child {
-  padding-top: 2px;
-}
-
-.xp-card__item:last-child {
-  padding-bottom: 2px;
-}
-
-.xp-card__item + .xp-card__item {
-  border-top: 1px solid var(--line);
-}
-
-.xp-card__title {
-  font-family: var(--font-hero);
-  font-size: 17px;
   font-weight: 600;
-  line-height: 1.3;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.xpb__portrait-plate span {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* 3. Plakat Pencapaian Midnight Sapphire + Foto Sertifikat Resmi */
+.xpb__card--award {
+  padding: clamp(22px, 2.8vw, 30px);
+  background:
+    radial-gradient(74% 88% at 14% 8%, rgba(124, 162, 255, 0.34) 0%, transparent 62%),
+    linear-gradient(142deg, #1d3de8 0%, #102494 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 28px 58px -28px rgba(16, 36, 148, 0.54);
+}
+
+.xpb__award-grid {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (min-width: 560px) {
+  .xpb__award-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 46%);
+    align-items: stretch;
+  }
+}
+
+.xpb__award-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  min-width: 0;
+}
+
+.xpb__award-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xpb__award-title {
+  font-family: var(--font-hero);
+  font-size: clamp(24px, 2.3vw, 31px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.xpb__award-sub {
+  font-size: 14px;
+  line-height: 1.48;
+  color: rgba(235, 242, 255, 0.84);
+}
+
+.xpb__cert {
+  position: relative;
+  display: block;
+  align-self: center;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 18px 36px -14px rgba(5, 12, 48, 0.58),
+    0 4px 12px rgba(5, 12, 48, 0.24);
+  transform: rotate(-1.5deg);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s var(--ease);
+}
+
+.xpb__cert img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.414 / 1;
+  object-fit: cover;
+}
+
+.xpb__cert:hover {
+  transform: rotate(0deg) translateY(-4px) scale(1.03);
+  box-shadow:
+    0 24px 44px -14px rgba(5, 12, 48, 0.68),
+    0 6px 16px rgba(5, 12, 48, 0.28);
+}
+
+.xpb__cert:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* 4. Kartu Pendidikan Kaca Prismatik (Sub-tile Tonal Tanpa Garis) */
+.xpb__card--edu {
+  padding: clamp(24px, 3.2vw, 32px);
+  gap: 18px;
+  background:
+    radial-gradient(80% 80% at 14% 6%, rgba(255, 255, 255, 0.94) 0%, transparent 64%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.84) 0%, rgba(237, 242, 251, 0.74) 100%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 1),
+    var(--glass-shadow),
+    0 0 0 1px var(--glass-ring);
+}
+
+[data-theme='dark'] .xpb__card--edu {
+  background:
+    radial-gradient(64% 76% at 16% 8%, rgba(84, 134, 255, 0.14) 0%, transparent 64%),
+    linear-gradient(150deg, rgba(26, 33, 50, 0.78) 0%, rgba(15, 20, 32, 0.72) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 26px 56px -26px rgba(0, 0, 0, 0.72);
+}
+
+.xpb__edu-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  flex: 1;
+}
+
+@media (min-width: 600px) {
+  .xpb__edu-grid {
+    grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr);
+  }
+}
+
+.xpb__edu-tile {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.035);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.xpb__edu-tile--primary {
+  background: rgba(35, 75, 255, 0.065);
+}
+
+[data-theme='dark'] .xpb__edu-tile {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+[data-theme='dark'] .xpb__edu-tile--primary {
+  background: rgba(68, 128, 255, 0.13);
+}
+
+.xpb__edu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.xpb__edu-logo {
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0);
+  opacity: 0.76;
+}
+
+[data-theme='dark'] .xpb__edu-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.88;
+}
+
+.xpb__edu-period {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.xpb__edu-school {
+  font-family: var(--font-hero);
+  font-size: 17.5px;
+  font-weight: 600;
+  line-height: 1.25;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
 
-.xp-card__sub {
-  margin-top: 4px;
-  font-size: 14px;
+.xpb__edu-prog {
+  font-size: 13.5px;
   line-height: 1.48;
   color: var(--muted);
 }
 
-/* Liquid Glass Accordion (Estetika Prismatik iOS 26 + Animasi 120fps Framer Motion) */
-.lacc {
-  --mx: 50%;
-  --my: 0%;
-  position: relative;
-  width: 100%;
-  padding: 8px;
-  border-radius: 28px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.72) 0%, rgba(242, 248, 255, 0.44) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  box-shadow:
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.98),
-    inset 0 -1px 2px rgba(0, 96, 190, 0.06),
-    0 20px 44px -22px rgba(0, 46, 102, 0.22),
-    0 2px 6px rgba(0, 46, 102, 0.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.65) brightness(1.03);
-  backdrop-filter: blur(18px) saturate(1.65) brightness(1.03);
-  isolation: isolate;
-  -webkit-tap-highlight-color: transparent;
-}
-
-[data-theme='dark'] .lacc {
-  background: linear-gradient(155deg, rgba(26, 36, 58, 0.56) 0%, rgba(12, 17, 30, 0.48) 100%);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.26),
-    inset 0 -1px 3px rgba(0, 120, 255, 0.12),
-    0 22px 48px -20px rgba(0, 0, 0, 0.78);
-}
-
-.lacc::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(280px circle at var(--mx) var(--my), rgba(86, 186, 255, 0.14), transparent 68%);
-  transition: opacity 0.35s var(--ease);
-}
-
-.lacc:hover::after {
-  opacity: 1;
-}
-
-[data-theme='dark'] .lacc::after {
-  background: radial-gradient(280px circle at var(--mx) var(--my), rgba(96, 185, 255, 0.18), transparent 68%);
-}
-
-.lacc__item {
-  position: relative;
-  border-radius: 20px;
-}
-
-.lacc__item + .lacc__item::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: 0;
-  height: 1px;
-  background: var(--line);
-  transition: opacity 0.25s var(--ease);
-}
-
-.lacc__item[data-open='true']::before,
-.lacc__item[data-open='true'] + .lacc__item::before {
-  opacity: 0;
-}
-
-/* Hover capsule kaca lembut mengikuti kursor */
-.lacc__hover {
-  position: absolute;
-  inset: 2px 0;
-  z-index: 0;
-  border-radius: 19px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.46) 0%, rgba(226, 242, 255, 0.22) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  pointer-events: none;
-}
-
-[data-theme='dark'] .lacc__hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(120, 190, 255, 0.04) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-/* Panel aktif Liquid Glass: kubah kaca basah + tepi refraksi prismatik + riak klik */
-.lacc__active {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: 20px;
-  overflow: hidden;
-  pointer-events: none;
-  background:
-    radial-gradient(115% 85% at 24% 0%, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0) 56%),
-    linear-gradient(170deg, rgba(255, 255, 255, 0.74) 0%, rgba(225, 245, 255, 0.56) 58%, rgba(235, 243, 255, 0.68) 100%);
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 1),
-    inset 0 -3px 12px rgba(0, 148, 255, 0.16),
-    inset 1px 0 6px rgba(168, 139, 250, 0.14),
-    0 12px 26px -14px rgba(0, 72, 152, 0.30),
-    0 2px 6px -2px rgba(0, 72, 152, 0.08);
-}
-
-/* Tepi refraksi prismatik pelangi kaca cair (cyan - putih - violet - aqua) */
-.lacc__active::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: linear-gradient(
-    122deg,
-    rgba(96, 214, 255, 0.85) 0%,
-    rgba(255, 255, 255, 0.98) 26%,
-    rgba(182, 158, 255, 0.72) 52%,
-    rgba(72, 200, 255, 0.86) 76%,
-    rgba(255, 255, 255, 0.96) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  pointer-events: none;
-}
-
-/* Kilau lengkung specular kaca atas tanpa batas sambungan */
-.lacc__active::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(84% 50% at 50% -10%, rgba(255, 255, 255, 0.76) 0%, rgba(255, 255, 255, 0) 72%);
-  pointer-events: none;
-}
-
-[data-theme='dark'] .lacc__active {
-  background:
-    radial-gradient(115% 85% at 24% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 56%),
-    linear-gradient(170deg, rgba(54, 86, 134, 0.44) 0%, rgba(24, 48, 86, 0.34) 58%, rgba(34, 52, 92, 0.42) 100%);
-  box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.38),
-    inset 0 -3px 14px rgba(56, 189, 248, 0.22),
-    inset 1px 0 8px rgba(168, 139, 250, 0.18),
-    0 14px 32px -14px rgba(0, 0, 0, 0.78);
-}
-
-[data-theme='dark'] .lacc__active::before {
-  background: linear-gradient(
-    122deg,
-    rgba(96, 214, 255, 0.56) 0%,
-    rgba(255, 255, 255, 0.48) 26%,
-    rgba(192, 164, 255, 0.46) 52%,
-    rgba(56, 189, 248, 0.58) 76%,
-    rgba(255, 255, 255, 0.42) 100%
-  );
-}
-
-[data-theme='dark'] .lacc__active::after {
-  background: radial-gradient(84% 50% at 50% -10%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 72%);
-}
-
-/* Riak air lembut saat baris diklik */
-.lacc__ripple {
-  position: absolute;
-  width: 110px;
-  height: 110px;
-  margin-left: -55px;
-  margin-top: -55px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.72) 0%, rgba(96, 200, 255, 0.26) 45%, transparent 72%);
-  pointer-events: none;
-}
-
-[data-theme='dark'] .lacc__ripple {
-  background: radial-gradient(circle, rgba(165, 224, 255, 0.34) 0%, rgba(56, 189, 248, 0.18) 45%, transparent 72%);
-}
-
-.lacc__h {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  font: inherit;
-}
-
-.lacc__q {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  min-height: 64px;
-  padding: 14px 14px 14px 20px;
-  border-radius: 20px;
-  text-align: left;
-  cursor: pointer;
-  color: var(--ink);
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.lacc__q:focus {
-  outline: none;
-}
-
-.lacc__q:focus-visible {
-  outline: none;
-  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, transparent);
-}
-
-.lacc__qt {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.lacc__title {
-  font-family: var(--font-hero);
-  font-size: 16.5px;
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-.lacc__sub {
-  font-size: 13.5px;
-  line-height: 1.35;
-  color: var(--muted);
-}
-
-.lacc__tag {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--muted);
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.045);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  transition: background-color 0.28s var(--ease), color 0.28s var(--ease);
-}
-
-.lacc__item[data-open='true'] .lacc__tag {
-  color: var(--accent);
-  background: rgba(0, 113, 227, 0.10);
-}
-
-[data-theme='dark'] .lacc__tag {
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-[data-theme='dark'] .lacc__item[data-open='true'] .lacc__tag {
-  color: #7cc4ff;
-  background: rgba(59, 158, 255, 0.18);
-}
-
-/* Ikon tetesan kaca cair 3D (+/-) */
-.lacc__ico {
-  position: relative;
-  flex: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  color: var(--ink);
-  background:
-    radial-gradient(120% 120% at 30% 16%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0) 60%),
-    rgba(255, 255, 255, 0.42);
-  box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.98),
-    inset 0 -2px 5px rgba(0, 148, 255, 0.22),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.65),
-    0 4px 10px -3px rgba(0, 68, 140, 0.34);
-  transition: color 0.28s var(--ease), box-shadow 0.28s var(--ease);
-}
-
-[data-theme='dark'] .lacc__ico {
-  background:
-    radial-gradient(120% 120% at 30% 16%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 60%),
-    rgba(120, 195, 255, 0.16);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.52),
-    inset 0 -2px 5px rgba(56, 189, 248, 0.24),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-    0 4px 10px -3px rgba(0, 0, 0, 0.65);
-}
-
-.lacc__ico::before,
-.lacc__ico::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 11px;
-  height: 1.7px;
-  margin: -0.85px 0 0 -5.5px;
-  border-radius: 2px;
-  background: currentColor;
-  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s var(--ease);
-}
-
-.lacc__ico::after {
-  transform: rotate(90deg);
-}
-
-.lacc__item[data-open='true'] .lacc__ico {
-  color: var(--accent);
-}
-
-.lacc__item[data-open='true'] .lacc__ico::after {
-  transform: rotate(90deg) scaleX(0);
-  opacity: 0;
-}
-
-.lacc__panel {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.lacc__a {
-  padding: 0 54px 20px 20px;
-  color: var(--ink-2);
-  font-size: 14.5px;
-  line-height: 1.62;
-}
-
 @media (max-width: 560px) {
-  .lacc__q {
-    padding: 13px 12px 13px 16px;
+  .xpb__card {
+    border-radius: 24px;
   }
 
-  .lacc__tag {
-    display: none;
+  .xpb__org-stage {
+    min-height: 204px;
   }
 
-  .lacc__a {
-    padding: 0 16px 18px 16px;
-  }
-}
-
-@media (min-width: 900px) {
-  .xp-grid {
-    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
-    gap: 28px;
+  .xpb__portrait-media {
+    min-height: 290px;
   }
 }
 
@@ -2724,32 +2752,10 @@ ol {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 470px;
-}
-
-.cv-stage__title {
-  font-family: var(--font-hero);
-  font-size: clamp(28px, 3.6vw, 44px);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.032em;
-  color: var(--ink);
-}
-
-.cv-stage__title span {
-  color: var(--muted);
-}
-
-.cv-stage__desc {
-  margin-top: 14px;
-  font-size: clamp(14.5px, 1.25vw, 16px);
-  line-height: 1.62;
-  color: var(--muted);
-  max-width: 38ch;
+  justify-content: center;
 }
 
 .cv-stage__actions {
-  margin-top: 28px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -2766,6 +2772,7 @@ ol {
   font-size: 14px;
   font-weight: 500;
   letter-spacing: -0.01em;
+  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s var(--ease), background-color 0.28s var(--ease), border-color 0.28s var(--ease);
 }
@@ -2894,12 +2901,12 @@ ol {
 .cv-sheet {
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
+  display: grid;
+  place-items: center;
+  text-align: center;
   width: min(100%, 272px);
   aspect-ratio: 1 / 1.24;
-  padding: 20px 20px 18px;
+  padding: 28px 22px;
   border-radius: 18px;
   background: linear-gradient(170deg, #ffffff 0%, #f8faff 100%);
   color: #0b0d14;
@@ -2933,95 +2940,30 @@ ol {
   transform: translateX(42%);
 }
 
-.cv-sheet__head {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.cv-sheet__name {
+.cv-sheet__monogram {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-hero);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-size: clamp(32px, 3.1vw, 38px);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: -0.045em;
   color: #0b0d14;
-}
-
-.cv-sheet__role {
-  font-size: 10px;
-  color: #626b80;
-}
-
-.cv-sheet__accent {
-  margin-top: 6px;
-  width: 28px;
-  height: 2px;
-  border-radius: 2px;
-  background: #234bff;
-}
-
-.cv-sheet__sec {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.cv-sheet__kicker {
-  font-size: 8.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #234bff;
-}
-
-.cv-sheet__row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cv-sheet__row-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.cv-sheet__row-top strong {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: #111521;
-}
-
-.cv-sheet__row-top span {
-  font-size: 9px;
-  color: #7c8599;
-}
-
-.cv-sheet__bar {
-  display: block;
-  width: 78%;
-  height: 3.5px;
-  border-radius: 99px;
-  background: rgba(15, 23, 42, 0.075);
-}
-
-.cv-sheet__sub {
-  font-size: 9.5px;
-  color: #626b80;
-  line-height: 1.4;
+  user-select: none;
 }
 
 @media (max-width: 859px) {
   .cv-stage__grid {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 28px;
   }
 
   .cv-stage__copy {
-    max-width: none;
+    align-items: center;
+  }
+
+  .cv-stage__actions {
+    justify-content: center;
   }
 
   .cv-stage__visual {
@@ -3035,23 +2977,9 @@ ol {
     border-radius: 24px;
   }
 
-  .cv-stage__actions {
-    width: 100%;
-    flex-wrap: nowrap;
-    gap: 8px;
-  }
-
   .cv-btn {
-    flex: 1 1 0;
-    padding: 11px 12px;
+    padding: 11px 16px;
     font-size: 13px;
-    white-space: nowrap;
-  }
-
-  .cv-btn-icon {
-    flex: 0 0 42px;
-    width: 42px;
-    height: 42px;
   }
 }
 
@@ -3479,28 +3407,59 @@ ol {
 }
 
 .socials {
-  margin-top: 12px;
-  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 460px) {
+  .socials {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 900px) {
+  .socials {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 .social {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 2px 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--line);
+  gap: 3px 14px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-ring);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s var(--ease), border-color 0.25s var(--ease);
+}
+
+.social:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--glass-border));
 }
 
 .social__label {
+  font-family: var(--font-hero);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 
 .social__handle {
   grid-column: 1;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: color 0.3s var(--ease);
 }
 
@@ -3508,15 +3467,16 @@ ol {
   grid-column: 2;
   grid-row: 1 / span 2;
   color: var(--muted);
-  transition: transform 0.4s var(--ease), color 0.3s var(--ease);
+  font-size: 16px;
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), color 0.28s var(--ease);
 }
 
-.social:hover .social__handle,
-.social:hover .social__arrow {
+.social:hover .social__handle {
   color: var(--ink);
 }
 
 .social:hover .social__arrow {
+  color: var(--accent);
   transform: translate(2px, -2px);
 }
 
@@ -3543,7 +3503,6 @@ ol {
 /* ---------- Footer ---------- */
 .footer {
   padding: 28px 0;
-  border-top: 1px solid var(--line);
 }
 
 .footer__row {
@@ -3615,19 +3574,6 @@ ol {
   .cv-body {
     grid-template-columns: 1fr 1fr;
   }
-
-  .social {
-    grid-template-columns: 200px 1fr auto;
-  }
-
-  .social__handle {
-    grid-column: 2;
-  }
-
-  .social__arrow {
-    grid-column: 3;
-    grid-row: 1;
-  }
 }
 
 /* ---------- Desktop (992px) ---------- */
@@ -3674,7 +3620,6 @@ ol {
 
 /* ---------- Section surfaces ---------- */
 .marquee {
-  border-block: 1px solid var(--line);
   background: var(--bg-sunken);
 }
 
@@ -3848,7 +3793,6 @@ ol {
   overflow: hidden;
   padding-top: clamp(96px, 16vw, 220px);
   margin-bottom: 28px;
-  border-bottom: 1px solid var(--line);
 }
 
 .footer__field {

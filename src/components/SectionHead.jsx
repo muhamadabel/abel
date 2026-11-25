@@ -5,7 +5,7 @@ import { blurUp, stagger, viewportOnce } from '../lib/motion'
 import SplitText from './SplitText'
 import useProximity from './fx/useProximity'
 
-// Judul section bersih dan konsisten dengan garis tipis di bawah.
+// Judul section bersih dan konsisten tanpa garis pemisah.
 export default function SectionHead({ id, meta, children }) {
   const { title } = sections.find((s) => s.id === id)
   const ref = useRef(null)
@@ -24,11 +24,6 @@ export default function SectionHead({ id, meta, children }) {
           {children}
         </motion.div>
       )}
-      <motion.span
-        className="section-rule"
-        aria-hidden="true"
-        variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1, transition: { duration: 1.1, ease: [0.22, 1, 0.36, 1] } } }}
-      />
     </motion.header>
   )
 }
