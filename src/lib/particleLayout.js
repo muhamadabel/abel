@@ -6,7 +6,7 @@ export const PARTICLE_FONT_FAMILY =
 
 export function getParticleDpr(viewportWidth) {
   const raw = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
-  return viewportWidth < 640 ? Math.min(raw, 1.5) : Math.min(raw, 2)
+  return viewportWidth < 640 ? Math.min(raw, 1.25) : Math.min(raw, 2)
 }
 
 export function particleDotRadius(compact, dpr) {
@@ -83,7 +83,7 @@ export function sampleParticleTitle(text, rawWidth, dpr) {
   }
 
   const img = octx.getImageData(0, 0, width, height).data
-  const step = Math.max(2, Math.round((compact ? 2.55 : 2.5) * dpr))
+  const step = Math.max(2, Math.round((compact ? 3.05 : 2.5) * dpr))
   const points = []
 
   for (let y = 0; y < height; y += step) {

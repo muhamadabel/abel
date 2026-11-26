@@ -65,7 +65,10 @@ export default function Nav({ ready }) {
       >
         <a href="#top" className="nav__brand" onClick={(e) => go(e, '#top')}>
           <span className="nav__mark">
-            <img src={profile.avatar} alt="Avatar Abel Abhinaya" />
+            <picture>
+              <source srcSet="/avatar.webp" type="image/webp" />
+              <img src={profile.avatar} alt="Avatar Abel Abhinaya" decoding="async" />
+            </picture>
           </span>
           <span className="nav__name">{profile.display}</span>
         </a>

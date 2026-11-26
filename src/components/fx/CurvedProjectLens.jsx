@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ease } from '../../lib/motion'
+import { loadCachedImage, projectImageSrc } from '../../lib/projectImage'
 
 function wrap(i, n) {
   return n > 0 ? ((i % n) + n) % n : 0
@@ -151,7 +152,7 @@ function buildGrid(segX, segY) {
  * Mendukung drag/flick bebas, swipe sentuh, horizontal trackpad scroll, klik samping,
  * dan klik kartu tengah untuk langsung membuka proyek. Tanpa tombol panah ramai.
  */
-export default function CurvedProjectLens({ items, ready = true, settledIntro = false }) {
+export default function CurvedProjectLens({ items, warm = true, ready = true, settledIntro = false }) {
   const n = items.length
   const rootRef = useRef(null)
   const canvasRef = useRef(null)
@@ -163,6 +164,7 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
   const apiRef = useRef({ goTo: () => {} })
 
   useEffect(() => {
+    if (!warm) return
     const canvas = canvasRef.current
     const root = rootRef.current
     if (!canvas || !root || n === 0) return
@@ -203,30 +205,6 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
     let disposed = false
-    const tex = items.map((s) => {
-      const t = gl.createTexture()
-      gl.bindTexture(gl.TEXTURE_2D, t)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([240, 242, 246, 255]))
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-
-      const entry = { t, aspect: 1.6, ready: false }
-      const img = new Image()
-      img.decoding = 'async'
-      img.onload = () => {
-        if (disposed) return
-        gl.bindTexture(gl.TEXTURE_2D, t)
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
-        entry.aspect = img.naturalWidth / Math.max(1, img.naturalHeight)
-        entry.ready = true
-        kick()
-      }
-      img.src = s.image
-      return entry
-    })
-
     let W = 1
     let H = 1
     let dpr = 1
@@ -253,12 +231,35 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
     let isDark = document.documentElement.dataset.theme === 'dark' ? 1 : 0
     let wheelTimer = 0
 
+    const unsubTex = []
+    const tex = items.map((s) => {
+      const t = gl.createTexture()
+      gl.bindTexture(gl.TEXTURE_2D, t)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([240, 242, 246, 255]))
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+      const entry = { t, aspect: 1.6, ready: false }
+      const unsub = loadCachedImage(projectImageSrc(s.image, compactMesh), (img) => {
+        if (disposed) return
+        gl.bindTexture(gl.TEXTURE_2D, t)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+        entry.aspect = img.naturalWidth / Math.max(1, img.naturalHeight)
+        entry.ready = true
+        kick()
+      })
+      if (unsub) unsubTex.push(unsub)
+      return entry
+    })
+
     const orderIdx = Array.from({ length: n }, (_, i) => i)
 
     const resize = (w, h) => {
       W = Math.max(1, w)
       H = Math.max(1, h)
-      dpr = W < 640 ? Math.min(1.5, window.devicePixelRatio || 1) : Math.min(2, window.devicePixelRatio || 1)
+      dpr = W < 640 ? Math.min(1.25, window.devicePixelRatio || 1) : Math.min(2, window.devicePixelRatio || 1)
       canvas.width = Math.round(W * dpr)
       canvas.height = Math.round(H * dpr)
       ;[cw, ch] = cardSize(W, H)
@@ -473,6 +474,7 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
 
     return () => {
       disposed = true
+      unsubTex.forEach((fn) => fn())
       clearInterval(readyCheck)
       clearTimeout(wheelTimer)
       cancelAnimationFrame(raf)
@@ -490,7 +492,7 @@ export default function CurvedProjectLens({ items, ready = true, settledIntro = 
       gl.deleteBuffer(buf)
       gl.deleteProgram(prog)
     }
-  }, [items, n, settledIntro])
+  }, [items, n, settledIntro, warm])
 
   const active = items[activeIndex] || items[0]
 

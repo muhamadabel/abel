@@ -266,8 +266,15 @@
     </script>
 
     <!-- Preload & Fonts (hanya Inter & Inter Tight yang dipakai) -->
-    <link rel="preload" as="image" href="/logo-a.png" fetchpriority="high" />
-    <link rel="preload" as="image" href="/projects/desiltrace.jpg" fetchpriority="high" />
+    <link rel="preload" as="image" href="/logo-a.webp" type="image/webp" fetchpriority="high" />
+    <link
+      rel="preload"
+      as="image"
+      imagesrcset="/projects/mobile/desiltrace.webp 640w, /projects/desiltrace.webp 1280w"
+      imagesizes="(max-width: 639px) 78vw, 36vw"
+      type="image/webp"
+      fetchpriority="high"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

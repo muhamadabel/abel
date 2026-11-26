@@ -68,7 +68,10 @@ function PortraitCard({ reduceMotion }) {
     >
       <div className="xpb__portrait-aura" aria-hidden="true" />
       <div className="xpb__portrait-media">
-        <img src={profile.photo} alt={profile.name} loading="lazy" draggable="false" />
+        <picture>
+          <source srcSet="/profile.webp" type="image/webp" />
+          <img src={profile.photo} alt={profile.name} loading="lazy" decoding="async" draggable="false" />
+        </picture>
       </div>
       <div className="xpb__portrait-plate">
         <strong>{profile.display}</strong>

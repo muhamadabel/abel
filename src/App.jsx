@@ -1,22 +1,33 @@
-import { useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { MotionConfig } from 'framer-motion'
 import { useSmoothScroll } from './lib/smoothScroll'
 import Preloader from './components/Preloader'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import TechMarquee from './components/TechMarquee'
-import FocusDeck from './components/FocusDeck'
-import Experience from './components/Experience'
-import Skills from './components/Skills'
-import CVPreview from './components/CVPreview'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import Cursor from './components/Cursor'
+
+const FocusDeck = lazy(() => import('./components/FocusDeck'))
+const Experience = lazy(() => import('./components/Experience'))
+const Skills = lazy(() => import('./components/Skills'))
+const CVPreview = lazy(() => import('./components/CVPreview'))
+const Contact = lazy(() => import('./components/Contact'))
+const Footer = lazy(() => import('./components/Footer'))
+const Cursor = lazy(() => import('./components/Cursor'))
 
 export default function App() {
   useSmoothScroll()
   const [reveal, setReveal] = useState(false)
   const [ready, setReady] = useState(false)
+  const [finePointer, setFinePointer] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    const mq = window.matchMedia('(pointer: coarse)')
+    const sync = () => setFinePointer(!mq.matches)
+    sync()
+    mq.addEventListener?.('change', sync)
+    return () => mq.removeEventListener?.('change', sync)
+  }, [])
 
   return (
     <MotionConfig reducedMotion="user">
@@ -33,14 +44,18 @@ export default function App() {
       <main>
         <Hero reveal={reveal} ready={ready} />
         <TechMarquee />
-        <FocusDeck />
-        <Experience />
-        <Skills />
-        <CVPreview />
-        <Contact />
+        <Suspense fallback={null}>
+          <FocusDeck />
+          <Experience />
+          <Skills />
+          <CVPreview />
+          <Contact />
+        </Suspense>
       </main>
-      <Footer />
-      <Cursor />
+      <Suspense fallback={null}>
+        <Footer />
+        {finePointer && <Cursor />}
+      </Suspense>
     </MotionConfig>
   )
 }

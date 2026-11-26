@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { profile, projects } from '../data/content'
 import { getParticleDpr, particleDotRadius, sampleParticleTitle, sampleWordPixels } from '../lib/particleLayout'
+import { loadCachedImage, projectImageSrc } from '../lib/projectImage'
 
 const TAU = Math.PI * 2
 const P_BUCKETS = 4
@@ -508,21 +509,19 @@ export default function Preloader({ onReveal, onDone }) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
     const logoState = { tex: logoTex, img: null, aspect: 1.56, ready: false }
-    const logoImg = new Image()
-    logoImg.decoding = 'async'
-    logoImg.onload = () => {
+    const unsubLogo = loadCachedImage('/logo-a.webp', (img) => {
       if (disposed) return
       gl.activeTexture(gl.TEXTURE0)
       gl.bindTexture(gl.TEXTURE_2D, logoTex)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, logoImg)
-      logoState.img = logoImg
-      logoState.aspect = logoImg.naturalWidth / Math.max(1, logoImg.naturalHeight)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+      logoState.img = img
+      logoState.aspect = img.naturalWidth / Math.max(1, img.naturalHeight)
       logoState.ready = true
-    }
-    logoImg.src = '/logo-a.png'
+    })
 
     const rocketSparks = buildRocketSparks(compactMesh ? 18 : 34)
     const n = projects.length
+    const unsubTex = []
     const tex = projects.map((s) => {
       const t = gl.createTexture()
       gl.bindTexture(gl.TEXTURE_2D, t)
@@ -533,16 +532,14 @@ export default function Preloader({ onReveal, onDone }) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 
       const entry = { t, aspect: 1.6, ready: false }
-      const img = new Image()
-      img.decoding = 'async'
-      img.onload = () => {
+      const unsub = loadCachedImage(projectImageSrc(s.image, compactMesh), (img) => {
         if (disposed) return
         gl.bindTexture(gl.TEXTURE_2D, t)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
         entry.aspect = img.naturalWidth / Math.max(1, img.naturalHeight)
         entry.ready = true
-      }
-      img.src = s.image
+      })
+      if (unsub) unsubTex.push(unsub)
       return entry
     })
 
@@ -555,6 +552,22 @@ export default function Preloader({ onReveal, onDone }) {
     let H = window.innerHeight
     let dpr = 1
 
+    // Hitung posisi target persis dari kanvas Hero di bawah tanpa forced reflow per frame
+    const measureTarget = () => {
+      const targetEl = document.querySelector('.lens-stage__canvas')
+      if (targetEl) {
+        const r = targetEl.getBoundingClientRect()
+        if (r.width > 10 && r.height > 10) {
+          const cx = r.left + r.width * 0.5 - W * 0.5
+          const cy = H * 0.5 - (r.top + r.height * 0.5)
+          return { cx, cy, tw: r.width, th: r.height }
+        }
+      }
+      const fallbackH = Math.max(248, Math.min(392, H * 0.39))
+      return { cx: 0, cy: -H * 0.14, tw: W, th: fallbackH }
+    }
+
+    let targetMetrics = null
     const syncSize = () => {
       W = Math.max(1, window.innerWidth)
       H = Math.max(1, window.innerHeight)
@@ -570,24 +583,10 @@ export default function Preloader({ onReveal, onDone }) {
         pCanvas.width = Math.round(W * dpr)
         pCanvas.height = Math.round(H * dpr)
       }
+      targetMetrics = measureTarget()
     }
     syncSize()
     window.addEventListener('resize', syncSize, { passive: true })
-
-    // Hitung posisi target persis dari kanvas Hero di bawah
-    const measureTarget = () => {
-      const targetEl = document.querySelector('.lens-stage__canvas')
-      if (targetEl) {
-        const r = targetEl.getBoundingClientRect()
-        if (r.width > 10 && r.height > 10) {
-          const cx = r.left + r.width * 0.5 - W * 0.5
-          const cy = H * 0.5 - (r.top + r.height * 0.5)
-          return { cx, cy, tw: r.width, th: r.height }
-        }
-      }
-      const fallbackH = Math.max(248, Math.min(392, H * 0.39))
-      return { cx: 0, cy: -H * 0.14, tw: W, th: fallbackH }
-    }
 
     // Bangun partikel tepat saat "Abel" & "Abhinaya." pecah menjadi titik-titik menuju judul raksasa Hero
     let morphParticles = null
@@ -692,16 +691,16 @@ export default function Preloader({ onReveal, onDone }) {
     const pBaseBuckets = Array.from({ length: P_BUCKETS }, () => [])
     const pHeatBuckets = Array.from({ length: P_BUCKETS }, () => [])
 
-    const SPIN_DURATION = 1.44 // detik berputar 3D globe ke kanan
-    const PARTICLE_START = 1.32 // saat "Abel" & "Abhinaya." pecah menjadi titik-titik
-    const PARTICLE_DURATION = 0.92 // titik "Abel Abhinaya" terbentuk utuh sebelum roket melintas
-    const MORPH_START = 1.42 // mulai membuka mulus globe -> panorama Hero
-    const MORPH_DURATION = 0.86
-    const CROUCH_START = 1.88 // logo masih di dalam inti globe/belakang Desiltrace sambil bersiap mengisi daya
-    const LAUNCH_AT = 2.16 // meluncur lurus dari dalam (belakang Desiltrace) menembus titik "Abel Abhinaya"
-    const LAUNCH_DUR = 0.68
-    const REVEAL_AT = 2.60 // munculkan subjudul, tombol CTA, dan Nav tepat saat roket menembus ke atas
-    const TOTAL_END = 3.12 // jeda tenang supaya partikel yang terbelah kembali mengunci rapi
+    const SPIN_DURATION = compactMesh ? 0.95 : 1.44 // detik berputar 3D globe ke kanan
+    const PARTICLE_START = compactMesh ? 0.86 : 1.32 // saat "Abel" & "Abhinaya." pecah menjadi titik-titik
+    const PARTICLE_DURATION = compactMesh ? 0.66 : 0.92 // titik "Abel Abhinaya" terbentuk utuh sebelum roket melintas
+    const MORPH_START = compactMesh ? 0.92 : 1.42 // mulai membuka mulus globe -> panorama Hero
+    const MORPH_DURATION = compactMesh ? 0.62 : 0.86
+    const CROUCH_START = compactMesh ? 1.28 : 1.88 // logo masih di dalam inti globe/belakang Desiltrace sambil bersiap mengisi daya
+    const LAUNCH_AT = compactMesh ? 1.48 : 2.16 // meluncur lurus dari dalam (belakang Desiltrace) menembus titik "Abel Abhinaya"
+    const LAUNCH_DUR = compactMesh ? 0.56 : 0.68
+    const REVEAL_AT = compactMesh ? 1.84 : 2.60 // munculkan subjudul, tombol CTA, dan Nav tepat saat roket menembus ke atas
+    const TOTAL_END = compactMesh ? 2.24 : 3.12 // jeda tenang supaya partikel yang terbelah kembali mengunci rapi
 
     const startTime = performance.now()
     let startedUnfold = false
@@ -730,6 +729,7 @@ export default function Preloader({ onReveal, onDone }) {
 
       if (t >= PARTICLE_START && !startedUnfold) {
         startedUnfold = true
+        targetMetrics = measureTarget()
         morphParticles = buildTextMorphParticles()
         setUnfolding(true)
       }
@@ -739,7 +739,7 @@ export default function Preloader({ onReveal, onDone }) {
         onRevealRef.current?.()
       }
 
-      const { cx: tcx, cy: tcy, tw, th } = measureTarget()
+      const { cx: tcx, cy: tcy, tw, th } = targetMetrics || measureTarget()
       const [cw, ch] = heroCardSize(tw, th)
       const gap = cw * (tw < 640 ? 0.08 : 0.095)
       const step = cw + gap
@@ -918,7 +918,11 @@ export default function Preloader({ onReveal, onDone }) {
           const rocketNoseX = rocket ? rocket.cx : 0
           const rocketNoseY = rocket ? rocket.curY - rocket.drawH * 0.15 : 0
           const blastR = baseLogoW * 1.24 * dpr
-          const wakeLock = t > 2.86 ? Math.max(0, Math.min(1, (TOTAL_END - 0.04 - t) / 0.22)) : 1
+          const wakeEnd = LAUNCH_AT + LAUNCH_DUR
+          const wakeLock =
+            t > wakeEnd
+              ? Math.max(0, Math.min(1, (TOTAL_END - 0.04 - t) / Math.max(0.14, TOTAL_END - 0.04 - wakeEnd)))
+              : 1
 
           for (let b = 0; b < P_BUCKETS; b++) {
             pBaseBuckets[b].length = 0
@@ -1020,6 +1024,8 @@ export default function Preloader({ onReveal, onDone }) {
       disposed = true
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', syncSize)
+      unsubLogo?.()
+      unsubTex.forEach((fn) => fn())
       tex.forEach((entry) => gl.deleteTexture(entry.t))
       gl.deleteTexture(logoTex)
       gl.deleteBuffer(buf)

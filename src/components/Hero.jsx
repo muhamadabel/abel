@@ -123,7 +123,7 @@ export default function Hero({ reveal, ready }) {
           @fullstack
         </motion.span>
 
-        <CurvedProjectLens items={projects} ready={ready} settledIntro />
+        <CurvedProjectLens items={projects} warm={reveal || ready} ready={ready} settledIntro />
       </motion.div>
     </section>
   )

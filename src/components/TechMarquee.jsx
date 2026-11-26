@@ -1,16 +1,47 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAnimationFrame, useReducedMotion } from 'framer-motion'
 import { affiliations } from '../data/content'
 
 export default function TechMarquee() {
+  const sectionRef = useRef(null)
   const trackRef = useRef(null)
   const pausedRef = useRef(false)
+  const visibleRef = useRef(true)
+  const groupWidthRef = useRef(0)
   const xRef = useRef(0)
   const reduceMotion = useReducedMotion()
 
+  useEffect(() => {
+    const track = trackRef.current
+    const section = sectionRef.current
+    if (!track || !section) return
+
+    const firstGroup = track.firstElementChild
+    const updateWidth = () => {
+      if (firstGroup) groupWidthRef.current = firstGroup.offsetWidth || 0
+    }
+    updateWidth()
+
+    const ro = firstGroup ? new ResizeObserver(updateWidth) : null
+    if (ro && firstGroup) ro.observe(firstGroup)
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry ? entry.isIntersecting : true
+      },
+      { threshold: 0.01 },
+    )
+    io.observe(section)
+
+    return () => {
+      ro?.disconnect()
+      io.disconnect()
+    }
+  }, [])
+
   useAnimationFrame((_, delta) => {
-    if (reduceMotion || pausedRef.current || !trackRef.current) return
-    const groupW = trackRef.current.firstElementChild?.offsetWidth || 0
+    if (reduceMotion || pausedRef.current || !visibleRef.current || !trackRef.current) return
+    const groupW = groupWidthRef.current
     if (!groupW) return
     xRef.current -= Math.min(delta, 40) * 0.038
     if (xRef.current <= -groupW) xRef.current += groupW
@@ -19,6 +50,7 @@ export default function TechMarquee() {
 
   return (
     <section
+      ref={sectionRef}
       className="lmarq no-print"
       aria-label="Institusi, organisasi, dan mitra kolaborasi"
       onMouseEnter={() => {
@@ -39,7 +71,8 @@ export default function TechMarquee() {
                       src={item.logo}
                       alt={dup === 0 ? item.name : ''}
                       className="lmarq__img lmarq__img--emblem"
-                      loading="eager"
+                      loading="lazy"
+                      decoding="async"
                       draggable="false"
                     />
                     <span className="lmarq__text">
@@ -53,7 +86,8 @@ export default function TechMarquee() {
                     alt={dup === 0 ? item.name : ''}
                     className="lmarq__img lmarq__img--wordmark"
                     style={item.scale ? { '--logo-scale': item.scale } : undefined}
-                    loading="eager"
+                    loading="lazy"
+                    decoding="async"
                     draggable="false"
                   />
                 )}

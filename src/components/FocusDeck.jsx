@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
 import { projects } from '../data/content'
+import { projectImageSrc } from '../lib/projectImage'
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v)
 const easeOut = (t) => 1 - Math.pow(1 - t, 3)
@@ -161,7 +162,21 @@ export default function FocusDeck() {
                         aria-label={`Buka proyek ${card.previews[0].title}`}
                       >
                         <span className="fcard__frame fcard__frame--left">
-                          <img src={card.previews[0].image} alt={card.previews[0].title} loading="lazy" draggable="false" />
+                          <picture>
+                            <source
+                              media="(max-width: 639px)"
+                              srcSet={projectImageSrc(card.previews[0].image, true)}
+                              type="image/webp"
+                            />
+                            <source srcSet={projectImageSrc(card.previews[0].image, false)} type="image/webp" />
+                            <img
+                              src={card.previews[0].image}
+                              alt={card.previews[0].title}
+                              loading="lazy"
+                              decoding="async"
+                              draggable="false"
+                            />
+                          </picture>
                         </span>
                         <span className="fcard__cap">
                           {card.previews[0].title}
@@ -202,7 +217,21 @@ export default function FocusDeck() {
                         aria-label={`Buka proyek ${card.previews[1].title}`}
                       >
                         <span className="fcard__frame fcard__frame--right">
-                          <img src={card.previews[1].image} alt={card.previews[1].title} loading="lazy" draggable="false" />
+                          <picture>
+                            <source
+                              media="(max-width: 639px)"
+                              srcSet={projectImageSrc(card.previews[1].image, true)}
+                              type="image/webp"
+                            />
+                            <source srcSet={projectImageSrc(card.previews[1].image, false)} type="image/webp" />
+                            <img
+                              src={card.previews[1].image}
+                              alt={card.previews[1].title}
+                              loading="lazy"
+                              decoding="async"
+                              draggable="false"
+                            />
+                          </picture>
                         </span>
                         <span className="fcard__cap">
                           {card.previews[1].title}
