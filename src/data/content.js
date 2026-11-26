@@ -87,10 +87,28 @@ export const organizations = [
 
 export const achievements = [
   {
+    id: 'olivia-2026',
+    short: 'OLIVIA XI',
     title: 'Juara Harapan 2',
     event: 'Olimpiade Olivia - Web Development',
     organizer: 'UNESA',
+    detail: 'Web Technology Competition · Nasional',
     year: '2026',
+    certImage: '/certificates/olivia-2026.jpg',
+    certPdf: '/certificates/olivia-2026.pdf',
+    certAlt: 'Sertifikat Juara Harapan 2 OLIVIA XI 2026 - Web Technology Competition',
+  },
+  {
+    id: 'iyeea-2026',
+    short: 'IYEEA 2026',
+    title: 'Esai Nasional DESILTRACE',
+    event: 'Indonesia Youth Excellence Essay Award (IYEEA)',
+    organizer: 'Muda Berdaya',
+    detail: 'Skor 902/1000 · Peringkat 66 dari 1.000+ tim · TIM PNS',
+    year: '2026',
+    certImage: '/certificates/iyeea-2026.jpg',
+    certPdf: '/certificates/iyeea-2026.pdf',
+    certAlt: 'Sertifikat Apresiasi IYEEA 2026 Muda Berdaya - Muhammad Abel Abhinaya Riananto',
   },
 ]
 

@@ -66,12 +66,24 @@ export default function FocusDeck() {
   const n = cards.length
 
   const paint = (progress) => {
-    const p = clamp(progress, 0, 1) * (n - 1)
     const compact = typeof window !== 'undefined' && window.innerWidth < 900
+    if (compact) {
+      for (let i = 0; i < n; i++) {
+        const el = cardEls.current[i]
+        if (el) {
+          el.style.transform = ''
+          el.style.opacity = ''
+        }
+        const sh = shadeEls.current[i]
+        if (sh) sh.style.opacity = '0'
+      }
+      return
+    }
+    const p = clamp(progress, 0, 1) * (n - 1)
     for (let i = 0; i < n; i++) {
       const el = cardEls.current[i]
       if (!el) continue
-      const q = pose(p, i, reduceMotion, compact)
+      const q = pose(p, i, reduceMotion, false)
       el.style.transform = toTransform(q)
       el.style.opacity = String(q.opacity)
       const sh = shadeEls.current[i]
@@ -89,7 +101,10 @@ export default function FocusDeck() {
   })
 
   useEffect(() => {
-    paint(scrollYProgress.get())
+    const sync = () => paint(scrollYProgress.get())
+    sync()
+    window.addEventListener('resize', sync, { passive: true })
+    return () => window.removeEventListener('resize', sync)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion])
 
@@ -124,46 +139,50 @@ export default function FocusDeck() {
                 key={card.id}
                 ref={(el) => (cardEls.current[i] = el)}
                 className={`fcard fcard--${card.tone}`}
-                style={{ zIndex: i + 1 }}
+                style={{ zIndex: i + 1, '--card-i': i }}
               >
                 <div className="fcard__shade" ref={(el) => (shadeEls.current[i] = el)} aria-hidden="true" />
 
                 <div className="fcard__grid">
-                  {/* Kiri/Atas: tipografi judul dan deskripsi bersih tanpa daftar ekstra */}
-                  <div className="fcard__left">
+                  {/* Kiri: preview proyek menghadap miring 3D ke tengah */}
+                  {card.previews[0] && (
+                    <div className="fcard__wing fcard__wing--left">
+                      <a
+                        href={card.previews[0].live || card.previews[0].repo}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="fcard__frame fcard__frame--left"
+                        data-cursor="Buka"
+                        aria-label={`Buka proyek ${card.previews[0].title}`}
+                      >
+                        <img src={card.previews[0].image} alt={card.previews[0].title} loading="lazy" draggable="false" />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Tengah: tipografi judul dan deskripsi rata tengah */}
+                  <div className="fcard__center">
                     <div className="fcard__copy">
                       <h3 className="fcard__title">{card.title}</h3>
                       <p className="fcard__desc">{card.desc}</p>
                     </div>
                   </div>
 
-                  {/* Kanan/Bawah: panggung visual dua thumbnail berlapis 3D tanpa badge penutup */}
-                  <div className="fcard__visual">
-                    {card.previews[1] && (
+                  {/* Kanan: preview proyek menghadap miring 3D ke tengah */}
+                  {card.previews[1] && (
+                    <div className="fcard__wing fcard__wing--right">
                       <a
                         href={card.previews[1].live || card.previews[1].repo}
                         target="_blank"
                         rel="noreferrer"
-                        className="fcard__frame fcard__frame--back"
+                        className="fcard__frame fcard__frame--right"
                         data-cursor="Buka"
                         aria-label={`Buka proyek ${card.previews[1].title}`}
                       >
                         <img src={card.previews[1].image} alt={card.previews[1].title} loading="lazy" draggable="false" />
                       </a>
-                    )}
-                    {card.previews[0] && (
-                      <a
-                        href={card.previews[0].live || card.previews[0].repo}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="fcard__frame fcard__frame--main"
-                        data-cursor="Buka"
-                        aria-label={`Buka proyek ${card.previews[0].title}`}
-                      >
-                        <img src={card.previews[0].image} alt={card.previews[0].title} loading="lazy" draggable="false" />
-                      </a>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </article>
             ))}

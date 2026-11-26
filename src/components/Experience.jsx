@@ -19,6 +19,11 @@ const ORG_META = {
   'Hackathon Crew': { short: 'Hackathon', logo: '/logos/refactory.png' },
 }
 
+const EDU_LOGO = {
+  'Universitas Gadjah Mada (UGM)': { src: '/logos/ugm.png', kind: 'wordmark' },
+  'SMAN 1 Kasihan': { src: '/logos/sman1kasihan.png', kind: 'crest' },
+}
+
 const dockSpring = { type: 'spring', stiffness: 420, damping: 34 }
 
 function PortraitCard({ reduceMotion }) {
@@ -75,11 +80,12 @@ function PortraitCard({ reduceMotion }) {
 
 export default function Experience() {
   const [activeOrg, setActiveOrg] = useState(0)
+  const [activeAward, setActiveAward] = useState(0)
   const reduceMotion = useReducedMotion()
 
   const org = organizations[activeOrg] || organizations[0]
   const orgVisual = ORG_META[org.org] || { short: org.org, logo: '' }
-  const primaryAchievement = achievements[0]
+  const award = achievements[activeAward] || achievements[0]
 
   const onSpotlightMove = (e) => {
     if (reduceMotion || e.pointerType !== 'mouse') return
@@ -97,6 +103,16 @@ export default function Experience() {
     if (next < 0) return
     e.preventDefault()
     setActiveOrg(next)
+  }
+
+  const onAwardKey = (e, idx) => {
+    const n = achievements.length
+    let next = -1
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % n
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + n) % n
+    if (next < 0) return
+    e.preventDefault()
+    setActiveAward(next)
   }
 
   return (
@@ -196,43 +212,96 @@ export default function Experience() {
           {/* Baris 1 Kanan (5 col): Potret Studio 3D Tilt */}
           <PortraitCard reduceMotion={reduceMotion} />
 
-          {/* Baris 2 Kiri (6 col): Plakat Pencapaian Midnight Sapphire + Foto Sertifikat Resmi */}
-          {primaryAchievement && (
+          {/* Baris 2 Kiri (6 col): Plakat Pencapaian Midnight Sapphire + Switcher Sertifikat Resmi */}
+          {award && (
             <motion.article
               className="xpb__card xpb__card--award"
               variants={cardReveal}
               onPointerMove={onSpotlightMove}
             >
-              <div className="xpb__award-grid">
-                <div className="xpb__award-copy">
-                  <div className="xpb__head">
-                    <span className="xpb__kicker xpb__kicker--light">Pencapaian</span>
-                    <span className="xpb__year">{primaryAchievement.year}</span>
-                  </div>
-                  <div className="xpb__award-body">
-                    <h3 className="xpb__award-title">{primaryAchievement.title}</h3>
-                    <p className="xpb__award-sub">
-                      {primaryAchievement.event} · {primaryAchievement.organizer}
-                    </p>
-                  </div>
-                </div>
+              <div className="xpb__head xpb__head--award">
+                <span className="xpb__kicker xpb__kicker--light">Pencapaian</span>
 
-                <a
-                  href="/certificates/olivia-2026.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="xpb__cert"
-                  data-cursor="Buka"
-                  aria-label="Lihat sertifikat resmi Juara Harapan 2 OLIVIA XI 2026"
-                >
-                  <img
-                    src="/certificates/olivia-2026.jpg"
-                    alt="Sertifikat Juara Harapan 2 OLIVIA XI 2026 - Web Technology Competition"
-                    loading="lazy"
-                    draggable="false"
-                  />
-                </a>
+                {achievements.length > 1 ? (
+                  <LayoutGroup id="xp-award-dock">
+                    <div
+                      className="xpb__award-dock"
+                      role="tablist"
+                      aria-label="Pilih pencapaian dan sertifikat"
+                    >
+                      {achievements.map((item, i) => {
+                        const isActive = i === activeAward
+                        return (
+                          <button
+                            key={item.id || item.title}
+                            type="button"
+                            role="tab"
+                            aria-selected={isActive}
+                            className={`xpb__award-tab${isActive ? ' is-active' : ''}`}
+                            onClick={() => setActiveAward(i)}
+                            onKeyDown={(e) => onAwardKey(e, i)}
+                          >
+                            {isActive && (
+                              <motion.span
+                                layoutId="xp-award-pill"
+                                className="xpb__award-tab-bg"
+                                transition={reduceMotion ? { duration: 0 } : dockSpring}
+                                aria-hidden="true"
+                              />
+                            )}
+                            <span className="xpb__award-tab-label">{item.short || item.title}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </LayoutGroup>
+                ) : (
+                  <span className="xpb__year">{award.year}</span>
+                )}
               </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={award.id || award.title}
+                  className="xpb__award-grid"
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                  transition={reduceMotion ? { duration: 0 } : { duration: 0.3, ease }}
+                >
+                  <div className="xpb__award-copy">
+                    <div className="xpb__award-body">
+                      <h3 className="xpb__award-title">{award.title}</h3>
+                      <p className="xpb__award-sub">
+                        {award.event} · {award.organizer}
+                      </p>
+                      {award.detail && (
+                        <p className="xpb__award-meta">
+                          {award.detail} · {award.year}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {award.certImage && (
+                    <a
+                      href={award.certPdf || award.certImage}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="xpb__cert"
+                      data-cursor="Buka"
+                      aria-label={`Lihat sertifikat resmi ${award.title}`}
+                    >
+                      <img
+                        src={award.certImage}
+                        alt={award.certAlt || `Sertifikat ${award.title}`}
+                        loading="lazy"
+                        draggable="false"
+                      />
+                    </a>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </motion.article>
           )}
 
@@ -247,29 +316,32 @@ export default function Experience() {
             </div>
 
             <div className="xpb__edu-grid">
-              {education.map((e, idx) => (
-                <div
-                  key={e.school}
-                  className={`xpb__edu-tile${idx === 0 ? ' xpb__edu-tile--primary' : ''}`}
-                >
-                  <div className="xpb__edu-top">
-                    {idx === 0 && (
-                      <img
-                        src="/logos/ugm.png"
-                        alt=""
-                        aria-hidden="true"
-                        className="xpb__edu-logo"
-                        draggable="false"
-                      />
-                    )}
-                    <span className="xpb__edu-period">{e.period}</span>
+              {education.map((e, idx) => {
+                const eduLogo = EDU_LOGO[e.school]
+                return (
+                  <div
+                    key={e.school}
+                    className={`xpb__edu-tile${idx === 0 ? ' xpb__edu-tile--primary' : ''}`}
+                  >
+                    <div className="xpb__edu-top">
+                      {eduLogo && (
+                        <img
+                          src={eduLogo.src}
+                          alt=""
+                          aria-hidden="true"
+                          className={`xpb__edu-logo${eduLogo.kind === 'crest' ? ' xpb__edu-logo--crest' : ''}`}
+                          draggable="false"
+                        />
+                      )}
+                      <span className="xpb__edu-period">{e.period}</span>
+                    </div>
+                    <h3 className="xpb__edu-school">{e.school}</h3>
+                    <p className="xpb__edu-prog">
+                      {[e.program, e.degree].filter(Boolean).join(' · ')}
+                    </p>
                   </div>
-                  <h3 className="xpb__edu-school">{e.school}</h3>
-                  <p className="xpb__edu-prog">
-                    {[e.program, e.degree].filter(Boolean).join(' · ')}
-                  </p>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </motion.article>
         </motion.div>

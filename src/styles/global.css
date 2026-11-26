@@ -1368,69 +1368,90 @@ ol {
     0 34px 72px -26px rgba(0, 0, 0, 0.82);
 }
 
-/* Tata letak split editorial: teks & tautan bersih di kiri, visual karya besar di kanan */
+/* Tata letak simetris 3D: teks rata tengah, dua preview proyek di kiri & kanan menghadap ke tengah */
 .fcard__grid {
   position: relative;
   z-index: 2;
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.18fr);
-  gap: clamp(24px, 3.6vw, 48px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(270px, 0.94fr) minmax(0, 1.08fr);
+  grid-template-areas: 'left center right';
+  gap: clamp(18px, 2.4vw, 34px);
   align-items: center;
 }
 
-.fcard__left {
-  height: 100%;
+.fcard__center {
+  grid-area: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
+  text-align: center;
+  min-width: 0;
+  padding-inline: 4px;
 }
 
 .fcard__copy {
-  max-width: 460px;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .fcard__title {
   font-family: var(--font-hero);
-  font-size: clamp(30px, 4.1vw, 52px);
+  font-size: clamp(28px, 3.15vw, 44px);
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.06;
   letter-spacing: -0.032em;
+  text-wrap: balance;
 }
 
 .fcard__desc {
-  margin-top: 16px;
-  font-size: clamp(15px, 1.3vw, 17px);
-  line-height: 1.6;
-  opacity: 0.80;
-  max-width: 36ch;
+  margin-top: 14px;
+  font-size: clamp(14.5px, 1.18vw, 16.5px);
+  line-height: 1.58;
+  opacity: 0.82;
+  max-width: 30ch;
+  text-wrap: balance;
 }
 
-/* Panggung 2 screenshot besar berlapis 3D tanpa badge menutupi isi gambar */
-.fcard__visual {
+/* Sayap visual kiri & kanan dengan perspektif 3D menghadap ke tengah */
+.fcard__wing {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
+  perspective: 1050px;
+}
+
+.fcard__wing--left {
+  grid-area: left;
+  justify-content: flex-end;
+}
+
+.fcard__wing--right {
+  grid-area: right;
+  justify-content: flex-start;
 }
 
 .fcard__frame {
-  position: absolute;
+  position: relative;
   display: block;
+  width: 100%;
   aspect-ratio: 16 / 10;
   border-radius: 18px;
   overflow: hidden;
   border: 1.5px solid rgba(255, 255, 255, 0.28);
   background: var(--bg-sunken);
   box-shadow: 0 28px 54px -20px rgba(4, 8, 24, 0.56);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s var(--ease), z-index 0s;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s var(--ease);
 }
 
 .fcard--light .fcard__frame {
-  border-color: rgba(15, 23, 42, 0.09);
+  border-color: rgba(15, 23, 42, 0.1);
   box-shadow: 0 24px 48px -20px rgba(15, 23, 42, 0.24);
 }
 
@@ -1441,102 +1462,111 @@ ol {
   object-position: center;
 }
 
-.fcard__frame--back {
-  width: 76%;
-  top: 4%;
-  right: 0;
-  z-index: 1;
-  transform: perspective(1100px) rotateY(-8deg) rotateZ(2.2deg);
-  opacity: 0.92;
+.fcard__frame--left {
+  transform-origin: center center;
+  transform: rotateY(22deg) rotateX(1.5deg) rotateZ(-1.2deg);
 }
 
-.fcard__frame--main {
-  width: 82%;
-  bottom: 4%;
-  left: 0;
-  z-index: 2;
-  transform: perspective(1100px) rotateY(-4deg) rotateZ(-1.2deg);
+.fcard__frame--right {
+  transform-origin: center center;
+  transform: rotateY(-22deg) rotateX(1.5deg) rotateZ(1.2deg);
 }
 
-.fcard__frame--back:hover {
-  z-index: 3;
-  opacity: 1;
-  transform: perspective(1100px) rotateY(0deg) rotateZ(0deg) translateY(-6px) scale(1.03);
+.fcard__frame--left:hover {
+  transform: rotateY(8deg) rotateX(0deg) rotateZ(0deg) translateY(-6px) scale(1.035);
+  box-shadow: 0 34px 64px -20px rgba(4, 8, 24, 0.68);
 }
 
-.fcard__frame--main:hover {
-  transform: perspective(1100px) rotateY(0deg) rotateZ(0deg) translateY(-6px) scale(1.03);
+.fcard__frame--right:hover {
+  transform: rotateY(-8deg) rotateX(0deg) rotateZ(0deg) translateY(-6px) scale(1.035);
+  box-shadow: 0 34px 64px -20px rgba(4, 8, 24, 0.68);
 }
 
 @media (max-width: 899px) {
+  .fdeck-track.is-sticky {
+    height: auto !important;
+    padding: clamp(52px, 9vw, 72px) 0;
+  }
+
   .fdeck-track.is-sticky .fdeck-stage {
-    padding: calc(var(--nav-h) + 14px) 0 24px;
+    position: static;
+    height: auto;
+    padding: 0;
+    overflow: visible;
   }
 
   .fdeck-head {
-    padding-bottom: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
+  }
+
+  .fdeck-steps {
+    display: none;
   }
 
   .fdeck-track.is-sticky .fdeck-cards {
-    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 0;
+  }
+
+  .fdeck-track.is-sticky .fcard {
+    position: sticky;
+    inset: auto;
+    top: calc(var(--nav-h) + 12px + var(--card-i, 0) * 12px);
+    will-change: auto;
   }
 
   .fcard {
-    border-radius: 26px;
-    padding: 24px 20px 24px;
+    border-radius: 24px;
+    padding: 26px 18px 24px;
   }
 
   .fcard__grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: 16px;
-    align-items: center;
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      'center center'
+      'left right';
+    align-content: start;
+    gap: 20px 12px;
   }
 
-  .fcard__left {
-    height: auto;
-    justify-content: flex-start;
+  .fcard__center {
+    padding-inline: 4px;
   }
 
   .fcard__title {
-    font-size: clamp(26px, 7.2vw, 34px);
+    font-size: clamp(24px, 6.8vw, 32px);
   }
 
   .fcard__desc {
-    margin-top: 10px;
-    font-size: 14px;
-    line-height: 1.52;
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
   }
 
-  .fcard__visual {
-    min-height: 0;
-    height: min(100%, 348px);
-    position: relative;
+  .fcard__wing {
+    perspective: 680px;
   }
 
   .fcard__frame {
-    border-radius: 14px;
+    border-radius: 12px;
+    aspect-ratio: 16 / 10;
   }
 
-  .fcard__frame--back {
-    width: min(86%, 46svh);
-    top: 2%;
-    right: 0;
-    transform: perspective(900px) rotateY(-6deg) rotateZ(2deg);
-    opacity: 0.94;
+  .fcard__frame--left {
+    transform: rotateY(16deg) rotateX(1deg) rotateZ(-1deg);
   }
 
-  .fcard__frame--main {
-    width: min(90%, 48svh);
-    bottom: 2%;
-    left: 0;
-    transform: perspective(900px) rotateY(-3deg) rotateZ(-1.2deg);
+  .fcard__frame--right {
+    transform: rotateY(-16deg) rotateX(1deg) rotateZ(1deg);
   }
 
-  .fcard__frame--back:hover,
-  .fcard__frame--main:hover {
-    transform: translateY(-4px) scale(1.02);
+  .fcard__frame--left:hover,
+  .fcard__frame--right:hover {
+    transform: rotateY(0deg) translateY(-4px) scale(1.02);
   }
 }
 
@@ -2233,9 +2263,10 @@ ol {
   white-space: nowrap;
 }
 
-/* 3. Plakat Pencapaian Midnight Sapphire + Foto Sertifikat Resmi */
+/* 3. Plakat Pencapaian Midnight Sapphire + Switcher Sertifikat Resmi */
 .xpb__card--award {
   padding: clamp(22px, 2.8vw, 30px);
+  gap: 20px;
   background:
     radial-gradient(74% 88% at 14% 8%, rgba(124, 162, 255, 0.34) 0%, transparent 62%),
     linear-gradient(142deg, #1d3de8 0%, #102494 100%);
@@ -2244,6 +2275,62 @@ ol {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.36),
     0 28px 58px -28px rgba(16, 36, 148, 0.54);
+}
+
+.xpb__head--award {
+  flex-wrap: wrap;
+}
+
+.xpb__award-dock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(6, 14, 58, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.xpb__award-tab {
+  position: relative;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-family: var(--font-hero);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: rgba(226, 236, 255, 0.72);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.22s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.xpb__award-tab:hover,
+.xpb__award-tab.is-active {
+  color: #ffffff;
+}
+
+.xpb__award-tab:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.85);
+}
+
+.xpb__award-tab-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 6px 14px -8px rgba(5, 12, 48, 0.52);
+}
+
+.xpb__award-tab-label {
+  position: relative;
+  z-index: 1;
 }
 
 .xpb__award-grid {
@@ -2258,16 +2345,15 @@ ol {
 
 @media (min-width: 560px) {
   .xpb__award-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(190px, 46%);
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) minmax(192px, 46%);
+    align-items: center;
   }
 }
 
 .xpb__award-copy {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: flex-end;
   min-width: 0;
 }
 
@@ -2279,17 +2365,24 @@ ol {
 
 .xpb__award-title {
   font-family: var(--font-hero);
-  font-size: clamp(24px, 2.3vw, 31px);
+  font-size: clamp(23px, 2.15vw, 29px);
   font-weight: 600;
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   color: #ffffff;
 }
 
 .xpb__award-sub {
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.48;
-  color: rgba(235, 242, 255, 0.84);
+  color: rgba(235, 242, 255, 0.86);
+}
+
+.xpb__award-meta {
+  font-size: 12.5px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  color: rgba(210, 224, 255, 0.7);
 }
 
 .xpb__cert {
@@ -2298,11 +2391,11 @@ ol {
   align-self: center;
   border-radius: 14px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.88);
+  background: #0c1538;
+  border: 1px solid rgba(255, 255, 255, 0.52);
   box-shadow:
-    0 18px 36px -14px rgba(5, 12, 48, 0.58),
-    0 4px 12px rgba(5, 12, 48, 0.24);
+    0 18px 36px -14px rgba(5, 12, 48, 0.62),
+    0 4px 12px rgba(5, 12, 48, 0.26);
   transform: rotate(-1.5deg);
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s var(--ease);
 }
@@ -2318,8 +2411,8 @@ ol {
 .xpb__cert:hover {
   transform: rotate(0deg) translateY(-4px) scale(1.03);
   box-shadow:
-    0 24px 44px -14px rgba(5, 12, 48, 0.68),
-    0 6px 16px rgba(5, 12, 48, 0.28);
+    0 24px 44px -14px rgba(5, 12, 48, 0.72),
+    0 6px 16px rgba(5, 12, 48, 0.3);
 }
 
 .xpb__cert:focus-visible {
@@ -2391,6 +2484,7 @@ ol {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  min-height: 26px;
   margin-bottom: 6px;
 }
 
@@ -2400,6 +2494,10 @@ ol {
   object-fit: contain;
   filter: brightness(0);
   opacity: 0.76;
+}
+
+.xpb__edu-logo--crest {
+  height: 26px;
 }
 
 [data-theme='dark'] .xpb__edu-logo {
