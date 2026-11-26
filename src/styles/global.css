@@ -400,6 +400,16 @@ ol {
   background: radial-gradient(circle at center, rgba(75, 123, 255, 0.14) 0%, rgba(75, 123, 255, 0.03) 50%, transparent 72%);
 }
 
+.preloader__rocket {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
 .preloader__canvas {
   position: absolute;
   inset: 0;

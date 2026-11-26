@@ -180,6 +180,194 @@ void main() {
 }
 `
 
+const LOGO_VERT = `
+attribute vec2 aPos;
+uniform vec2 uScreen;
+uniform vec2 uCenter;
+uniform vec2 uSize;
+uniform float uTiltY;
+
+varying vec2 vUv;
+
+void main() {
+  vec2 local = (aPos - 0.5) * (uSize * 1.45);
+  float c = cos(uTiltY);
+  float s = sin(uTiltY);
+  vec3 p = vec3(local.x * c, local.y, -local.x * s);
+  float persp = 900.0 / max(120.0, 900.0 - p.z);
+  vec2 px = uCenter + p.xy * persp;
+  vec2 ndc = px / (uScreen * 0.5);
+  vUv = aPos;
+  gl_Position = vec4(ndc, 0.0, 1.0);
+}
+`
+
+const LOGO_FRAG = `
+precision highp float;
+uniform sampler2D uTex;
+uniform float uAlpha;
+uniform float uDark;
+uniform float uCharge;
+uniform float uHaloFade;
+
+varying vec2 vUv;
+
+void main() {
+  vec2 imgUv = (vUv - 0.5) * 1.45 + 0.5;
+  float inBox = step(0.002, imgUv.x) * step(imgUv.x, 0.998) * step(0.002, imgUv.y) * step(imgUv.y, 0.998);
+  vec4 tex = texture2D(uTex, clamp(imgUv, 0.002, 0.998)) * inBox;
+  tex.rgb += vec3(0.24, 0.44, 1.0) * uCharge * 0.28 * tex.a;
+
+  float dist = length(vUv - 0.5) * 2.0;
+  float radial = smoothstep(0.98, 0.05, dist);
+  float aura = radial * radial;
+
+  vec3 lightHalo = mix(vec3(0.08, 0.13, 0.28), vec3(0.14, 0.30, 1.0), uCharge);
+  vec3 darkHalo = vec3(0.24, 0.50, 1.0);
+  vec3 haloCol = mix(lightHalo, darkHalo, uDark);
+  float haloAlpha = mix(0.24 + uCharge * 0.36, 0.36 + uCharge * 0.42, uDark) * aura * uHaloFade;
+
+  float la = tex.a * uAlpha;
+  float ha = haloAlpha * uAlpha;
+  vec3 outRgb = tex.rgb * la + haloCol * ha * (1.0 - la);
+  float outA = la + ha * (1.0 - la);
+  gl_FragColor = vec4(outRgb, outA);
+}
+`
+
+function buildRocketSparks(count) {
+  const out = []
+  for (let i = 0; i < count; i++) {
+    const t = count > 1 ? i / (count - 1) : 0.5
+    const spread = (t - 0.5) * 0.88 + Math.sin(i * 7.3) * 0.14
+    out.push({
+      angle: Math.PI * 0.5 + spread,
+      xOff: (t - 0.5) * 0.56,
+      speed: 0.72 + ((i * 37) % 100) / 110,
+      len: 14 + ((i * 23) % 24),
+      width: 1.2 + ((i * 13) % 10) * 0.15,
+      delay: ((i * 19) % 28) / 100,
+      tier: i % 3,
+    })
+  }
+  return out
+}
+
+function drawRocketImpulseGlow(pCtx, cx, cy, baseW, charge, dpr) {
+  if (charge <= 0.02) return
+  const r = baseW * (0.72 + charge * 0.45) * dpr
+  const g = pCtx.createRadialGradient(cx, cy, 0, cx, cy, r)
+  g.addColorStop(0, `rgba(96, 165, 250, ${(charge * 0.36).toFixed(3)})`)
+  g.addColorStop(0.45, `rgba(35, 75, 255, ${(charge * 0.22).toFixed(3)})`)
+  g.addColorStop(1, 'rgba(35, 75, 255, 0)')
+  pCtx.fillStyle = g
+  pCtx.beginPath()
+  pCtx.arc(cx, cy, r, 0, TAU)
+  pCtx.fill()
+}
+
+function drawRocketTrail(pCtx, rocket, { W, H, dpr, isDark, sparks }) {
+  const { lp, cx, startY, curY, drawW, drawH } = rocket
+
+  // 1. Expanding sapphire launch shockwave ring at the globe core
+  if (lp < 0.65) {
+    const sp = lp / 0.65
+    const waveR = (26 + easeOutCubic(sp) * Math.min(W, H) * 0.28) * dpr
+    const waveAlpha = (1 - sp) * (isDark ? 0.62 : 0.55)
+    pCtx.save()
+    pCtx.strokeStyle = isDark ? `rgba(120, 178, 255, ${waveAlpha.toFixed(3)})` : `rgba(35, 75, 255, ${waveAlpha.toFixed(3)})`
+    pCtx.lineWidth = (3.0 - 2.4 * sp) * dpr
+    pCtx.beginPath()
+    pCtx.arc(cx, startY, waveR, 0, TAU)
+    pCtx.stroke()
+    pCtx.restore()
+  }
+
+  // 2. Supersonic tapered exhaust plume + twin leg micro-streaks beneath the "A"
+  const tailFade = lp > 0.72 ? Math.max(0, 1 - (lp - 0.72) / 0.28) : Math.min(1, lp / 0.08)
+  if (tailFade > 0.01) {
+    const plumeLen = H * (0.14 + 0.3 * Math.sin(Math.min(1, lp * 1.15) * Math.PI * 0.5)) * dpr
+    const nozzleY = curY + drawH * 0.34
+    const outerHalfW = drawW * 0.22
+
+    const outerGrad = pCtx.createLinearGradient(cx, nozzleY, cx, nozzleY + plumeLen)
+    outerGrad.addColorStop(0, `rgba(35, 75, 255, ${(0.88 * tailFade).toFixed(3)})`)
+    outerGrad.addColorStop(0.42, `rgba(96, 165, 250, ${(0.52 * tailFade).toFixed(3)})`)
+    outerGrad.addColorStop(1, 'rgba(35, 75, 255, 0)')
+
+    pCtx.fillStyle = outerGrad
+    pCtx.beginPath()
+    pCtx.moveTo(cx - outerHalfW, nozzleY)
+    pCtx.lineTo(cx + outerHalfW, nozzleY)
+    pCtx.lineTo(cx + outerHalfW * 0.14, nozzleY + plumeLen)
+    pCtx.lineTo(cx - outerHalfW * 0.14, nozzleY + plumeLen)
+    pCtx.closePath()
+    pCtx.fill()
+
+    // Inner ice-white high-velocity core needle
+    const coreLen = plumeLen * 0.72
+    const coreHalfW = drawW * 0.085
+    const coreGrad = pCtx.createLinearGradient(cx, nozzleY, cx, nozzleY + coreLen)
+    coreGrad.addColorStop(0, `rgba(255, 255, 255, ${(0.95 * tailFade).toFixed(3)})`)
+    coreGrad.addColorStop(0.5, `rgba(191, 219, 254, ${(0.62 * tailFade).toFixed(3)})`)
+    coreGrad.addColorStop(1, 'rgba(191, 219, 254, 0)')
+
+    pCtx.fillStyle = coreGrad
+    pCtx.beginPath()
+    pCtx.moveTo(cx - coreHalfW, nozzleY)
+    pCtx.lineTo(cx + coreHalfW, nozzleY)
+    pCtx.lineTo(cx, nozzleY + coreLen)
+    pCtx.closePath()
+    pCtx.fill()
+
+    // Subtle twin leg thruster streaks at left & right feet of the metallic "A"
+    const legSpan = drawW * 0.34
+    const legLen = plumeLen * 0.42
+    for (let sIdx = -1; sIdx <= 1; sIdx += 2) {
+      const lx = cx + sIdx * legSpan
+      const lg = pCtx.createLinearGradient(lx, nozzleY, lx, nozzleY + legLen)
+      lg.addColorStop(0, `rgba(147, 197, 253, ${(0.52 * tailFade).toFixed(3)})`)
+      lg.addColorStop(1, 'rgba(35, 75, 255, 0)')
+      pCtx.strokeStyle = lg
+      pCtx.lineWidth = 2.4 * dpr
+      pCtx.beginPath()
+      pCtx.moveTo(lx, nozzleY)
+      pCtx.lineTo(lx + sIdx * 4 * dpr, nozzleY + legLen)
+      pCtx.stroke()
+    }
+  }
+
+  // 3. Velocity-stretched thruster sparks shooting downward
+  pCtx.save()
+  pCtx.lineCap = 'round'
+  for (let i = 0; i < sparks.length; i++) {
+    const spk = sparks[i]
+    const spkElapsed = lp - spk.delay
+    if (spkElapsed <= 0 || spkElapsed > 0.78) continue
+    const progress = spkElapsed / 0.78
+    const dist = easeOutCubic(progress) * H * 0.34 * spk.speed * dpr
+    const ox = cx + spk.xOff * drawW + Math.cos(spk.angle) * dist
+    const oy = startY + Math.sin(spk.angle) * dist * 0.68
+    const streak = spk.len * (1 - progress * 0.55) * dpr
+    const alpha = Math.sin(progress * Math.PI) * 0.85
+    if (alpha <= 0.02) continue
+
+    if (spk.tier === 0) {
+      pCtx.strokeStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`
+    } else if (spk.tier === 1) {
+      pCtx.strokeStyle = `rgba(147, 197, 253, ${alpha.toFixed(3)})`
+    } else {
+      pCtx.strokeStyle = `rgba(35, 75, 255, ${alpha.toFixed(3)})`
+    }
+    pCtx.lineWidth = spk.width * dpr
+    pCtx.beginPath()
+    pCtx.moveTo(ox, oy)
+    pCtx.lineTo(ox - Math.cos(spk.angle) * streak * 0.35, oy - Math.sin(spk.angle) * streak)
+    pCtx.stroke()
+  }
+  pCtx.restore()
+}
+
 function compileShader(gl, type, src) {
   const s = gl.createShader(type)
   gl.shaderSource(s, src)
@@ -208,6 +396,7 @@ function buildGrid(segX, segY) {
  */
 export default function Preloader({ onReveal, onDone }) {
   const reduceMotion = useReducedMotion()
+  const rocketCanvasRef = useRef(null)
   const canvasRef = useRef(null)
   const particleCanvasRef = useRef(null)
   const leftTextRef = useRef(null)
@@ -249,6 +438,25 @@ export default function Preloader({ onReveal, onDone }) {
       return
     }
 
+    // Program WebGL kedua khusus untuk logo 3D "A" di pusat bola globe
+    const logoProg = gl.createProgram()
+    gl.attachShader(logoProg, compileShader(gl, gl.VERTEX_SHADER, LOGO_VERT))
+    gl.attachShader(logoProg, compileShader(gl, gl.FRAGMENT_SHADER, LOGO_FRAG))
+    gl.linkProgram(logoProg)
+    const logoProgReady = Boolean(gl.getProgramParameter(logoProg, gl.LINK_STATUS))
+
+    const uLogo = {}
+    if (logoProgReady) {
+      for (const k of ['uScreen', 'uCenter', 'uSize', 'uTiltY', 'uTex', 'uAlpha', 'uDark', 'uCharge', 'uHaloFade']) {
+        uLogo[k] = gl.getUniformLocation(logoProg, k)
+      }
+    }
+    const logoLoc = logoProgReady ? gl.getAttribLocation(logoProg, 'aPos') : -1
+    const logoQuad = new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1])
+    const logoBuf = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, logoBuf)
+    gl.bufferData(gl.ARRAY_BUFFER, logoQuad, gl.STATIC_DRAW)
+
     gl.useProgram(prog)
     const compactMesh = window.innerWidth < 640
     const mesh = buildGrid(compactMesh ? 16 : 28, compactMesh ? 8 : 12)
@@ -289,6 +497,31 @@ export default function Preloader({ onReveal, onDone }) {
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
 
     let disposed = false
+
+    const logoTex = gl.createTexture()
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, logoTex)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]))
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+    const logoState = { tex: logoTex, img: null, aspect: 1.56, ready: false }
+    const logoImg = new Image()
+    logoImg.decoding = 'async'
+    logoImg.onload = () => {
+      if (disposed) return
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, logoTex)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, logoImg)
+      logoState.img = logoImg
+      logoState.aspect = logoImg.naturalWidth / Math.max(1, logoImg.naturalHeight)
+      logoState.ready = true
+    }
+    logoImg.src = '/logo-a.png'
+
+    const rocketSparks = buildRocketSparks(compactMesh ? 18 : 34)
     const n = projects.length
     const tex = projects.map((s) => {
       const t = gl.createTexture()
@@ -313,6 +546,8 @@ export default function Preloader({ onReveal, onDone }) {
       return entry
     })
 
+    const rCanvas = rocketCanvasRef.current
+    const rCtx = rCanvas ? rCanvas.getContext('2d', { alpha: true }) : null
     const pCanvas = particleCanvasRef.current
     const pCtx = pCanvas ? pCanvas.getContext('2d', { alpha: true }) : null
 
@@ -327,6 +562,10 @@ export default function Preloader({ onReveal, onDone }) {
       canvas.width = Math.round(W * dpr)
       canvas.height = Math.round(H * dpr)
       gl.viewport(0, 0, canvas.width, canvas.height)
+      if (rCanvas) {
+        rCanvas.width = Math.round(W * dpr)
+        rCanvas.height = Math.round(H * dpr)
+      }
       if (pCanvas) {
         pCanvas.width = Math.round(W * dpr)
         pCanvas.height = Math.round(H * dpr)
@@ -421,7 +660,27 @@ export default function Preloader({ onReveal, onDone }) {
           const bucket = Math.min(P_BUCKETS - 1, Math.floor(Math.random() * P_BUCKETS))
           const spark = Math.random() < 0.58 ? 0.62 + Math.random() * 0.38 : 0
 
-          out.push({ ox, oy, cx, cy, tx, ty, delay, r, bucket, spark, dx: 0, dy: 0, dr: r })
+          out.push({
+            ox,
+            oy,
+            cx,
+            cy,
+            tx,
+            ty,
+            delay,
+            r,
+            bucket,
+            spark,
+            group: sideSign < 0 ? 0 : 1,
+            dx: 0,
+            dy: 0,
+            dr: r,
+            wx: 0,
+            wy: 0,
+            wvx: 0,
+            wvy: 0,
+            wakeHeat: 0,
+          })
         }
       }
 
@@ -435,11 +694,14 @@ export default function Preloader({ onReveal, onDone }) {
 
     const SPIN_DURATION = 1.44 // detik berputar 3D globe ke kanan
     const PARTICLE_START = 1.32 // saat "Abel" & "Abhinaya." pecah menjadi titik-titik
-    const PARTICLE_DURATION = 1.28 // detik terbang melengkung & menyatu menjadi judul besar Hero
+    const PARTICLE_DURATION = 0.92 // titik "Abel Abhinaya" terbentuk utuh sebelum roket melintas
     const MORPH_START = 1.42 // mulai membuka mulus globe -> panorama Hero
-    const MORPH_DURATION = 0.96
-    const REVEAL_AT = 2.04 // munculkan subjudul, tombol CTA, dan Nav saat huruf hampir terbentuk
-    const TOTAL_END = PARTICLE_START + PARTICLE_DURATION + 0.06
+    const MORPH_DURATION = 0.86
+    const CROUCH_START = 1.88 // logo masih di dalam inti globe/belakang Desiltrace sambil bersiap mengisi daya
+    const LAUNCH_AT = 2.16 // meluncur lurus dari dalam (belakang Desiltrace) menembus titik "Abel Abhinaya"
+    const LAUNCH_DUR = 0.68
+    const REVEAL_AT = 2.60 // munculkan subjudul, tombol CTA, dan Nav tepat saat roket menembus ke atas
+    const TOTAL_END = 3.12 // jeda tenang supaya partikel yang terbelah kembali mengunci rapi
 
     const startTime = performance.now()
     let startedUnfold = false
@@ -489,8 +751,69 @@ export default function Preloader({ onReveal, onDone }) {
       const patchLon = W < 640 ? 0.72 : 0.68
       const patchLat = patchLon * 0.625
 
+      const baseLogoW = Math.max(76, Math.min(156, globeR * 0.45))
+      const baseLogoH = baseLogoW / logoState.aspect
+      const logoIntro = easeOutCubic(Math.min(1, t / 0.42))
+      const crouchP =
+        t > CROUCH_START ? easeInOutQuart(Math.min(1, (t - CROUCH_START) / (LAUNCH_AT - CROUCH_START))) : 0
+      const coreRestY = tcy * 0.40
+      const launchOriginY = coreRestY - 16
+      const hoverY = Math.sin(t * 4.4) * 5.5 * (1 - crouchP)
+
+      const isLaunching = t >= LAUNCH_AT
+      const rawLaunch = isLaunching ? t - LAUNCH_AT : -1
+      const lp = isLaunching ? Math.max(0, Math.min(1, rawLaunch / LAUNCH_DUR)) : 0
+      const rocketEase = isLaunching ? Math.pow(lp, 2.2) : 0
+
+      // Koordinat WebGL Y-up (+ ke atas): tetap di dalam globe/belakang Desiltrace hingga melesat menembus "Abel Abhinaya"
+      const logoCenterY = isLaunching
+        ? launchOriginY + rocketEase * (H * 0.92 + baseLogoH)
+        : hoverY * (1 - morph) + coreRestY * morph - 16 * crouchP
+
+      const stretchEase = isLaunching ? easeOutCubic(Math.min(1, lp / 0.35)) : 0
+      const logoScaleX = isLaunching
+        ? 1.09 - 0.25 * stretchEase
+        : (0.62 + 0.38 * logoIntro) * (1 + 0.09 * crouchP)
+      const logoScaleY = isLaunching
+        ? 0.89 + 0.41 * stretchEase
+        : (0.62 + 0.38 * logoIntro) * (1 - 0.11 * crouchP)
+      const logoTiltY = isLaunching ? 0 : Math.sin(t * 2.5) * 0.24 * (1 - crouchP)
+      const logoFade = isLaunching ? (lp > 0.82 ? Math.max(0, 1 - (lp - 0.82) / 0.18) : 1) : logoIntro
+      const logoCharge = isLaunching ? Math.max(0.25, 1 - lp * 0.7) : crouchP
+      const logoHaloFade = isLaunching ? Math.max(0, 1 - Math.min(1, lp / 0.25)) : 1
+      const showInsideGlobe =
+        logoProgReady && logoState.ready && logoLoc >= 0 && logoFade > 0.01 && rawLaunch <= LAUNCH_DUR + 0.04
+
+      const drawCoreLogo = () => {
+        gl.useProgram(logoProg)
+        gl.bindBuffer(gl.ARRAY_BUFFER, logoBuf)
+        gl.enableVertexAttribArray(logoLoc)
+        gl.vertexAttribPointer(logoLoc, 2, gl.FLOAT, false, 0, 0)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, logoState.tex)
+        gl.uniform1i(uLogo.uTex, 0)
+        gl.uniform2f(uLogo.uScreen, W, H)
+        gl.uniform2f(uLogo.uCenter, 0, logoCenterY)
+        gl.uniform2f(uLogo.uSize, baseLogoW * logoScaleX, baseLogoH * logoScaleY)
+        gl.uniform1f(uLogo.uTiltY, logoTiltY)
+        gl.uniform1f(uLogo.uAlpha, logoFade)
+        gl.uniform1f(uLogo.uDark, isDark)
+        gl.uniform1f(uLogo.uCharge, logoCharge)
+        gl.uniform1f(uLogo.uHaloFade, logoHaloFade)
+        gl.drawArrays(gl.TRIANGLES, 0, 6)
+
+        gl.useProgram(prog)
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+        gl.enableVertexAttribArray(loc)
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
+      }
+
       gl.clearColor(0, 0, 0, 0)
       gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(prog)
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+      gl.enableVertexAttribArray(loc)
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
       gl.uniform2f(u.uScreen, W, H)
       gl.uniform2f(u.uTargetCenter, tcx, tcy)
       gl.uniform2f(u.uTargetSize, tw, th)
@@ -504,7 +827,7 @@ export default function Preloader({ onReveal, onDone }) {
       gl.uniform1f(u.uDark, isDark)
       gl.uniform1f(u.uSpinVel, spinVel)
 
-      // Hitung posisi & urutan gambar: di fase globe urut dari z belakang ke depan; saat membuka urut ke tengah
+      // Hitung posisi & urutan gambar: di fase globe urut dari z belakang -> logo pusat -> z depan
       const drawList = projects.map((_, i) => {
         const d = offsetOf(i, 0, n)
         const baseLon = d * ((Math.PI * 2) / n)
@@ -522,10 +845,17 @@ export default function Preloader({ onReveal, onDone }) {
         drawList.sort((a, b) => Math.abs(b.d) - Math.abs(a.d))
       }
 
+      let drawnLogo = false
       for (const item of drawList) {
+        if (showInsideGlobe && !drawnLogo && (morph < 0.55 ? item.zTilt >= 0 : item.d === 0)) {
+          drawCoreLogo()
+          drawnLogo = true
+        }
         const { i, d, lon, lat } = item
         const heroX = d * step
+        gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, tex[i].t)
+        gl.uniform1i(u.uTex, 0)
         gl.uniform1f(u.uLon, lon)
         gl.uniform1f(u.uLat, lat)
         gl.uniform1f(u.uHeroX, heroX)
@@ -534,8 +864,40 @@ export default function Preloader({ onReveal, onDone }) {
         gl.uniform1f(u.uShift, Math.max(-0.04, Math.min(0.04, -d * 0.025)))
         gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 2)
       }
+      if (showInsideGlobe && !drawnLogo) {
+        drawCoreLogo()
+      }
 
-      // Render animasi titik-titik dari "Abel" & "Abhinaya." -> judul partikel besar Hero (batched 8 fill/frame)
+      const rocket =
+        isLaunching && rawLaunch <= LAUNCH_DUR + 0.22
+          ? {
+              lp,
+              cx: W * 0.5 * dpr,
+              startY: (H * 0.5 - launchOriginY) * dpr,
+              curY: (H * 0.5 - logoCenterY) * dpr,
+              drawW: baseLogoW * logoScaleX * dpr,
+              drawH: baseLogoH * logoScaleY * dpr,
+            }
+          : null
+
+      // 1. Kanvas asap/api roket & shockwave (z-index 1): tepat DI BELAKANG kartu globe/Desiltrace
+      if (rCtx && rCanvas) {
+        rCtx.clearRect(0, 0, rCanvas.width, rCanvas.height)
+        if (t >= CROUCH_START && !isLaunching) {
+          drawRocketImpulseGlow(rCtx, W * 0.5 * dpr, (H * 0.5 - logoCenterY) * dpr, baseLogoW, crouchP, dpr)
+        }
+        if (rocket) {
+          drawRocketTrail(rCtx, rocket, {
+            W,
+            H,
+            dpr,
+            isDark: isDark > 0.5,
+            sparks: rocketSparks,
+          })
+        }
+      }
+
+      // 2. Kanvas partikel nama (z-index 4): hanya titik "Abel Abhinaya" yang terbelah aerodinamis oleh roket
       if (pCtx && pCanvas) {
         pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height)
         if (morphParticles && morphParticles.length > 0 && t >= PARTICLE_START) {
@@ -552,6 +914,12 @@ export default function Preloader({ onReveal, onDone }) {
           const aMin = isDark ? 0.66 : 0.72
           const aSpan = isDark ? 0.30 : 0.25
 
+          const wakeActive = rocket && rocket.lp <= 0.92
+          const rocketNoseX = rocket ? rocket.cx : 0
+          const rocketNoseY = rocket ? rocket.curY - rocket.drawH * 0.15 : 0
+          const blastR = baseLogoW * 1.24 * dpr
+          const wakeLock = t > 2.86 ? Math.max(0, Math.min(1, (TOTAL_END - 0.04 - t) / 0.22)) : 1
+
           for (let b = 0; b < P_BUCKETS; b++) {
             pBaseBuckets[b].length = 0
             pHeatBuckets[b].length = 0
@@ -564,13 +932,36 @@ export default function Preloader({ onReveal, onDone }) {
             const uEase = easeParticleFlight(localT)
             const inv = 1 - uEase
 
-            // Kurva Bezier kuadratik: pecah halus -> melayang menyebar -> mengunci tajam di bentuk huruf besar
-            pt.dx = inv * inv * pt.ox + 2 * inv * uEase * pt.cx + uEase * uEase * pt.tx
-            pt.dy = inv * inv * pt.oy + 2 * inv * uEase * pt.cy + uEase * uEase * pt.ty
+            // Kurva Bezier kuadratik: pecah halus -> mengunci tajam -> bereaksi membuka saat roket menembus nama
+            const bx = inv * inv * pt.ox + 2 * inv * uEase * pt.cx + uEase * uEase * pt.tx
+            const by = inv * inv * pt.oy + 2 * inv * uEase * pt.cy + uEase * uEase * pt.ty
+
+            if (wakeActive) {
+              const rx = bx + pt.wx - rocketNoseX
+              const ry = by + pt.wy - rocketNoseY
+              const dist = Math.hypot(rx, ry)
+              if (dist < blastR) {
+                const imp = Math.pow(1 - dist / blastR, 2)
+                const dirX = dist > 1 ? rx / dist : pt.group === 0 ? -1 : 1
+                const dirY = dist > 1 ? ry / dist : -0.4
+                pt.wvx += dirX * imp * 16 * dpr
+                pt.wvy += (dirY * 0.45 - 0.35) * imp * 12 * dpr
+                pt.wakeHeat = Math.min(1, pt.wakeHeat + imp * 1.15)
+              }
+            }
+
+            pt.wvx = (pt.wvx - pt.wx * 0.16) * 0.78
+            pt.wvy = (pt.wvy - pt.wy * 0.16) * 0.78
+            pt.wx += pt.wvx
+            pt.wy += pt.wvy
+            pt.wakeHeat *= 0.9
+
+            pt.dx = bx + pt.wx * wakeLock
+            pt.dy = by + pt.wy * wakeLock
 
             const flight = Math.sin(uEase * Math.PI)
-            pt.dr = pt.r * (0.76 + 0.24 * uEase + 0.28 * flight)
-            const heat = pt.spark * flight
+            pt.dr = pt.r * (0.76 + 0.24 * uEase + 0.28 * flight + pt.wakeHeat * wakeLock * 0.35)
+            const heat = Math.max(pt.spark * flight, pt.wakeHeat * wakeLock)
 
             if (heat > 0.05) {
               const hb = Math.min(P_BUCKETS - 1, Math.floor(heat * P_BUCKETS))
@@ -630,8 +1021,11 @@ export default function Preloader({ onReveal, onDone }) {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', syncSize)
       tex.forEach((entry) => gl.deleteTexture(entry.t))
+      gl.deleteTexture(logoTex)
       gl.deleteBuffer(buf)
+      gl.deleteBuffer(logoBuf)
       gl.deleteProgram(prog)
+      if (logoProg) gl.deleteProgram(logoProg)
     }
   }, [reduceMotion])
 
@@ -671,6 +1065,9 @@ export default function Preloader({ onReveal, onDone }) {
       >
         <span ref={rightTextRef}>{rightWord}</span>
       </motion.span>
+
+      {/* Kanvas 2D asap roket & shockwave: tepat DI BELAKANG kartu 3D WebGL */}
+      <canvas ref={rocketCanvasRef} className="preloader__rocket" />
 
       {/* Kanvas WebGL penuh layar: 3D Globe berputar ke kanan -> melebur langsung ke Hero */}
       <canvas ref={canvasRef} className="preloader__canvas" />
