@@ -1243,16 +1243,18 @@ ol {
   position: sticky;
   top: 0;
   height: 100svh;
-  padding: calc(var(--nav-h) + 28px) 0 38px;
+  padding: calc(var(--nav-h) + 20px) 0 32px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   overflow: hidden;
 }
 
 .fdeck-shell {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  justify-content: center;
+  width: 100%;
 }
 
 .fdeck-head {
@@ -1292,16 +1294,16 @@ ol {
 }
 
 .fdeck-track.is-sticky .fdeck-cards {
-  flex: 1;
+  flex: none;
   display: block;
-  min-height: 0;
+  height: clamp(410px, 55svh, 496px);
   margin-top: 6px;
 }
 
 .fcard {
   position: relative;
   border-radius: 30px;
-  padding: clamp(28px, 3.8vw, 48px);
+  padding: clamp(28px, 3vw, 40px) clamp(20px, 2.4vw, 34px);
   overflow: hidden;
   transform-origin: 50% 0%;
   backface-visibility: hidden;
@@ -1322,33 +1324,36 @@ ol {
   pointer-events: none;
 }
 
-/* 3 material studio bersih tanpa kesan template polos */
+/* 3 material studio bersih dengan pencahayaan radial di tengah */
 .fcard--blue {
   background:
-    radial-gradient(68% 82% at 14% 8%, rgba(114, 152, 255, 0.28) 0%, transparent 62%),
-    linear-gradient(142deg, #1d3de8 0%, #102494 100%);
+    radial-gradient(56% 76% at 50% 42%, rgba(128, 168, 255, 0.34) 0%, transparent 72%),
+    radial-gradient(64% 80% at 14% 8%, rgba(114, 152, 255, 0.24) 0%, transparent 62%),
+    linear-gradient(146deg, #1f42ee 0%, #0f228e 100%);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.32),
-    0 34px 72px -28px rgba(16, 36, 148, 0.46);
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 34px 72px -28px rgba(16, 36, 148, 0.48);
 }
 
 .fcard--dark {
   background:
-    radial-gradient(60% 76% at 88% 12%, rgba(58, 102, 255, 0.20) 0%, transparent 70%),
-    linear-gradient(148deg, #14161f 0%, #090a0f 100%);
+    radial-gradient(54% 72% at 50% 42%, rgba(64, 114, 255, 0.22) 0%, transparent 72%),
+    radial-gradient(60% 76% at 88% 12%, rgba(58, 102, 255, 0.16) 0%, transparent 70%),
+    linear-gradient(148deg, #151926 0%, #090b11 100%);
   color: #f5f6fa;
   border: 1px solid rgba(255, 255, 255, 0.11);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
     0 34px 72px -28px rgba(5, 7, 14, 0.68);
 }
 
 .fcard--light {
   background:
+    radial-gradient(58% 72% at 50% 44%, rgba(59, 130, 246, 0.08) 0%, transparent 72%),
     radial-gradient(74% 82% at 16% 6%, rgba(255, 255, 255, 0.96) 0%, transparent 64%),
-    linear-gradient(150deg, #ffffff 0%, #edf1f8 100%);
+    linear-gradient(150deg, #ffffff 0%, #ebf0f9 100%);
   color: var(--ink);
   border: 1px solid rgba(255, 255, 255, 0.94);
   box-shadow:
@@ -1359,8 +1364,8 @@ ol {
 
 [data-theme='dark'] .fcard--light {
   background:
-    radial-gradient(64% 76% at 16% 8%, rgba(84, 134, 255, 0.16) 0%, transparent 64%),
-    linear-gradient(148deg, #1b2234 0%, #111623 100%);
+    radial-gradient(56% 72% at 50% 42%, rgba(92, 142, 255, 0.2) 0%, transparent 72%),
+    linear-gradient(148deg, #1c2438 0%, #111726 100%);
   color: #f5f6fa;
   border-color: rgba(255, 255, 255, 0.14);
   box-shadow:
@@ -1368,15 +1373,15 @@ ol {
     0 34px 72px -26px rgba(0, 0, 0, 0.82);
 }
 
-/* Tata letak simetris 3D: teks rata tengah, dua preview proyek di kiri & kanan menghadap ke tengah */
+/* Tata letak simetris 3D widescreen: dua preview besar menghadap ke teks & stack di tengah */
 .fcard__grid {
   position: relative;
   z-index: 2;
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(270px, 0.94fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1.22fr) minmax(308px, 1fr) minmax(0, 1.22fr);
   grid-template-areas: 'left center right';
-  gap: clamp(18px, 2.4vw, 34px);
+  gap: clamp(14px, 2vw, 24px);
   align-items: center;
 }
 
@@ -1388,11 +1393,11 @@ ol {
   justify-content: center;
   text-align: center;
   min-width: 0;
-  padding-inline: 4px;
+  padding-inline: 2px;
 }
 
 .fcard__copy {
-  max-width: 380px;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1400,20 +1405,54 @@ ol {
 
 .fcard__title {
   font-family: var(--font-hero);
-  font-size: clamp(28px, 3.15vw, 44px);
+  font-size: clamp(28px, 3vw, 42px);
   font-weight: 600;
-  line-height: 1.06;
+  line-height: 1.05;
   letter-spacing: -0.032em;
   text-wrap: balance;
 }
 
 .fcard__desc {
-  margin-top: 14px;
-  font-size: clamp(14.5px, 1.18vw, 16.5px);
-  line-height: 1.58;
+  margin-top: 12px;
+  font-size: clamp(14px, 1.12vw, 15.5px);
+  line-height: 1.56;
   opacity: 0.82;
   max-width: 30ch;
   text-wrap: balance;
+}
+
+.fcard__tags {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+}
+
+.fcard__tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.13);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.fcard--light .fcard__tag {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--ink-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+[data-theme='dark'] .fcard--light .fcard__tag {
+  background: rgba(255, 255, 255, 0.11);
+  color: rgba(241, 245, 249, 0.92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 /* Sayap visual kiri & kanan dengan perspektif 3D menghadap ke tengah */
@@ -1423,17 +1462,24 @@ ol {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 1050px;
 }
 
 .fcard__wing--left {
   grid-area: left;
-  justify-content: flex-end;
 }
 
 .fcard__wing--right {
   grid-area: right;
-  justify-content: flex-start;
+}
+
+.fcard__showcase {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  perspective: 1120px;
 }
 
 .fcard__frame {
@@ -1443,16 +1489,16 @@ ol {
   aspect-ratio: 16 / 10;
   border-radius: 18px;
   overflow: hidden;
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
   background: var(--bg-sunken);
-  box-shadow: 0 28px 54px -20px rgba(4, 8, 24, 0.56);
+  box-shadow: 0 28px 54px -18px rgba(4, 8, 24, 0.58);
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s var(--ease);
 }
 
 .fcard--light .fcard__frame {
   border-color: rgba(15, 23, 42, 0.1);
-  box-shadow: 0 24px 48px -20px rgba(15, 23, 42, 0.24);
+  box-shadow: 0 24px 48px -18px rgba(15, 23, 42, 0.24);
 }
 
 .fcard__frame img {
@@ -1472,14 +1518,42 @@ ol {
   transform: rotateY(-22deg) rotateX(1.5deg) rotateZ(1.2deg);
 }
 
-.fcard__frame--left:hover {
-  transform: rotateY(8deg) rotateX(0deg) rotateZ(0deg) translateY(-6px) scale(1.035);
-  box-shadow: 0 34px 64px -20px rgba(4, 8, 24, 0.68);
+.fcard__showcase:hover .fcard__frame--left,
+.fcard__showcase:focus-visible .fcard__frame--left {
+  transform: rotateY(8deg) rotateX(0deg) rotateZ(0deg) translateY(-6px) scale(1.03);
+  box-shadow: 0 36px 66px -18px rgba(4, 8, 24, 0.7);
 }
 
-.fcard__frame--right:hover {
-  transform: rotateY(-8deg) rotateX(0deg) rotateZ(0deg) translateY(-6px) scale(1.035);
-  box-shadow: 0 34px 64px -20px rgba(4, 8, 24, 0.68);
+.fcard__showcase:hover .fcard__frame--right,
+.fcard__showcase:focus-visible .fcard__frame--right {
+  transform: rotateY(-8deg) rotateX(0deg) rotateZ(0deg) translateY(-6px) scale(1.03);
+  box-shadow: 0 36px 66px -18px rgba(4, 8, 24, 0.7);
+}
+
+.fcard__cap {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 0.72;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.fcard__cap-arrow {
+  font-size: 11px;
+  opacity: 0.75;
+  transition: transform 0.25s var(--ease);
+}
+
+.fcard__showcase:hover .fcard__cap,
+.fcard__showcase:focus-visible .fcard__cap {
+  opacity: 1;
+}
+
+.fcard__showcase:hover .fcard__cap-arrow {
+  transform: translate(2px, -2px);
 }
 
 @media (max-width: 899px) {
@@ -1492,6 +1566,7 @@ ol {
     position: static;
     height: auto;
     padding: 0;
+    justify-content: flex-start;
     overflow: visible;
   }
 
@@ -1506,6 +1581,7 @@ ol {
   .fdeck-track.is-sticky .fdeck-cards {
     display: flex;
     flex-direction: column;
+    height: auto;
     gap: 16px;
     margin-top: 0;
   }
@@ -1519,7 +1595,7 @@ ol {
 
   .fcard {
     border-radius: 24px;
-    padding: 26px 18px 24px;
+    padding: 24px 16px 22px;
   }
 
   .fcard__grid {
@@ -1530,7 +1606,7 @@ ol {
       'center center'
       'left right';
     align-content: start;
-    gap: 20px 12px;
+    gap: 18px 12px;
   }
 
   .fcard__center {
@@ -1538,7 +1614,7 @@ ol {
   }
 
   .fcard__title {
-    font-size: clamp(24px, 6.8vw, 32px);
+    font-size: clamp(23px, 6.4vw, 30px);
   }
 
   .fcard__desc {
@@ -1547,7 +1623,18 @@ ol {
     line-height: 1.5;
   }
 
-  .fcard__wing {
+  .fcard__tags {
+    margin-top: 12px;
+    gap: 5px;
+  }
+
+  .fcard__tag {
+    padding: 4px 9px;
+    font-size: 11px;
+  }
+
+  .fcard__showcase {
+    gap: 8px;
     perspective: 680px;
   }
 
@@ -1556,16 +1643,20 @@ ol {
     aspect-ratio: 16 / 10;
   }
 
+  .fcard__cap {
+    font-size: 11.5px;
+  }
+
   .fcard__frame--left {
-    transform: rotateY(16deg) rotateX(1deg) rotateZ(-1deg);
+    transform: rotateY(15deg) rotateX(1deg) rotateZ(-1deg);
   }
 
   .fcard__frame--right {
-    transform: rotateY(-16deg) rotateX(1deg) rotateZ(1deg);
+    transform: rotateY(-15deg) rotateX(1deg) rotateZ(1deg);
   }
 
-  .fcard__frame--left:hover,
-  .fcard__frame--right:hover {
+  .fcard__showcase:hover .fcard__frame--left,
+  .fcard__showcase:hover .fcard__frame--right {
     transform: rotateY(0deg) translateY(-4px) scale(1.02);
   }
 }

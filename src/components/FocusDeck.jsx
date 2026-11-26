@@ -14,13 +14,15 @@ function pose(p, i, reduced, compact) {
   }
   const e = easeOut(enter)
   const lift = compact ? 2.1 : 3.2
+  const enterAlpha = i === 0 ? 1 : clamp(enter / 0.08, 0, 1)
+  const exitAlpha = depth > 2.2 ? clamp((2.6 - depth) / 0.4, 0, 1) : 1
   return {
-    y: (1 - e) * 116 - depth * lift,
+    y: (1 - e) * 155 - depth * lift,
     scale: (1 - depth * 0.055) * (0.92 + 0.08 * e),
     rx: (1 - e) * 16 - depth * 7,
     rz: (1 - e) * (i % 2 ? 3 : -3),
     shade: Math.min(depth, 2) * 0.22,
-    opacity: depth > 2.2 ? clamp((2.6 - depth) / 0.4, 0, 1) : 1,
+    opacity: Math.min(enterAlpha, exitAlpha),
   }
 }
 
@@ -33,6 +35,7 @@ const cards = [
     tone: 'blue',
     title: 'Web & Front End',
     desc: 'Antarmuka web yang cepat, presisi, dan responsif dari sistem desain hingga kode produksi.',
+    tags: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     previews: [projects[0], projects[1]].filter(Boolean),
   },
   {
@@ -40,6 +43,7 @@ const cards = [
     tone: 'dark',
     title: 'Full-Stack & Data',
     desc: 'Arsitektur aplikasi end-to-end dengan autentikasi aman, integrasi API, dan basis data terstruktur.',
+    tags: ['Node.js', 'PostgreSQL', 'Prisma', 'Supabase'],
     previews: [projects[2], projects[3]].filter(Boolean),
   },
   {
@@ -47,6 +51,7 @@ const cards = [
     tone: 'light',
     title: 'Mobile & Quality',
     desc: 'Pengembangan aplikasi mobile lintas platform yang ringan dengan alur pengujian terotomasi.',
+    tags: ['React Native', 'Expo', 'Selenium', 'Cucumber'],
     previews: [projects[4], projects[6]].filter(Boolean),
   },
 ]
@@ -151,20 +156,37 @@ export default function FocusDeck() {
                         href={card.previews[0].live || card.previews[0].repo}
                         target="_blank"
                         rel="noreferrer"
-                        className="fcard__frame fcard__frame--left"
+                        className="fcard__showcase"
                         data-cursor="Buka"
                         aria-label={`Buka proyek ${card.previews[0].title}`}
                       >
-                        <img src={card.previews[0].image} alt={card.previews[0].title} loading="lazy" draggable="false" />
+                        <span className="fcard__frame fcard__frame--left">
+                          <img src={card.previews[0].image} alt={card.previews[0].title} loading="lazy" draggable="false" />
+                        </span>
+                        <span className="fcard__cap">
+                          {card.previews[0].title}
+                          <span className="fcard__cap-arrow" aria-hidden="true">
+                            ↗
+                          </span>
+                        </span>
                       </a>
                     </div>
                   )}
 
-                  {/* Tengah: tipografi judul dan deskripsi rata tengah */}
+                  {/* Tengah: tipografi judul, deskripsi, dan stack inti rata tengah */}
                   <div className="fcard__center">
                     <div className="fcard__copy">
                       <h3 className="fcard__title">{card.title}</h3>
                       <p className="fcard__desc">{card.desc}</p>
+                      {card.tags?.length > 0 && (
+                        <ul className="fcard__tags" aria-label={`Teknologi utama ${card.title}`}>
+                          {card.tags.map((tag) => (
+                            <li key={tag} className="fcard__tag">
+                              {tag}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
 
@@ -175,11 +197,19 @@ export default function FocusDeck() {
                         href={card.previews[1].live || card.previews[1].repo}
                         target="_blank"
                         rel="noreferrer"
-                        className="fcard__frame fcard__frame--right"
+                        className="fcard__showcase"
                         data-cursor="Buka"
                         aria-label={`Buka proyek ${card.previews[1].title}`}
                       >
-                        <img src={card.previews[1].image} alt={card.previews[1].title} loading="lazy" draggable="false" />
+                        <span className="fcard__frame fcard__frame--right">
+                          <img src={card.previews[1].image} alt={card.previews[1].title} loading="lazy" draggable="false" />
+                        </span>
+                        <span className="fcard__cap">
+                          {card.previews[1].title}
+                          <span className="fcard__cap-arrow" aria-hidden="true">
+                            ↗
+                          </span>
+                        </span>
                       </a>
                     </div>
                   )}
