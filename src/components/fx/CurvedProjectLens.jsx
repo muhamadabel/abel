@@ -514,7 +514,7 @@ export default function CurvedProjectLens({ items, warm = true, ready = true, se
             <img src={active.image} alt={active.title} />
           </a>
         ) : (
-          <canvas ref={canvasRef} className="lens-stage__canvas" data-cursor="Geser" />
+          <canvas ref={canvasRef} className="lens-stage__canvas" />
         )}
       </div>
 
@@ -526,7 +526,6 @@ export default function CurvedProjectLens({ items, warm = true, ready = true, se
             target="_blank"
             rel="noreferrer"
             className="lens-caption__main"
-            data-cursor="Buka"
           >
             <motion.span
               key={active.id}
@@ -546,7 +545,6 @@ export default function CurvedProjectLens({ items, warm = true, ready = true, se
               target="_blank"
               rel="noreferrer"
               className="lens-caption__repo"
-              data-cursor="GitHub"
               aria-label={`Repositori GitHub ${active.title}`}
             >
               GitHub

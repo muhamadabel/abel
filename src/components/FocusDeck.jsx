@@ -158,7 +158,6 @@ export default function FocusDeck() {
                         target="_blank"
                         rel="noreferrer"
                         className="fcard__showcase"
-                        data-cursor="Buka"
                         aria-label={`Buka proyek ${card.previews[0].title}`}
                       >
                         <span className="fcard__frame fcard__frame--left">
@@ -213,7 +212,6 @@ export default function FocusDeck() {
                         target="_blank"
                         rel="noreferrer"
                         className="fcard__showcase"
-                        data-cursor="Buka"
                         aria-label={`Buka proyek ${card.previews[1].title}`}
                       >
                         <span className="fcard__frame fcard__frame--right">

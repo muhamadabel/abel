@@ -501,17 +501,36 @@ ol {
 }
 
 .nav__mark {
-  overflow: hidden;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
   background: transparent;
+  border: none;
+  box-shadow: none;
+  transition: transform 0.6s var(--ease);
+}
+
+.nav__mark picture {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
 }
 
 .nav__mark img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 25%;
-  transform: scale(1.15);
-  transform-origin: center 25%;
+  object-fit: contain;
+  transform: translateY(-0.5px);
+  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.22));
+}
+
+[data-theme='dark'] .nav__mark img {
+  filter: drop-shadow(0 2px 6px rgba(96, 152, 255, 0.28));
 }
 
 /* ---------- Nav (Floating iOS 26 Optical Liquid Glass Pill) ---------- */
@@ -559,21 +578,6 @@ ol {
   font-size: 14.5px;
   letter-spacing: -0.02em;
   flex-shrink: 0;
-}
-
-.nav__mark {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  color: var(--bg);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  transition: transform 0.6s var(--ease), background-color 0.4s var(--ease);
 }
 
 .nav__brand:hover .nav__mark {
@@ -1511,7 +1515,14 @@ ol {
   box-shadow: 0 24px 48px -18px rgba(15, 23, 42, 0.24);
 }
 
+.fcard__frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .fcard__frame img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -2311,7 +2322,17 @@ ol {
   overflow: hidden;
 }
 
+.xpb__portrait-media picture {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
 .xpb__portrait-media img {
+  display: block;
+  margin: 0 auto;
   width: 84%;
   max-width: 340px;
   height: 100%;
@@ -3620,7 +3641,7 @@ ol {
 
 @media (min-width: 900px) {
   .socials {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -3948,37 +3969,6 @@ ol {
   .lacc__item::before {
     transition: none !important;
     animation: none !important;
-  }
-}
-
-/* Bubble kursor di kartu proyek */
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 300;
-  pointer-events: none;
-}
-
-.cursor__bubble {
-  position: absolute;
-  top: -44px;
-  left: -44px;
-  width: 88px;
-  height: 88px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  [data-cursor] {
-    cursor: none;
   }
 }
 

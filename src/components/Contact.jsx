@@ -12,7 +12,6 @@ const socials = [
   contact.linkedin,
   contact.instagram,
   contact.tiktok,
-  { label: 'Telepon', handle: contact.phone, url: `tel:${contact.phone}` },
 ]
 
 export default function Contact() {

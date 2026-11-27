@@ -19,14 +19,12 @@ export const profile = {
   avatar: '/avatar.png',
   initials: 'MA',
   birthDate: '17 Juni 2006',
-  phone: '08813798385',
   address: 'Pandes RT02, Panggungharjo, Sewon, Bantul',
 }
 
 export const contact = {
   email: 'muhammadabelabhinaya@mail.ugm.ac.id',
   formEndpoint: 'https://formsubmit.co/ajax/muhamadabelugm@gmail.com',
-  phone: '08813798385',
   github: { label: 'GitHub', handle: 'muhamadabel', url: 'https://github.com/muhamadabel' },
   linkedin: {
     label: 'LinkedIn',

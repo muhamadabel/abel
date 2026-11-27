@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { MotionConfig } from 'framer-motion'
 import { useSmoothScroll } from './lib/smoothScroll'
 import Preloader from './components/Preloader'
@@ -12,22 +12,11 @@ const Skills = lazy(() => import('./components/Skills'))
 const CVPreview = lazy(() => import('./components/CVPreview'))
 const Contact = lazy(() => import('./components/Contact'))
 const Footer = lazy(() => import('./components/Footer'))
-const Cursor = lazy(() => import('./components/Cursor'))
 
 export default function App() {
   useSmoothScroll()
   const [reveal, setReveal] = useState(false)
   const [ready, setReady] = useState(false)
-  const [finePointer, setFinePointer] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return
-    const mq = window.matchMedia('(pointer: coarse)')
-    const sync = () => setFinePointer(!mq.matches)
-    sync()
-    mq.addEventListener?.('change', sync)
-    return () => mq.removeEventListener?.('change', sync)
-  }, [])
 
   return (
     <MotionConfig reducedMotion="user">
@@ -54,7 +43,6 @@ export default function App() {
       </main>
       <Suspense fallback={null}>
         <Footer />
-        {finePointer && <Cursor />}
       </Suspense>
     </MotionConfig>
   )

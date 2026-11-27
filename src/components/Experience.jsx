@@ -1,15 +1,7 @@
 import { useRef, useState } from 'react'
-import {
-  AnimatePresence,
-  LayoutGroup,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from 'framer-motion'
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'framer-motion'
 import { achievements, education, organizations, profile } from '../data/content'
-import { cardReveal, ease, springTilt, stagger, viewportOnce } from '../lib/motion'
+import { cardReveal, ease, stagger, viewportOnce } from '../lib/motion'
 import SectionHead from './SectionHead'
 
 const ORG_META = {
@@ -28,25 +20,12 @@ const dockSpring = { type: 'spring', stiffness: 420, damping: 34 }
 
 function PortraitCard({ reduceMotion }) {
   const cardRef = useRef(null)
-  const mx = useMotionValue(0)
-  const my = useMotionValue(0)
-  const sx = useSpring(mx, springTilt)
-  const sy = useSpring(my, springTilt)
-  const rx = useTransform(sy, [-0.5, 0.5], [5, -5])
-  const ry = useTransform(sx, [-0.5, 0.5], [-6, 6])
 
   const onMove = (e) => {
     if (reduceMotion || e.pointerType !== 'mouse' || !cardRef.current) return
     const r = cardRef.current.getBoundingClientRect()
-    mx.set((e.clientX - r.left) / r.width - 0.5)
-    my.set((e.clientY - r.top) / r.height - 0.5)
     cardRef.current.style.setProperty('--mx', `${e.clientX - r.left}px`)
     cardRef.current.style.setProperty('--my', `${e.clientY - r.top}px`)
-  }
-
-  const onLeave = () => {
-    mx.set(0)
-    my.set(0)
   }
 
   return (
@@ -55,16 +34,6 @@ function PortraitCard({ reduceMotion }) {
       className="xpb__card xpb__card--portrait"
       variants={cardReveal}
       onPointerMove={onMove}
-      onPointerLeave={onLeave}
-      style={
-        reduceMotion
-          ? undefined
-          : {
-              transformPerspective: 1000,
-              rotateX: rx,
-              rotateY: ry,
-            }
-      }
     >
       <div className="xpb__portrait-aura" aria-hidden="true" />
       <div className="xpb__portrait-media">
@@ -292,7 +261,6 @@ export default function Experience() {
                       target="_blank"
                       rel="noreferrer"
                       className="xpb__cert"
-                      data-cursor="Buka"
                       aria-label={`Lihat sertifikat resmi ${award.title}`}
                     >
                       <img

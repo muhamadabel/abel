@@ -117,7 +117,6 @@ export default function CVPreview() {
                 target="_blank"
                 rel="noreferrer"
                 className="cv-sheet"
-                data-cursor="Buka"
                 aria-label="Buka dokumen CV dalam tab baru"
                 style={
                   reduceMotion
